@@ -3,12 +3,13 @@ let mapleader=","       " leader is comma
 " Enable Pathogen (needs to be at top)
 execute pathogen#infect()
 
-" Theme (Look Colors)
+" Theme (Look/Colors)
 set background=dark
 " colorscheme solarized
 
-  " Badwolf Scheme
+  " Badwolf Theme
 colorscheme badwolf
+let g:badwolf_darkgutter = 1 " Make the gutters darker than the background.
 
 " Feel of VIM
 syntax enable
