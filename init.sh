@@ -12,6 +12,12 @@ do
     fi
 done
 
+curpath=$PWD
+cd $HOMEREPO
+git config user.name "User"
+git config user.email waterns@users.noreply.github.com
+cd $curpath
+
 
 #Setup Pathogen
 mkdir -p ~/.vim/autoload ~/.vim/bundle && \
