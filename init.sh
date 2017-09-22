@@ -30,9 +30,21 @@ git clone http://github.com/sjl/gundo.vim.git ~/.vim/bundle/gundo
 #TODO: Requires silver searcher (ag) to be installed
 git clone https://github.com/mileszs/ack.vim.git ~/.vim/bundle/ack.vim
 
+#VIM Plugin: vim-airline (light weight vim powerline)
+git clone https://github.com/vim-airline/vim-airline ~/.vim/bundle/vim-airline
+
+#BASH Plugin: bash-powerline
+curl https://raw.githubusercontent.com/riobard/bash-powerline/master/bash-powerline.sh > ~/.bash-powerline.sh
+
 #OSX Terminal Theme: Dracula:
 if [[ $OSTYPE == darwin* ]]; then
   mkdir -p ~/.osx/
   git clone https://github.com/dracula/terminal.app.git ~/.osx/terminal/dracula
   open ~/.osx/terminal/dracula/Dracula.terminal
 fi
+
+#OSX: Show hidden files
+if [[ $OSTYPE == darwin* ]]; then
+  defaults write com.apple.finder AppleShowAllFiles YES
+fi
+
