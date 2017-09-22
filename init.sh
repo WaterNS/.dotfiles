@@ -33,6 +33,12 @@ git clone https://github.com/mileszs/ack.vim.git ~/.vim/bundle/ack.vim
 #VIM Plugin: vim-airline (light weight vim powerline)
 git clone https://github.com/vim-airline/vim-airline ~/.vim/bundle/vim-airline
 
+#VIM Plugin: vim-gitgutter (git plugin)
+git clone git://github.com/airblade/vim-gitgutter.git ~/.vim/bundle/vim-gitgutter
+
+#VIM Plugin:
+git clone https://github.com/tpope/vim-fugitive.git ~/.vim/bundle/vim-fugitive
+
 #BASH Plugin: bash-powerline
 curl https://raw.githubusercontent.com/riobard/bash-powerline/master/bash-powerline.sh > ~/.bash-powerline.sh
 
