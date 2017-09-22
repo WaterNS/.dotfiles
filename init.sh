@@ -29,3 +29,10 @@ git clone http://github.com/sjl/gundo.vim.git ~/.vim/bundle/gundo
 #VIM Plugin: ack (Search files/folders within VIM)
 #TODO: Requires silver searcher (ag) to be installed
 git clone https://github.com/mileszs/ack.vim.git ~/.vim/bundle/ack.vim
+
+#OSX Terminal Theme: Dracula:
+if [[ $OSTYPE == darwin* ]]; then
+  mkdir -p ~/.osx/
+  git clone https://github.com/dracula/terminal.app.git ~/.osx/terminal/dracula
+  open ~/.osx/terminal/dracula/Dracula.terminal
+fi
