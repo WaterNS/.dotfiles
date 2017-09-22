@@ -1,6 +1,6 @@
 #!/bin/bash
 shopt -s dotglob
-HOMEREPO=$HOME/.dotfiles/
+HOMEREPO=$HOME/.dotfiles
 
 for dotfile in $HOMEREPO/*
 do
