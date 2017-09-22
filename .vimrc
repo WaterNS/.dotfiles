@@ -10,6 +10,7 @@ set background=dark
   " Badwolf Theme
 colorscheme badwolf
 let g:badwolf_darkgutter = 1 " Make the gutters darker than the background.
+let g:airline_theme='bubblegum'
 
 " Feel of VIM
 syntax enable
