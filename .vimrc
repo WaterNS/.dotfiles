@@ -7,7 +7,7 @@ execute pathogen#infect()
 set background=dark
 " colorscheme solarized
 
-  " Badwolf Theme
+	" Badwolf Theme
 colorscheme badwolf
 let g:badwolf_darkgutter = 1 " Make the gutters darker than the background.
 let g:airline_theme='bubblegum'
@@ -38,12 +38,12 @@ set binary " Open file in binary mode to avoid manipulating EOL
 
 " Tools/Plugins:
 
-  " Toggle gundo ',u'
+	" Toggle gundo ',u'
 nnoremap <leader>u :GundoToggle<CR>
 
-  " Ack - Use Silver Searcher if available
+	" Ack - Use Silver Searcher if available
 if executable('ag')
-  let g:ackprg = 'ag --vimgrep'
+	let g:ackprg = 'ag --vimgrep'
 endif
 
 
@@ -62,9 +62,9 @@ nnoremap <leader>a :Ack!<space>
 " Select all text (Ctrl+A)
 map <C-a> <esc>gg0vG$<CR>
 
-  " Custom Functions
+	" Custom Functions
 func! RetabIndents()
-    let saved_view = winsaveview()
-    execute '%s@^\(\ \{'.&ts.'\}\)\+@\=repeat("\t", len(submatch(0))/'.&ts.')@e'
-    call winrestview(saved_view)
+		let saved_view = winsaveview()
+		execute '%s@^\(\ \{'.&ts.'\}\)\+@\=repeat("\t", len(submatch(0))/'.&ts.')@e'
+		call winrestview(saved_view)
 endfunc

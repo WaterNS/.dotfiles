@@ -4,34 +4,36 @@ HOMEREPO=$HOME/.dotfiles
 
 for dotfile in $(find $HOMEREPO -maxdepth 1 -type f -iname ".*")
 do
-	target=$HOME/$(basename $dotfile)
-	[ ! -r $target ] && ln -s $dotfile $target && echo "NOTE: Linked ~/$(basename $dotfile) to custom one in dotfiles repo"
+	if [ "$(basename $dotfile)" != ".editorconfig" ]; then
+		target=$HOME/$(basename $dotfile)
+		[ ! -r $target ] && ln -s $dotfile $target && echo "NOTE: Linked ~/$(basename $dotfile) to custom one in dotfiles repo"
+	fi
 done
 
 # Create .bashrc if doesn't exist
 if [ ! -f ~/.bashrc ]; then
 	echo 'NOTE: .bashrc not found, creating!'
 	touch ~/.bashrc
-  echo '#!/bin/bash' >> ~/.bashrc
+	echo '#!/bin/bash' >> ~/.bashrc
 fi
 
 # Source custom bashrc in existing .bashrc
 if ! grep -q "bashrc_custom" ~/.bashrc; then
-  echo 'NOTE: .bashrc found, but missing reference to custom bashrc, adding!'
-  echo "source $HOMEREPO/bashrc_custom" >> ~/.bashrc
+	echo 'NOTE: .bashrc found, but missing reference to custom bashrc, adding!'
+	echo "source $HOMEREPO/bashrc_custom" >> ~/.bashrc
 fi
 
 # Create .bash_profile if doesn't exist
 if [ ! -f ~/.bash_profile ]; then
-  echo 'NOTE: .bash_profile not found, creating!'
-  touch ~/.bash_profile
-  echo '#!/bin/bash' >> ~/.bash_profile
+	echo 'NOTE: .bash_profile not found, creating!'
+	touch ~/.bash_profile
+	echo '#!/bin/bash' >> ~/.bash_profile
 fi
 
 # Source .bashrc in existing .bash_profile
 if ! grep -q "bashrc" ~/.bash_profile; then
-  echo 'NOTE: .bash_profile found, but missing reference to ~/.bashrc, adding!'
-  echo "source ~/.bashrc" >> ~/.bash_profile
+	echo 'NOTE: .bash_profile found, but missing reference to ~/.bashrc, adding!'
+	echo "source ~/.bashrc" >> ~/.bash_profile
 fi
 
 curpath=$PWD
@@ -92,8 +94,8 @@ fi
 
 #OSX Terminal Theme: Dracula:
 if [[ $OSTYPE == darwin* ]]; then
-  mkdir -p ~/.osx/
-  if [ ! -d "$HOME/.osx/terminal/dracula" ]; then
+	mkdir -p ~/.osx/
+	if [ ! -d "$HOME/.osx/terminal/dracula" ]; then
 		git clone https://github.com/dracula/terminal.app.git ~/.osx/terminal/dracula
 		open ~/.osx/terminal/dracula/Dracula.terminal
 	fi
@@ -101,6 +103,6 @@ fi
 
 #OSX: Show hidden files
 if [[ $OSTYPE == darwin* ]]; then
-  defaults write com.apple.finder AppleShowAllFiles YES
+	defaults write com.apple.finder AppleShowAllFiles YES
 fi
 
