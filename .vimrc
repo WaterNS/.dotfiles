@@ -52,6 +52,7 @@ endif
 
 command Convert2unix :set ff=unix " convert to unix file endings
 command ConvertSpaceTabstoTabs call RetabIndents() " convert indent spaces into tabs
+command ToggleGutters :GitGutterSignsToggle | set invnumber " Toggle Git Gutter Signs and Line Numbers
 
 " search: exit highlighted results (,Return)
 nnoremap <leader><CR> :nohlsearch<CR>
