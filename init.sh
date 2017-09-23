@@ -21,6 +21,19 @@ if ! grep -q "bashrc_custom" ~/.bashrc; then
   echo "source $HOMEREPO/bashrc_custom" >> ~/.bashrc
 fi
 
+# Create .bash_profile if doesn't exist
+if [ ! -f ~/.bash_profile ]; then
+  echo 'NOTE: .bash_profile not found, creating!'
+  touch ~/.bash_profile
+  echo '#!/bin/bash' >> ~/.bash_profile
+fi
+
+# Source .bashrc in existing .bash_profile
+if ! grep -q "bashrc" ~/.bash_profile; then
+  echo 'NOTE: .bash_profile found, but missing reference to ~/.bashrc, adding!'
+  echo "source ~/.bashrc" >> ~/.bash_profile
+fi
+
 curpath=$PWD
 cd $HOMEREPO
 git config user.name "User"
