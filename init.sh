@@ -88,7 +88,7 @@ if [ ! -d "$HOME/.vim/bundle/vim-fugitive" ]; then
 fi
 
 #BASH Plugin: bash-powerline
-if [ ! -f "$HOME/.bash-powerline.sh" ]; then
+if [ ! -f "$HOMEREPO/bash-powerline.sh" ]; then
 	curl https://raw.githubusercontent.com/riobard/bash-powerline/master/bash-powerline.sh > $HOMEREPO/bash-powerline.sh
 fi
 
