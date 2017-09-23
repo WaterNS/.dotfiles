@@ -46,37 +46,57 @@ mkdir -p ~/.vim/autoload ~/.vim/bundle && \
 curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
 
 #VIM Theme: Badwolf
-git clone http://github.com/sjl/badwolf/ ~/.vim/bundle/badwolf
+if [ ! -d "$HOME/.vim/bundle/badwolf" ]; then
+	git clone http://github.com/sjl/badwolf/ ~/.vim/bundle/badwolf
+fi
 
 #VIM Theme: Solarized
-git clone git://github.com/altercation/vim-colors-solarized.git ~/.vim/bundle/vim-colors-solarized
+if [ ! -d "$HOME/.vim/bundle/vim-colors-solarized" ]; then
+	git clone git://github.com/altercation/vim-colors-solarized.git ~/.vim/bundle/vim-colors-solarized
+fi
 
 #VIM Plugin: gUndo (Undo on steriods)
-git clone http://github.com/sjl/gundo.vim.git ~/.vim/bundle/gundo
+if [ ! -d "$HOME/.vim/bundle/gundo" ]; then
+	git clone http://github.com/sjl/gundo.vim.git ~/.vim/bundle/gundo
+fi
 
 #VIM Plugin: ack (Search files/folders within VIM)
 #TODO: Requires silver searcher (ag) to be installed
-git clone https://github.com/mileszs/ack.vim.git ~/.vim/bundle/ack.vim
+if [ ! -d "$HOME/.vim/bundle/ack.vim" ]; then
+	git clone https://github.com/mileszs/ack.vim.git ~/.vim/bundle/ack.vim
+fi
 
-#VIM Plugin: vim-airline (light weight vim powerline)
-git clone https://github.com/vim-airline/vim-airline ~/.vim/bundle/vim-airline
-git clone https://github.com/vim-airline/vim-airline-themes ~/.vim/bundle/vim-airline-themes
+#VIM Plugin: vim-airline (light weight vim powerline) + themes
+if [ ! -d "$HOME/.vim/bundle/vim-airline" ]; then
+	git clone https://github.com/vim-airline/vim-airline ~/.vim/bundle/vim-airline
+fi
+
+if [ ! -d "$HOME/.vim/bundle/vim-airline-themes" ]; then
+	git clone https://github.com/vim-airline/vim-airline-themes ~/.vim/bundle/vim-airline-themes
+fi
 
 #VIM Plugin: vim-gitgutter (git plugin)
-git clone git://github.com/airblade/vim-gitgutter.git ~/.vim/bundle/vim-gitgutter
+if [ ! -d "$HOME/.vim/bundle/vim-gitgutter" ]; then
+	git clone git://github.com/airblade/vim-gitgutter.git ~/.vim/bundle/vim-gitgutter
+fi
 
 #VIM Plugin:
-git clone https://github.com/tpope/vim-fugitive.git ~/.vim/bundle/vim-fugitive
+if [ ! -d "$HOME/.vim/bundle/vim-fugitive" ]; then
+	git clone https://github.com/tpope/vim-fugitive.git ~/.vim/bundle/vim-fugitive
+fi
 
 #BASH Plugin: bash-powerline
-curl https://raw.githubusercontent.com/riobard/bash-powerline/master/bash-powerline.sh > ~/.bash-powerline.sh
+if [ ! -f "$HOME/.bash-powerline.sh" ]; then
+	curl https://raw.githubusercontent.com/riobard/bash-powerline/master/bash-powerline.sh > $HOMEREPO/bash-powerline.sh
+fi
 
 #OSX Terminal Theme: Dracula:
 if [[ $OSTYPE == darwin* ]]; then
-  #TODO: Check to see if folder exists
   mkdir -p ~/.osx/
-  git clone https://github.com/dracula/terminal.app.git ~/.osx/terminal/dracula
-  open ~/.osx/terminal/dracula/Dracula.terminal
+  if [ ! -d "$HOME/.osx/terminal/dracula" ]; then
+		git clone https://github.com/dracula/terminal.app.git ~/.osx/terminal/dracula
+		open ~/.osx/terminal/dracula/Dracula.terminal
+	fi
 fi
 
 #OSX: Show hidden files
