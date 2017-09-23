@@ -51,7 +51,7 @@ endif
 " Shortcut keys/commands
 
 command Convert2unix :set ff=unix " convert to unix file endings
-command ConvertSpacestoTabs %retab! " convert existing spaces into tabs
+command ConvertSpaceTabstoTabs call RetabIndents() " convert indent spaces into tabs
 
 " search: exit highlighted results (,Return)
 nnoremap <leader><CR> :nohlsearch<CR>
@@ -61,3 +61,10 @@ nnoremap <leader>a :Ack!<space>
 
 " Select all text (Ctrl+A)
 map <C-a> <esc>gg0vG$<CR>
+
+  " Custom Functions
+func! RetabIndents()
+    let saved_view = winsaveview()
+    execute '%s@^\(\ \{'.&ts.'\}\)\+@\=repeat("\t", len(submatch(0))/'.&ts.')@e'
+    call winrestview(saved_view)
+endfunc
