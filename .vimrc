@@ -33,9 +33,8 @@ set number        " LINE Numbers
 " Functionality
 set tabstop=2     " number of visual spaces per TAB
 set softtabstop=2 " number of spaces in tab when editing
-"set expandtab     " replace tabs with spaces
+set noexpandtab " Tab behavior: noexpandtab = Use tabs not spaces
 set binary " Open file in binary mode to avoid manipulating EOL
-command Convert2unix :set ff=unix " convert to unix file endings
 
 " Tools/Plugins:
 
@@ -49,7 +48,10 @@ endif
 
 
 
-" Shortcut keys
+" Shortcut keys/commands
+
+command Convert2unix :set ff=unix " convert to unix file endings
+command ConvertSpacestoTabs %retab! " convert existing spaces into tabs
 
 " search: exit highlighted results (,Return)
 nnoremap <leader><CR> :nohlsearch<CR>
