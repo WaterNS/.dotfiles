@@ -2,15 +2,24 @@
 shopt -s dotglob
 HOMEREPO=$HOME/.dotfiles
 
-for dotfile in $HOMEREPO/*
+for dotfile in $(find $HOMEREPO -maxdepth 1 -type f -iname ".*")
 do
-    if [ ! "$(basename $dotfile)" == ".git" ]; then
-      target=$HOME/$(basename $dotfile)
-      [ ! -r $target ] && ln -s $dotfile $target && echo "Linked $(basename $dotfile)"
-    else
-      echo "Skipping .git folder"
-    fi
+	target=$HOME/$(basename $dotfile)
+	[ ! -r $target ] && ln -s $dotfile $target && echo "NOTE: Linked ~/$(basename $dotfile) to custom one in dotfiles repo"
 done
+
+# Create .bashrc if doesn't exist
+if [ ! -f ~/.bashrc ]; then
+	echo 'NOTE: .bashrc not found, creating!'
+	touch ~/.bashrc
+  echo '#!/bin/bash' >> ~/.bashrc
+fi
+
+# Source custom bashrc in existing .bashrc
+if ! grep -q "bashrc_custom" ~/.bashrc; then
+  echo 'NOTE: .bashrc found, but missing reference to custom bashrc, adding!'
+  echo "source $HOMEREPO/bashrc_custom" >> ~/.bashrc
+fi
 
 curpath=$PWD
 cd $HOMEREPO
@@ -51,6 +60,7 @@ curl https://raw.githubusercontent.com/riobard/bash-powerline/master/bash-powerl
 
 #OSX Terminal Theme: Dracula:
 if [[ $OSTYPE == darwin* ]]; then
+  #TODO: Check to see if folder exists
   mkdir -p ~/.osx/
   git clone https://github.com/dracula/terminal.app.git ~/.osx/terminal/dracula
   open ~/.osx/terminal/dracula/Dracula.terminal

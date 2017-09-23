@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Show Full Path in Bash Prompt
 #export PS1='\u@\h \W \$ '
 #PS1="\[\033[38m\]\u@\h\[\033[32m\] \w \[\033[31m\]\$(prompt_git)\[\033[37m\]$\[\033[00m\] "
