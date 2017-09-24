@@ -1,0 +1,11 @@
+# OSX specific
+.DS_Store
+.TemporaryItems
+.Trashes
+
+# Windows specific
+Thumbs.db
+Desktop.ini
+
+# Installed packages folder
+opt/

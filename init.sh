@@ -10,6 +10,9 @@ do
 	fi
 done
 
+# Create dir for installation of packages for dotfiles
+mkdir -p $HOMEREPO/opt
+
 # Create .bashrc if doesn't exist
 if [ ! -f ~/.bashrc ]; then
 	echo 'NOTE: .bashrc not found, creating!'
@@ -88,16 +91,15 @@ if [ ! -d "$HOME/.vim/bundle/vim-fugitive" ]; then
 fi
 
 #BASH Plugin: bash-powerline
-if [ ! -f "$HOMEREPO/bash-powerline.sh" ]; then
-	curl https://raw.githubusercontent.com/riobard/bash-powerline/master/bash-powerline.sh > $HOMEREPO/bash-powerline.sh
+if [ ! -f "$HOMEREPO/opt/bash-powerline.sh" ]; then
+	curl https://raw.githubusercontent.com/riobard/bash-powerline/master/bash-powerline.sh > $HOMEREPO/opt/bash-powerline.sh
 fi
 
 #OSX Terminal Theme: Dracula:
 if [[ $OSTYPE == darwin* ]]; then
-	mkdir -p ~/.osx/
-	if [ ! -d "$HOME/.osx/terminal/dracula" ]; then
-		git clone https://github.com/dracula/terminal.app.git ~/.osx/terminal/dracula
-		open ~/.osx/terminal/dracula/Dracula.terminal
+	if [ ! -d "$HOMEREPO/opt/osxterminal/dracula" ]; then
+		git clone https://github.com/dracula/terminal.app.git $HOMEREPO/opt/osxterminal/dracula
+		open $HOMEREPO/opt/osxterminal/dracula/Dracula.terminal
 	fi
 fi
 
