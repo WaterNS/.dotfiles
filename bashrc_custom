@@ -20,7 +20,13 @@ export PS1="\u\h $(echo $PS1)"
 # alias common git commands to shorthand
 if [ -x "$(command -v git)" ]; then
 	alias status='git status'
-  alias push='git push'
+	alias push='git push'
+fi
+
+# add vim alias to v, run vim with viminfo disabled
+if [ -x "$(command -v vim)" ]; then
+	alias v='vim'
+	alias vim='vim -i NONE'
 fi
 
 # youtube-dl shorthand function that does auto retry

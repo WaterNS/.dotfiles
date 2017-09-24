@@ -1,4 +1,6 @@
-let mapleader=","       " leader is comma
+let mapleader="," " leader is comma
+set viminfo=      " set viminfo file to nothing
+
 
 " Enable Pathogen (needs to be at top)
 execute pathogen#infect()
