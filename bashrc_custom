@@ -17,6 +17,12 @@ source ~/.dotfiles/bash-powerline.sh
 export PS1="\u\h $(echo $PS1)"
 #echo $PS1
 
+# alias common git commands to shorthand
+if [ -x "$(command -v git)" ]; then
+	alias status='git status'
+  alias push='git push'
+fi
+
 # youtube-dl shorthand function that does auto retry
 if [ -x "$(command -v youtube-dl)" ]; then
 	ytdl () { while ! youtube-dl "$1" -c --socket-timeout 5; do echo DISCONNECTED; sleep 5; done; }
