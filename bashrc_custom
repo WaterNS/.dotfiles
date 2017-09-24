@@ -17,7 +17,8 @@ source ~/.dotfiles/bash-powerline.sh
 export PS1="\u\h $(echo $PS1)"
 #echo $PS1
 
-# youtube-dl shorthand alias and auto retry
-#TODO: Check if youtube-dl command even exists
-ytdl () { while ! youtube-dl "$1" -c --socket-timeout 5; do echo DISCONNECTED; sleep 5; done; }
+# youtube-dl shorthand function that does auto retry
+if [ -x "$(command -v youtube-dl)" ]; then
+	ytdl () { while ! youtube-dl "$1" -c --socket-timeout 5; do echo DISCONNECTED; sleep 5; done; }
+fi
 
