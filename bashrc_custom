@@ -4,8 +4,12 @@
 #export PS1='\u@\h \W \$ '
 #PS1="\[\033[38m\]\u@\h\[\033[32m\] \w \[\033[31m\]\$(prompt_git)\[\033[37m\]$\[\033[00m\] "
 
-#TODO: OSX uses -G, GNU uses -alh --colors. Include if then logic mostly for darwin
-alias ls='ls -alhG'
+# Set ls behavior
+if [[ $OSTYPE == darwin* ]]; then
+	alias ls='/bin/ls -alhG'
+else
+	alias ls='/bin/ls -alh --color'
+fi
 
 # Source bash-powerline
 source ~/.dotfiles/bash-powerline.sh
