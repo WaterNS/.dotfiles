@@ -30,7 +30,7 @@ else
 fi
 
 # Source bash-powerline
-source ~/.dotfiles/bash-powerline.sh
+source ~/.dotfiles/opt/bash-powerline.sh
 #echo $PS1
 export PS1="\u\h $(echo $PS1)"
 #echo $PS1

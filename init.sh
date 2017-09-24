@@ -4,7 +4,7 @@ HOMEREPO=$HOME/.dotfiles
 
 for dotfile in $(find $HOMEREPO -maxdepth 1 -type f -iname ".*")
 do
-	if [ "$(basename $dotfile)" != ".editorconfig" ]; then
+	if [ "$(basename $dotfile)" != ".editorconfig" ] && [ "$(basename $dotfile)" != ".gitignore" ]; then
 		target=$HOME/$(basename $dotfile)
 		[ ! -r $target ] && ln -s $dotfile $target && echo "NOTE: Linked ~/$(basename $dotfile) to custom one in dotfiles repo"
 	fi
@@ -39,10 +39,12 @@ if ! grep -q "bashrc" ~/.bash_profile; then
 	echo "source ~/.bashrc" >> ~/.bash_profile
 fi
 
+# Set .dotfiles repo setting
 curpath=$PWD
 cd $HOMEREPO
 git config user.name "User"
 git config user.email waterns@users.noreply.github.com
+git config core.pager 'less -x2'
 cd $curpath
 
 
