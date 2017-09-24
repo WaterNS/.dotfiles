@@ -43,10 +43,8 @@ nnoremap <leader>u :GundoToggle<CR>
 
 	" Ack - Use Silver Searcher if available
 if executable('ag')
-	let g:ackprg = 'ag --vimgrep'
+	let g:ackprg = 'ag --nogroup --nocolor --column'
 endif
-
-
 
 " Shortcut keys/commands
 command Convert2unix :set ff=unix " convert to unix file endings

@@ -12,6 +12,7 @@ done
 
 # Create dir for installation of packages for dotfiles
 mkdir -p $HOMEREPO/opt
+mkdir -p $HOMEREPO/opt/bin
 
 # Create .bashrc if doesn't exist
 if [ ! -f ~/.bashrc ]; then
@@ -65,6 +66,11 @@ fi
 #VIM Plugin: gUndo (Undo on steriods)
 if [ ! -d "$HOME/.vim/bundle/gundo" ]; then
 	git clone http://github.com/sjl/gundo.vim.git ~/.vim/bundle/gundo
+fi
+
+#Perl binary: Ack (searcher)
+if [ ! -f "$HOMEREPO/opt/bin/ack" ]; then
+	curl https://beyondgrep.com/ack-2.18-single-file > "$HOMEREPO/opt/bin/ack" && chmod 0755 "$HOMEREPO/opt/bin/ack"
 fi
 
 #VIM Plugin: ack (Search files/folders within VIM)

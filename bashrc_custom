@@ -29,6 +29,9 @@ else
 	alias ls='/bin/ls -alh --color'
 fi
 
+# PATH: Include .dotfiles bin
+PATH=$PATH:~/.dotfiles/opt/bin
+
 # Source bash-powerline
 source ~/.dotfiles/opt/bash-powerline.sh
 #echo $PS1
