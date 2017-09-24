@@ -15,8 +15,9 @@ let g:badwolf_darkgutter = 1 " Make the gutters darker than the background.
 let g:airline_theme='bubblegum'
 
 " Look of VIM
-set list " Show list characters
+set list                     " Show list characters
 set listchars=tab:▸·,trail:· " Tabs as ▸·, trailing spaces as dots
+set number                   " Show LINE Numbers
 
 " Feel of VIM
 syntax enable
@@ -28,9 +29,6 @@ set hlsearch      " search: highlight matches
 set foldenable          " enable folding
 set foldlevelstart=10   " open most folds by default
 set foldnestmax=10      " 10 nested fold max
-
-set number        " LINE Numbers
-
 
 " Functionality
 set tabstop=2     " number of visual spaces per TAB
@@ -51,7 +49,6 @@ endif
 
 
 " Shortcut keys/commands
-
 command Convert2unix :set ff=unix " convert to unix file endings
 command ConvertSpaceTabstoTabs call RetabIndents() " convert indent spaces into tabs
 command ToggleGuttersandChars :GitGutterSignsToggle | set invnumber | set list! " Toggle Git Gutter Signs, Line Numbers, Hidden Chars
