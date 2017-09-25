@@ -30,8 +30,8 @@ export EDITOR=vim
 # Set ls behavior
 if [[ $OSTYPE == darwin* ]]; then
 	alias ls='/bin/ls -alhG'
-else
-	alias ls='/bin/ls -alh --color'
+else # Most likely GNU Linux ls
+	alias ls='/bin/ls -alh --color --group-directories-first'
 fi
 
 # PATH: Include .dotfiles bin
