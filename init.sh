@@ -1,6 +1,7 @@
 #!/bin/bash
 shopt -s dotglob
-HOMEREPO=$HOME/.dotfiles
+HOMEREPO="$HOME/.dotfiles"
+HOMEREPOlit='~/.dotfiles'
 
 for dotfile in $(find $HOMEREPO -maxdepth 1 -type f -iname ".*")
 do
@@ -24,7 +25,7 @@ fi
 # Source custom bashrc in existing .bashrc
 if ! grep -q "bashrc_custom" ~/.bashrc; then
 	echo 'NOTE: .bashrc found, but missing reference to custom bashrc, adding!'
-	echo "source $HOMEREPO/bashrc_custom" >> ~/.bashrc
+	echo "source $HOMEREPOlit/bashrc_custom" >> ~/.bashrc
 fi
 
 # Create .bash_profile if doesn't exist
