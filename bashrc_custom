@@ -7,6 +7,11 @@ history -c
 rm -f "$HOME/.bash_history" 2> /dev/null
 rm -rf "$HOME/.bash_sessions" 2> /dev/null
 
+# Disable OSX session saving
+if [[ $OSTYPE == darwin* ]]; then
+	touch ~/.bash_sessions_disable
+fi
+
 # Disable less history and delete it
 export LESSHISTFILE=/dev/null
 rm -f "$HOME/.lesshst" 2> /dev/null
