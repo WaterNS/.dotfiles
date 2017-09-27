@@ -1,6 +1,10 @@
 let mapleader="," " leader is comma
 set viminfo=      " set viminfo file to nothing
 
+" Detect Unix type
+if has("unix")
+	let s:uname = system("echo -n \"$(uname -s)\"")
+endif
 
 " Enable Pathogen (needs to be at top)
 execute pathogen#infect()
@@ -50,6 +54,7 @@ endif
 command Convert2unix :set ff=unix " convert to unix file endings
 command ConvertSpaceTabstoTabs call RetabIndents() " convert indent spaces into tabs
 command ToggleGuttersandChars :GitGutterSignsToggle | set invnumber | set list! " Toggle Git Gutter Signs, Line Numbers, Hidden Chars
+noremap <leader>n :ToggleGuttersandChars<CR>
 
 " search: exit highlighted results (,Return)
 nnoremap <leader><CR> :nohlsearch<CR>
@@ -60,7 +65,14 @@ nnoremap <leader>a :Ack!<space>
 " Select all text (Ctrl+A)
 map <C-a> <esc>gg0vG$<CR>
 
-	" Custom Functions
+" OSX: Cut/Copy text to clipboard using pbcopy (ctrl+x/ctrl+c)
+if !v:shell_error && s:uname == "Darwin"
+	vmap <C-x> :!pbcopy<CR>
+	vmap <C-c> :w !pbcopy<CR><CR>
+endif
+
+" Custom Functions
+
 func! RetabIndents()
 		let saved_view = winsaveview()
 		execute '%s@^\(\ \{'.&ts.'\}\)\+@\=repeat("\t", len(submatch(0))/'.&ts.')@e'
