@@ -23,18 +23,25 @@ set list                     " Show list characters
 set listchars=tab:▸·,trail:· " Tabs as ▸·, trailing spaces as dots
 set number                   " Show LINE Numbers
 
-" Feel of VIM
+"Feel/Behavior of VIM
 syntax enable
 set wildmenu      " visual autocomplete for command menu
 set showmatch     " highlight matching closing item (ie brace, paran, etc)
 set hlsearch      " search: highlight matches
+filetype plugin on " Detect file type for syntax and commenting
+set timeout " Time out of :mappings
+set timeoutlen=2500 " Set time out of :mappings (i.e. leader) to 2.5 seconds
+set ttimeout " Time out on keycodes
 
-" Code collapsing (folding) behavior
+" Collapsing (folding) behavior
 set foldenable          " enable folding
 set foldlevelstart=10   " open most folds by default
 set foldnestmax=10      " 10 nested fold max
 
-" Functionality
+" Commenting behavior
+let g:NERDCommentEmptyLines = 1 " Allow commenting and inverting empty lines
+
+" Tab Functionality
 set tabstop=2     " number of visual spaces per TAB
 set softtabstop=2 " number of spaces in tab when editing
 set noexpandtab " Tab behavior: noexpandtab = Use tabs not spaces

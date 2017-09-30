@@ -94,10 +94,18 @@ if [ ! -d "$HOME/.vim/bundle/vim-gitgutter" ]; then
 	git clone git://github.com/airblade/vim-gitgutter.git ~/.vim/bundle/vim-gitgutter
 fi
 
-#VIM Plugin:
+#VIM Plugin: Adds git capabilities to VIM
 if [ ! -d "$HOME/.vim/bundle/vim-fugitive" ]; then
 	git clone https://github.com/tpope/vim-fugitive.git ~/.vim/bundle/vim-fugitive
 fi
+
+#VIM Plugin: Add commenting capabilities to VIM
+if [ ! -d "$HOME/.vim/bundle/nerdcommenter" ]; then
+	git clone https://github.com/scrooloose/nerdcommenter.git ~/.vim/bundle/nerdcommenter
+fi
+
+# Regenerate VIM help catalog
+vim -c 'call pathogen#helptags()|q'
 
 #BASH Plugin: bash-powerline
 if [ ! -f "$HOMEREPO/opt/bash-powerline.sh" ]; then
