@@ -40,6 +40,7 @@ set foldnestmax=10      " 10 nested fold max
 
 " Commenting behavior
 let g:NERDCommentEmptyLines = 1 " Allow commenting and inverting empty lines
+let g:NERDDefaultAlign = 'left' " Comments are aligned to left instead of code indentation
 
 " Tab Functionality
 set tabstop=2     " number of visual spaces per TAB
