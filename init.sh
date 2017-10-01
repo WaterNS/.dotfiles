@@ -1,8 +1,55 @@
 #!/bin/bash
-shopt -s dotglob
+
+SCRIPTDIR=$( cd $(dirname $0) ; pwd -P )
+SCRIPTPATH=$SCRIPTDIR/$(basename "$0")
+
+# Check passed options/args
+while getopts ":u" opt ; do
+	case $opt in
+		u) u=1 ;; # Handle -u switch
+	esac
+done
+
+# Function: Update git repo (if needed)
+updategitrepo () {
+	olddir=$PWD
+	reponame=$1
+	description=$2
+	repolocation=$3
+
+	echo ""
+	echo "-Check updates: $reponame ($description)"
+	cd "$repolocation"
+	git fetch
+
+	if [ "$(git rev-parse master)" != "$(git rev-parse origin/master)" ]; then
+		echo -n "--Updating $reponame $description repo "
+		echo -n "(from $(git rev-parse --short master) to "
+		echo -n "$(git rev-parse --short origin/master))"
+		git pull --quiet
+
+		# Restart the init script if it self updated
+		if [ "$reponame" == "dotfiles" ]; then
+			cd $olddir
+			exec $SCRIPTPATH -u;
+		fi
+
+  fi
+
+	cd $olddir
+}
+
+if [ $u ]; then echo "UPDATING..."; fi
+
 HOMEREPO="$HOME/.dotfiles"
 HOMEREPOlit='~/.dotfiles'
 
+# Update dotfiles repo
+if [ $u ]; then
+	updategitrepo "dotfiles" "profile configs" $HOMEREPO
+fi
+
+shopt -s dotglob
 for dotfile in $(find $HOMEREPO -maxdepth 1 -type f -iname ".*")
 do
 	if [ "$(basename $dotfile)" != ".editorconfig" ] && [ "$(basename $dotfile)" != ".gitignore" ]; then
@@ -53,20 +100,28 @@ cd $curpath
 #Setup Pathogen
 mkdir -p ~/.vim/autoload ~/.vim/bundle && \
 curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
+	if [ $u ]; then
+		echo ""
+		echo "--Updating Pathogen"
+		curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
+	fi
 
 #VIM Theme: Badwolf
 if [ ! -d "$HOME/.vim/bundle/badwolf" ]; then
-	git clone http://github.com/sjl/badwolf/ ~/.vim/bundle/badwolf
+	git clone https://github.com/sjl/badwolf/ ~/.vim/bundle/badwolf
+elif [ $u ]; then updategitrepo "BadWolf" "VIM theme" ~/.vim/bundle/badwolf ;
 fi
 
 #VIM Theme: Solarized
 if [ ! -d "$HOME/.vim/bundle/vim-colors-solarized" ]; then
 	git clone git://github.com/altercation/vim-colors-solarized.git ~/.vim/bundle/vim-colors-solarized
+elif [ $u ]; then updategitrepo "Solarized" "VIM theme" ~/.vim/bundle/vim-colors-solarized ;
 fi
 
 #VIM Plugin: gUndo (Undo on steriods)
 if [ ! -d "$HOME/.vim/bundle/gundo" ]; then
 	git clone http://github.com/sjl/gundo.vim.git ~/.vim/bundle/gundo
+elif [ $u ]; then updategitrepo "gUndo" "VIM undo plugin" ~/.vim/bundle/gundo ;
 fi
 
 #Perl binary: Ack (searcher)
@@ -78,30 +133,36 @@ fi
 #TODO: Requires silver searcher (ag) to be installed
 if [ ! -d "$HOME/.vim/bundle/ack.vim" ]; then
 	git clone https://github.com/mileszs/ack.vim.git ~/.vim/bundle/ack.vim
+elif [ $u ]; then updategitrepo "ack.vim" "VIM search plugin" ~/.vim/bundle/ack.vim ;
 fi
 
 #VIM Plugin: vim-airline (light weight vim powerline) + themes
 if [ ! -d "$HOME/.vim/bundle/vim-airline" ]; then
 	git clone https://github.com/vim-airline/vim-airline ~/.vim/bundle/vim-airline
+elif [ $u ]; then updategitrepo "vim-airline" "VIM status bar plugin" ~/.vim/bundle/vim-airline ;
 fi
 
 if [ ! -d "$HOME/.vim/bundle/vim-airline-themes" ]; then
 	git clone https://github.com/vim-airline/vim-airline-themes ~/.vim/bundle/vim-airline-themes
+elif [ $u ]; then updategitrepo "vim-airline-themes" "vim-airline themes" ~/.vim/bundle/vim-airline-themes ;
 fi
 
 #VIM Plugin: vim-gitgutter (git plugin)
 if [ ! -d "$HOME/.vim/bundle/vim-gitgutter" ]; then
 	git clone git://github.com/airblade/vim-gitgutter.git ~/.vim/bundle/vim-gitgutter
+elif [ $u ]; then updategitrepo "vim-gitgutter" "VIM git statusbar plugin" ~/.vim/bundle/vim-gitgutter ;
 fi
 
 #VIM Plugin: Adds git capabilities to VIM
 if [ ! -d "$HOME/.vim/bundle/vim-fugitive" ]; then
 	git clone https://github.com/tpope/vim-fugitive.git ~/.vim/bundle/vim-fugitive
+elif [ $u ]; then updategitrepo "vim-fugitive" "VIM git plugin" ~/.vim/bundle/vim-fugitive ;
 fi
 
 #VIM Plugin: Add commenting capabilities to VIM
 if [ ! -d "$HOME/.vim/bundle/nerdcommenter" ]; then
 	git clone https://github.com/scrooloose/nerdcommenter.git ~/.vim/bundle/nerdcommenter
+elif [ $u ]; then updategitrepo "nerdcommenter" "VIM commenting plugin" ~/.vim/bundle/nerdcommenter ;
 fi
 
 # Regenerate VIM help catalog
@@ -125,3 +186,9 @@ if [[ $OSTYPE == darwin* ]]; then
 	defaults write com.apple.finder AppleShowAllFiles YES
 fi
 
+
+
+if [ $u ]; then
+	echo ""
+	echo "UPDATING Completed!"
+fi
