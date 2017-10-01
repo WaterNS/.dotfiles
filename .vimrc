@@ -22,6 +22,13 @@ let g:airline_theme='bubblegum'
 set list                     " Show list characters
 set listchars=tab:▸·,trail:· " Tabs as ▸·, trailing spaces as dots
 set number                   " Show LINE Numbers
+"Highlight Whitespace properly
+highlight ExtraWhitespace ctermbg=red guibg=red
+match ExtraWhitespace /\s\+$/
+autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
+autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
+autocmd InsertLeave * match ExtraWhitespace /\s\+$/
+autocmd BufWinLeave * call clearmatches()
 
 "Feel/Behavior of VIM
 syntax enable
@@ -62,6 +69,7 @@ endif
 command Convert2unix :set ff=unix " convert to unix file endings
 command ConvertSpaceTabstoTabs call RetabIndents() " convert indent spaces into tabs
 command ToggleGuttersandChars :GitGutterSignsToggle | set invnumber | set list! " Toggle Git Gutter Signs, Line Numbers, Hidden Chars
+command TrimWhiteSpace call TrimWhitespace()
 noremap <leader>n :ToggleGuttersandChars<CR>
 
 " search: exit highlighted results (,Return)
@@ -86,3 +94,9 @@ func! RetabIndents()
 		execute '%s@^\(\ \{'.&ts.'\}\)\+@\=repeat("\t", len(submatch(0))/'.&ts.')@e'
 		call winrestview(saved_view)
 endfunc
+
+fun! TrimWhitespace()
+    let l:save = winsaveview()
+    %s/\s\+$//e
+    call winrestview(l:save)
+endfun
