@@ -186,7 +186,11 @@ if [[ $OSTYPE == darwin* ]]; then
 	defaults write com.apple.finder AppleShowAllFiles YES
 fi
 
-
+#Write last update file
+#if [ ! -f $HOMEREPO/opt/lastupdate ]; then
+	#date -u > $HOMEREPO/opt/lastupdate
+#elif
+#fi
 
 if [ $u ]; then
 	echo ""
