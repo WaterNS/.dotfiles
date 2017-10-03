@@ -161,7 +161,8 @@ fi
 
 #VIM Plugin: Add commenting capabilities to VIM
 if [ ! -d "$HOME/.vim/bundle/nerdcommenter" ]; then
-	git clone https://github.com/scrooloose/nerdcommenter.git ~/.vim/bundle/nerdcommenter
+	echo "- Installing: nerdcommenter (VIM commenting plugin)";
+	git clone https://github.com/scrooloose/nerdcommenter.git ~/.vim/bundle/nerdcommenter; echo ""
 elif [ $u ]; then updategitrepo "nerdcommenter" "VIM commenting plugin" ~/.vim/bundle/nerdcommenter ;
 fi
 
