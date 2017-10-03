@@ -12,8 +12,7 @@ execute pathogen#infect()
 " Color Theme
 set background=dark
 " colorscheme solarized
-
-	" Badwolf Theme
+  " Badwolf Theme
 colorscheme badwolf
 let g:badwolf_darkgutter = 1 " Make the gutters darker than the background.
 let g:airline_theme='bubblegum'
@@ -22,6 +21,12 @@ let g:airline_theme='bubblegum'
 set list                     " Show list characters
 set listchars=tab:▸·,trail:· " Tabs as ▸·, trailing spaces as dots
 set number                   " Show LINE Numbers
+set title                    " Show filename in title
+set showcmd                  " Show shortcut/cmd in bottom right as its being typed
+" Enable syntax highlighting
+if !exists("g:syntax_on")
+    syntax enable
+endif
 "Highlight Whitespace properly
 highlight ExtraWhitespace ctermbg=red guibg=red
 match ExtraWhitespace /\s\+$/
@@ -31,11 +36,14 @@ autocmd InsertLeave * match ExtraWhitespace /\s\+$/
 autocmd BufWinLeave * call clearmatches()
 
 "Feel/Behavior of VIM
-syntax enable
+set nostartofline " Don't reset cursor to start of line when moving around
 set wildmenu      " visual autocomplete for command menu
 set showmatch     " highlight matching closing item (ie brace, paran, etc)
 set hlsearch      " search: highlight matches
 filetype plugin on " Detect file type for syntax and commenting
+au FileType * set fo-=c fo-=r fo-=o " Disable auto commenting lines
+autocmd BufNewFile,BufRead *.json setfiletype json syntax=javascript " Treat .json files as .js
+autocmd BufNewFile,BufRead *.md setlocal filetype=markdown " Treat .md files as Markdown
 set timeout " Time out of :mappings
 set timeoutlen=2500 " Set time out of :mappings (i.e. leader) to 2.5 seconds
 set ttimeout " Time out on keycodes
