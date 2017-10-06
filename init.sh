@@ -93,7 +93,6 @@ curpath=$PWD
 cd $HOMEREPO
 git config user.name "User"
 git config user.email waterns@users.noreply.github.com
-git config core.pager 'less -x2'
 cd $curpath
 
 
@@ -127,6 +126,15 @@ fi
 #Perl binary: Ack (searcher)
 if [ ! -f "$HOMEREPO/opt/bin/ack" ]; then
 	curl https://beyondgrep.com/ack-2.18-single-file > "$HOMEREPO/opt/bin/ack" && chmod 0755 "$HOMEREPO/opt/bin/ack"
+fi
+
+#Perl binary: diff-so-fancy (better git diff)
+if [ ! -f "$HOMEREPO/opt/bin/diff-so-fancy" ]; then
+	echo ""; echo "Pulling down: diff-so-fancy (better git diff)"
+  curl https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy > "$HOMEREPO/opt/bin/diff-so-fancy" && chmod 0755 "$HOMEREPO/opt/bin/diff-so-fancy"
+elif [ $u ]; then
+	echo ""; echo "--Updating diff-so-fancy"
+  curl https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy > "$HOMEREPO/opt/bin/diff-so-fancy" && chmod 0755 "$HOMEREPO/opt/bin/diff-so-fancy"
 fi
 
 #VIM Plugin: ack (Search files/folders within VIM)

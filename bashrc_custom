@@ -59,6 +59,21 @@ if [ -x "$(command -v git)" ]; then
 	alias push='git push'
 fi
 
+# GIT PAGER and LESS settings
+# Use diff-so-fancy (if available)
+if [ -x "$(command -v diff-so-fancy)" ]; then
+	# Set Git Pager and LESS settings for session
+	export GIT_PAGER='diff-so-fancy | less'
+	export LESS="-x2 -RFX $LESS"
+
+	# Include diff-so-fancy colors
+	git config --global include.path "~/.dotfiles/git_colors"
+else # Set to use LESS as fallback and undo gitconfig change
+  export GIT_PAGER='less'
+  export LESS="-x2 -RFX $LESS"
+	git config --global --unset include.path "~/.dotfiles/git_colors"
+fi
+
 # add vim alias to v, run vim with viminfo disabled
 if [ -x "$(command -v vim)" ]; then
 	alias v='vim'
