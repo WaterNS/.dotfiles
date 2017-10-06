@@ -80,6 +80,7 @@ endif
 command Convert2unix :set ff=unix " convert to unix file endings
 command ConvertSpaceTabstoTabs call RetabIndents() " convert indent spaces into tabs
 command TrimWhiteSpace call TrimWhitespace()
+command SudoWriteFile :execute ':silent w !sudo tee % > /dev/null' | :edit!
 
 " Toggle Git Gutters, Line Numbers, Hidden Chars
 command ToggleGuttersandChars :GitGutterSignsToggle | set invnumber | set list!
