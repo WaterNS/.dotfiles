@@ -39,6 +39,7 @@ autocmd BufWinLeave * call clearmatches()
 set nostartofline " Don't reset cursor to start of line when moving around
 set wildmenu      " visual autocomplete for command menu
 set showmatch     " highlight matching closing item (ie brace, paran, etc)
+set incsearch     " search as you type
 set hlsearch      " search: highlight matches
 filetype plugin on " Detect file type for syntax and commenting
 au FileType * set fo-=c fo-=r fo-=o " Disable auto commenting lines
