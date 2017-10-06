@@ -41,6 +41,8 @@ set wildmenu      " visual autocomplete for command menu
 set showmatch     " highlight matching closing item (ie brace, paran, etc)
 set incsearch     " search as you type
 set hlsearch      " search: highlight matches
+set ignorecase    " search: Ignore case (affects MATCHES)
+set smartcase     " search: Ignore case UNLESS use cap in search
 filetype plugin on " Detect file type for syntax and commenting
 au FileType * set fo-=c fo-=r fo-=o " Disable auto commenting lines
 autocmd BufNewFile,BufRead *.json setfiletype json syntax=javascript " Treat .json files as .js
