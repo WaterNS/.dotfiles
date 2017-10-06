@@ -39,8 +39,9 @@ if [ -f ~/.bash_aliases ]; then
 	. ~/.bash_aliases
 fi
 
-# Source bash-powerline
-source ~/.dotfiles/opt/bash-powerline.sh
+if [ -f ~/.dotfiles/bash_prompt ]; then
+	. ~/.dotfiles/bash_prompt
+fi
 
 # PATH: Include .dotfiles bin
 PATH=$PATH:~/.dotfiles/opt/bin
@@ -51,6 +52,15 @@ PATH=$PATH:~/.dotfiles/opt/bin
 export GIT_EDITOR=vim
 export VISUAL=vim
 export EDITOR=vim
+
+# Enable programmable completion features
+if ! shopt -oq posix; then
+  if [ -f /usr/share/bash-completion/bash_completion ]; then
+    . /usr/share/bash-completion/bash_completion
+  elif [ -f /etc/bash_completion ]; then
+    . /etc/bash_completion
+  fi
+fi
 
 # GIT PAGER and LESS settings
 # Use diff-so-fancy (if available)
@@ -66,6 +76,10 @@ else # Set to use LESS as fallback and undo gitconfig change
   export LESS="-x2 -RFX $LESS"
 	git config --global --unset include.path "~/.dotfiles/git_colors"
 fi
+
+# Use lesspipe for binaries
+[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+
 
 # DOTFILES updater
 # Check if last update was longer than set interval, kick off update if so
