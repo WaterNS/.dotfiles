@@ -86,12 +86,18 @@ if [ -x "$(command -v youtube-dl)" ]; then
 fi
 
 # Check if last update was longer than set interval, kick off update if so
-oldtime=$(head -1 $HOME/.dotfiles/opt/lastupdate)
-newtime=$(date +%s)
-difftime=$(($newtime-$oldtime))
-maxtime=$((8*60*60))
-if [ $difftime -gt $maxtime ]; then
-	echo "Last update happened $difftime seconds ago, updating dotfiles"
+if [ -f $HOME/.dotfiles/opt/lastupdate ]; then
+	oldtime=$(head -1 $HOME/.dotfiles/opt/lastupdate)
+	newtime=$(date +%s)
+	difftime=$(($newtime-$oldtime))
+	maxtime=$((8*60*60))
+fi
+if [ $difftime -gt $maxtime ] || [ ! -f $HOME/.dotfiles/opt/lastupdate ]; then
+	if [ ! -f $HOME/.dotfiles/opt/lastupdate ]; then
+		echo "No update time file found, running update now"
+	else
+		echo "Last update happened $difftime seconds ago, updating dotfiles"
+	fi
 	$HOME/.dotfiles/init.sh -u
 	echo "Restarting shell..."
 	echo "------------------"
