@@ -18,8 +18,9 @@ let g:badwolf_darkgutter = 1 " Make the gutters darker than the background.
 let g:airline_theme='bubblegum'
 
 " Look of VIM
+set cursorline               " Highlight current line
 set list                     " Show list characters
-set listchars=tab:▸·,trail:·,eol:¬ " Tabs as ▸·, trailing spaces as dots, End of lines as ¬
+set listchars=tab:▸·,trail:·,eol:¬ " Tabs as ▸·, trailing spaces as dots, and show EOLs
 set number                   " Show LINE Numbers
 set title                    " Show filename in title
 set showcmd                  " Show shortcut/cmd in bottom right as its being typed
