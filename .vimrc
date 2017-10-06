@@ -19,7 +19,7 @@ let g:airline_theme='bubblegum'
 
 " Look of VIM
 set list                     " Show list characters
-set listchars=tab:▸·,trail:· " Tabs as ▸·, trailing spaces as dots
+set listchars=tab:▸·,trail:·,eol:¬ " Tabs as ▸·, trailing spaces as dots, End of lines as ¬
 set number                   " Show LINE Numbers
 set title                    " Show filename in title
 set showcmd                  " Show shortcut/cmd in bottom right as its being typed
