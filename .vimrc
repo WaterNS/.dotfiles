@@ -76,9 +76,11 @@ endif
 " Shortcut keys/commands
 command Convert2unix :set ff=unix " convert to unix file endings
 command ConvertSpaceTabstoTabs call RetabIndents() " convert indent spaces into tabs
-command ToggleGuttersandChars :GitGutterSignsToggle | set invnumber | set list! " Toggle Git Gutter Signs, Line Numbers, Hidden Chars
 command TrimWhiteSpace call TrimWhitespace()
-noremap <leader>n :ToggleGuttersandChars<CR>
+
+" Toggle Git Gutters, Line Numbers, Hidden Chars
+command ToggleGuttersandChars :GitGutterSignsToggle | set invnumber | set list!
+noremap <leader>t<space> :ToggleGuttersandChars<CR>
 
 " search: exit highlighted results (,Return)
 nnoremap <leader><CR> :nohlsearch<CR>
