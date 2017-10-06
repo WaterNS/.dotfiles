@@ -188,10 +188,15 @@ if [[ $OSTYPE == darwin* ]]; then
 fi
 
 #Write last update file
-#if [ ! -f $HOMEREPO/opt/lastupdate ]; then
-	#date -u > $HOMEREPO/opt/lastupdate
-#elif
-#fi
+if [ ! -f $HOMEREPO/opt/lastupdate ]; then
+	date +%s > $HOMEREPO/opt/lastupdate
+	date '+%A %F %I:%M:%S %p %Z' >> $HOMEREPO/opt/lastupdate
+elif [ $u ]; then
+	echo ""
+	echo "Updating last update time file with current date"
+	date +%s > $HOMEREPO/opt/lastupdate
+	date '+%A %F %I:%M:%S %p %Z' >> $HOMEREPO/opt/lastupdate
+fi
 
 if [ $u ]; then
 	echo ""

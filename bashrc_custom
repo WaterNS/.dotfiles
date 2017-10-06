@@ -23,6 +23,9 @@ rm -f "$HOME/.rnd" 2> /dev/null
 rm -f "$HOME/.viminfo" 2> /dev/null
 rm -f "$HOME/.vim/.netrwhist" 2> /dev/null
 
+############################################
+source $HOME/.dotfiles/bash_functions
+
 # Set default editors
 export GIT_EDITOR=vim
 export VISUAL=vim
@@ -67,3 +70,18 @@ if [ -x "$(command -v youtube-dl)" ]; then
 	ytdl () { while ! youtube-dl "$1" -c --socket-timeout 5; do echo DISCONNECTED; sleep 5; done; }
 fi
 
+# Check if last update was longer than set interval, kick off update if so
+oldtime=$(head -1 $HOME/.dotfiles/opt/lastupdate)
+newtime=$(date +%s)
+difftime=$(($newtime-$oldtime))
+maxtime=$((8*60*60))
+if [ $difftime -gt $maxtime ]; then
+	echo "Last update happened $difftime seconds ago, updating dotfiles"
+	$HOME/.dotfiles/init.sh -u
+	echo "Restarting shell..."
+	echo "------------------"
+	exec bash
+else
+	echo "Last dotfiles update: $(seconds2time $difftime) ago / Update Interval: $(seconds2time $maxtime)"
+	#echo "Update <$maxtime seconds ago, skipping dotfiles update"
+fi
