@@ -67,6 +67,13 @@ set softtabstop=2 " number of spaces in tab when editing
 set noexpandtab " Tab behavior: noexpandtab = Use tabs not spaces
 set binary " Open file in binary mode to avoid manipulating EOL
 
+" Centralize backups, swapfiles and undo history
+set backupdir=~/.vim/backups
+set directory=~/.vim/swaps
+if exists("&undodir")
+	set undodir=~/.vim/undo
+endif
+
 " Tools/Plugins:
 
 	" Toggle gundo ',u'

@@ -23,6 +23,11 @@ rm -f "$HOME/.rnd" 2> /dev/null
 rm -f "$HOME/.viminfo" 2> /dev/null
 rm -f "$HOME/.vim/.netrwhist" 2> /dev/null
 
+# VIM: Create backup, swap, and undo folders if don't exist
+if [ ! -d ~/.vim/backups ]; then mkdir -p ~/.vim/backups; fi
+if [ ! -d ~/.vim/swaps ]; then mkdir -p ~/.vim/swaps; fi
+if [ ! -d ~/.vim/undo ]; then mkdir -p ~/.vim/undo; fi
+
 ############################################
 source $HOME/.dotfiles/bash_functions
 
