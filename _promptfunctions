@@ -30,7 +30,7 @@ git_prompt() {
 		done < <($git_eng status --porcelain --branch)  # note the space between the two <
 
 		# print the git branch segment without a trailing newline
-     printf " $branch$marks "
+     printf " [ $branch$marks ] "
 }
 
 # Set a color for last exit
@@ -41,7 +41,7 @@ else
 	local EXITCOLOR_BG="$BG_RED"
 fi
 
-return $EXITCOLOR_BG
+echo "$EXITCOLOR_BG"
 }
 
 
