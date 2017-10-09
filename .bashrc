@@ -48,6 +48,13 @@ PATH=$PATH:~/.dotfiles/opt/bin
 
 #############################################
 
+# Running interactively?
+case $- in
+    *i*) shopt -s checkwinsize ;;
+      *) # return;;
+esac
+
+
 # Set default editors
 export GIT_EDITOR=vim
 export VISUAL=vim
