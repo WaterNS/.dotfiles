@@ -38,7 +38,7 @@ fi
 unset color_prompt force_color_prompt
 
 # GIT PROMPT
-PS1+="\$(git_prompt) "
+PS1+="\$(git_prompt2) "
 
 # END OF LINE: Add Prompt Symbol
 #PS1+="$RESET\$(lastexitcolor) $PS_SYMBOL $RESET "
