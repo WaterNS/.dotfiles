@@ -36,12 +36,12 @@ if [[ $(tput colors) -ge 256 ]] 2>/dev/null; then
 
     readonly BG_YELLOW="\[$(tput setab 136)\]"
     readonly BG_ORANGE="\[$(tput setab 166)\]"
-    readonly BG_RED="\[$(tput setab 160)\]"
+    readonly BG_RED="$(tput setab 160)"
     readonly BG_MAGENTA="\[$(tput setab 125)\]"
     readonly BG_VIOLET="\[$(tput setab 61)\]"
     readonly BG_BLUE="\[$(tput setab 33)\]"
     readonly BG_CYAN="\[$(tput setab 37)\]"
-    readonly BG_GREEN="\[$(tput setab 64)\]"
+    readonly BG_GREEN="$(tput setab 64)"
  else
     readonly FG_BASE03="\[$(tput setaf 8)\]"
     readonly FG_BASE02="\[$(tput setaf 0)\]"
