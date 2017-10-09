@@ -1,45 +1,51 @@
 #!/bin/bash
 
-# Source bash-powerline
-#if [ -f ~/.dotfiles/opt/bash-powerline.sh ]; then
-#  . ~/.dotfiles/opt/bash-powerline.sh
-#fi
-
 # Source prompt functions
 if [ -f ~/.dotfiles/_promptfunctions ];then
 	. ~/.dotfiles/_promptfunctions
 fi
 
-# set variable identifying the chroot you work in (used in the prompt below)
-if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
-	debian_chroot=$(cat /etc/debian_chroot)
+
+ps1function() {
+
+# DEFINE: Last Exit code: get and set colors
+if [ $? -eq 0 ]; then
+	local symbol="$COLOR_SUCCESS $PS_SYMBOL $RESET"
+else
+	local symbol="$COLOR_FAILURE $PS_SYMBOL $RESET"
 fi
 
-#
-# CREATE THE PROMPT
-#
-
-# TITLE:
-# If this is an xterm set the title to user@host:dir
+# DEFINE: Title (if xterm/rxvt/others?)
 case "$TERM" in
-xterm*|rxvt*)
-    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
-    ;;
-*)
-    ;;
+	xterm*|rxvt*) local windowtitle="\[\e]0;\u@\h: \w\a\]" ;;
+	*) ;;
 esac
 
+# DEFINE: User@host entry
+local userhost='\[\033[01;32m\]\u@\h\[\033[00m\]:'
 
-if [ "$color_prompt" = yes ]; then
-    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\] '
-else
-    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w '
-fi
-unset color_prompt force_color_prompt
+# DEFINE: Location
+local location='\[\033[01;34m\]\w\[\033[00m\] '
 
-# GIT PROMPT
-PS1+="\$(git_prompt) "
+# DEFINE: Git Prompt
+	# security fix: don't run a script that happens to be same name as the branch
+	if shopt -q promptvars; then
+		_git_prompt="$(git_prompt)"
+		local git="$COLOR_GIT\${_git_prompt}$RESET"
+	else
+		# promptvars is disabled. Avoid creating unnecessary env var.
+		local git="$COLOR_GIT$(git_prompt)$RESET"
+	fi
 
-# END OF LINE: Add Prompt Symbol
-#PS1+="$RESET\$(lastexitcolor) $PS_SYMBOL $RESET "
-PS1+="$RESET\$(lastexitcolor) $PS_SYMBOL $RESET "
+# Put it all together!
+PS1="\
+$windowtitle\
+$userhost\
+$location\
+$git\
+$symbol"
+}
+
+#Set the PROMPT_COMMAND, but don't overwrite existing ones
+#ref: https://github.com/riobard/bash-powerline/issues/14#issuecomment-311846617
+PROMPT_COMMAND="ps1function${PROMPT_COMMAND:+; $PROMPT_COMMAND}"
