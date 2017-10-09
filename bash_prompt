@@ -25,16 +25,16 @@ esac
 local userhost='\[\033[01;32m\]\u@\h\[\033[00m\]:'
 
 # DEFINE: Location
-local location='\[\033[01;34m\]\w\[\033[00m\] '
+local location='\[\033[01;34m\]\w\[\033[00m\]'
 
 # DEFINE: Git Prompt
 	# security fix: don't run a script that happens to be same name as the branch
 	if shopt -q promptvars; then
 		_git_prompt="$(git_prompt)"
-		local git="$COLOR_GIT\${_git_prompt}$RESET"
+		local git="$RESET$BG_GIT\${_git_prompt}$RESET"
 	else
 		# promptvars is disabled. Avoid creating unnecessary env var.
-		local git="$COLOR_GIT$(git_prompt)$RESET"
+		local git="$RESET$BG_GIT$(git_prompt)$RESET"
 	fi
 
 # Put it all together!
