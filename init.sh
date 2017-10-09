@@ -84,6 +84,7 @@ curpath=$PWD
 cd $HOMEREPO
 git config user.name "User"
 git config user.email waterns@users.noreply.github.com
+git config push.default matching
 cd $curpath
 
 
