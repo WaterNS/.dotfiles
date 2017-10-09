@@ -2,10 +2,14 @@
 
 # Prompt Colors
 readonly RESET='\[\033[m\]'
+readonly ESC=$(printf "\e")
 readonly COLOR_CWD='\[\033[0;34m\]' # blue
 readonly COLOR_GIT='\[\033[0;36m\]' # cyan
 readonly COLOR_SUCCESS='\[\033[0;32m\]' # green
 readonly COLOR_FAILURE='\[\033[0;31m\]' # red
+
+# Backgrounds:
+#readonly BG_GIT="$ESC[48;5;209m"
 
 #Prompt Symbols
 readonly SYMBOL_GIT_BRANCH='⑂'
