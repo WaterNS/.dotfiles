@@ -54,6 +54,10 @@ for dotfile in $(find $HOMEREPO -maxdepth 1 -type f -iname ".*")
 do
 	if [ "$(basename $dotfile)" != ".editorconfig" ] && [ "$(basename $dotfile)" != ".gitignore" ]; then
 		target=$HOME/$(basename $dotfile)
+		if [ -f "$target" ] && [ ! -L "$target" ]; then
+			rm $target
+			echo "NOTE: Found existing $(basename $dotfile) in HOME, removing..."
+		fi
 		[ ! -r $target ] && ln -s $dotfile $target && echo "NOTE: Linked ~/$(basename $dotfile) to custom one in dotfiles repo"
 	fi
 done
@@ -61,19 +65,6 @@ done
 # Create dir for installation of packages for dotfiles
 mkdir -p $HOMEREPO/opt
 mkdir -p $HOMEREPO/opt/bin
-
-# Create .bashrc if doesn't exist
-if [ ! -f ~/.bashrc ]; then
-	echo 'NOTE: .bashrc not found, creating!'
-	touch ~/.bashrc
-	echo '#!/bin/bash' >> ~/.bashrc
-fi
-
-# Source custom bashrc in existing .bashrc
-if ! grep -q "bashrc_custom" ~/.bashrc; then
-	echo 'NOTE: .bashrc found, but missing reference to custom bashrc, adding!'
-	echo "source $HOMEREPOlit/bashrc_custom" >> ~/.bashrc
-fi
 
 # Create .bash_profile if doesn't exist
 if [ ! -f ~/.bash_profile ]; then
@@ -176,11 +167,6 @@ fi
 
 # Regenerate VIM help catalog
 vim -c 'call pathogen#helptags()|q'
-
-#BASH Plugin: bash-powerline
-if [ ! -f "$HOMEREPO/opt/bash-powerline.sh" ]; then
-	curl https://raw.githubusercontent.com/riobard/bash-powerline/master/bash-powerline.sh > $HOMEREPO/opt/bash-powerline.sh
-fi
 
 #OSX Terminal Theme: Dracula:
 if [[ $OSTYPE == darwin* ]]; then
