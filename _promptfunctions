@@ -34,14 +34,14 @@ while IFS= read -r line; do
 		[[ $line =~ ahead\ ([0-9]+) ]] && marks+=" $SYMBOL_GIT_PUSH${BASH_REMATCH[1]}"
 		[[ $line =~ behind\ ([0-9]+) ]] && marks+=" $SYMBOL_GIT_PULL${BASH_REMATCH[1]}"
 	else # branch is modified if output contains more lines after the header line
-		marks="$SYMBOL_GIT_MODIFIED$marks"
+		marks=" $SYMBOL_GIT_MODIFIED$marks"
 		break
 	fi
 
 done < <($git_eng status --porcelain --branch 2>/dev/null)  # note the space between the two <
 
 # print the git branch segment without a trailing newline
-printf " [ $ref $marks ] "
+printf " [ $ref$marks ] "
 }
 
 git_prompt2() {
