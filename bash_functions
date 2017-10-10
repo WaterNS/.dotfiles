@@ -31,4 +31,11 @@ if [ $S -gt 0 ]; then
   if [ $M -gt 0 ] || [ $H -gt 0 ] || [ $D -gt 0 ]; then printf ', '; fi
   printf '%d second' $S; if [ $S -gt 1 ]; then printf 's'; fi
 fi
+
+#Print '0 seconds' if no time provided or time is 0
+if [[ -z "${T// }" ]]; then
+	printf '0 seconds'
+elif [[ $T -eq 0 ]]; then
+	printf '0 seconds'
+fi
 }
