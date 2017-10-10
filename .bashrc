@@ -87,6 +87,9 @@ fi
 # Use lesspipe for binaries
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
+# Enable ZSH like tab completion functionality
+bind 'set show-all-if-ambiguous on'
+bind 'TAB:menu-complete'
 
 # DOTFILES updater
 # Check if last update was longer than set interval, kick off update if so
