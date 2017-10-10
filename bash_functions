@@ -22,13 +22,13 @@ fi
 
 #Print the minutes, if any
 if [ $M -gt 0 ]; then
-  if [ $H -gt 0 ]; then printf ', '; fi
+  if [ $H -gt 0 ] || [ $D -gt 0 ]; then printf ', '; fi
   printf '%d minute' $M; if [ $M -gt 1 ]; then printf 's'; fi
 fi
 
 #Print the seconds, if any
 if [ $S -gt 0 ]; then
-  if [ $M -gt 0 ]; then printf ', '; fi
+  if [ $M -gt 0 ] || [ $H -gt 0 ] || [ $D -gt 0 ]; then printf ', '; fi
   printf '%d second' $S; if [ $S -gt 1 ]; then printf 's'; fi
 fi
 }
