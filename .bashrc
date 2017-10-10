@@ -100,7 +100,7 @@ if [ $difftime -gt $maxtime ] || [ ! -f $HOME/.dotfiles/opt/lastupdate ]; then
 	if [ ! -f $HOME/.dotfiles/opt/lastupdate ]; then
 		echo "No update time file found, running update now"
 	else
-		echo "Last update happened $(seconds2time $difftime) seconds ago, updating dotfiles"
+		echo "Last update happened $(seconds2time $difftime) ago, updating dotfiles"
 	fi
 	$HOME/.dotfiles/init.sh -u
 	echo "Restarting shell..."
