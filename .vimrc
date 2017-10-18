@@ -116,6 +116,18 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isT
 " Show hidden files in NERDTree
 let NERDTreeShowHidden=1
 
+" TAB switch shortcuts using <leader>+number
+noremap <leader>1 1gt
+noremap <leader>2 2gt
+noremap <leader>3 3gt
+noremap <leader>4 4gt
+noremap <leader>5 5gt
+noremap <leader>6 6gt
+noremap <leader>7 7gt
+noremap <leader>8 8gt
+noremap <leader>9 9gt
+noremap <leader>0 :tablast<cr>
+
 " Custom Functions
 
 func! RetabIndents()
