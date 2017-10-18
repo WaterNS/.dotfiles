@@ -90,9 +90,25 @@ command ConvertSpaceTabstoTabs call RetabIndents() " convert indent spaces into 
 command TrimWhiteSpace call TrimWhitespace()
 command SudoWriteFile :execute ':silent w !sudo tee % > /dev/null' | :edit!
 
-" Toggle Git Gutters, Line Numbers, Hidden Chars
-command ToggleGuttersandChars :GitGutterSignsToggle | set invnumber | set list!
-noremap <leader>t<space> :ToggleGuttersandChars<CR>
+" Toggle Git Gutters, Line Numbers, Hidden Chars, NERDTree (handy for copying text)
+function ToggleGuttersandChars()
+	" Is NERDTree in focus?
+	if (exists("t:NERDTreeBufName") && bufwinnr(t:NERDTreeBufName) == winnr())
+		wincmd p
+	endif
+	:set invnumber
+	:set list!
+	:GitGutterSignsToggle
+	" Is NERDTree present in current tab?
+	if (exists("t:NERDTreeBufName"))
+		:NERDTreeToggle
+	endif
+	" Is NERDTree in focus?
+	if (exists("t:NERDTreeBufName") && bufwinnr(t:NERDTreeBufName) == winnr())
+		wincmd p
+	endif
+endfunction
+noremap <leader>t<space> :call ToggleGuttersandChars()<CR>
 
 " search: exit highlighted results (,Return)
 nnoremap <leader><CR> :nohlsearch<CR>
