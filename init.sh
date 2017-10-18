@@ -166,6 +166,13 @@ if [ ! -d "$HOME/.vim/bundle/nerdcommenter" ]; then
 elif [ $u ]; then updategitrepo "nerdcommenter" "VIM commenting plugin" ~/.vim/bundle/nerdcommenter ;
 fi
 
+#VIM Plugin: Super Tab (tab to complete)
+if [ ! -d "$HOME/.vim/bundle/supertab" ]; then
+	echo "- Installing: SuperTab (VIM tab completion plugin)";
+	git clone https://github.com/ervandew/supertab.git ~/.vim/bundle/supertab; echo ""
+elif [ $u ]; then updategitrepo "supertab" "VIM tab completion plugin" ~/.vim/bundle/supertab ;
+fi
+
 # Regenerate VIM help catalog
 vim -c 'call pathogen#helptags()|q'
 
