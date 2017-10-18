@@ -109,6 +109,13 @@ if !v:shell_error && s:uname == "Darwin"
 	vmap <C-c> :w !pbcopy<CR><CR>
 endif
 
+" Autostart NERDTree
+autocmd vimenter * NERDTree
+" Close if NERDTree is only other tab
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+" Show hidden files in NERDTree
+let NERDTreeShowHidden=1
+
 " Custom Functions
 
 func! RetabIndents()
