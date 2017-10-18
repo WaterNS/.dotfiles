@@ -15,6 +15,9 @@ if [ -x "$(command -v git)" ]; then
   alias push='git push'
 fi
 
+# pubkey function to spit out pubkey
+pubkey () { echo "$(cat ~/.ssh/id_rsa.pub)"; }
+
 # add vim alias to v, run vim with viminfo disabled
 if [ -x "$(command -v vim)" ]; then
   alias vim='vim -i NONE'
