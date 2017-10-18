@@ -35,6 +35,11 @@ autocmd BufWinEnter * match ExtraWhitespace /\s\+$/
 autocmd InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
 autocmd InsertLeave * match ExtraWhitespace /\s\+$/
 autocmd BufWinLeave * call clearmatches()
+" airline: Enable the list of buffers
+let g:airline#extensions#tabline#enabled = 1
+" airline: Show just the filename
+let g:airline#extensions#tabline#fnamemod = ':t'
+
 
 "Feel/Behavior of VIM
 set nostartofline " Don't reset cursor to start of line when moving around
