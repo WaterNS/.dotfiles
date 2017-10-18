@@ -111,6 +111,8 @@ endif
 
 " Autostart NERDTree
 autocmd vimenter * NERDTree
+" Jump to the main window.
+autocmd VimEnter * wincmd p
 " Close if NERDTree is only other tab
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 " Show hidden files in NERDTree
