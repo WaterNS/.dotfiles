@@ -188,7 +188,8 @@ elif [ $u ]; then updategitrepo "supertab" "VIM tab completion plugin" ~/.vim/bu
 fi
 
 # Regenerate VIM help catalog
-vim -c 'call pathogen#helptags()|q'
+#vim -c 'call pathogen#helptags()|q'
+# Commented out because vim throws a 2R character when run, spitting out to terminal
 
 #OSX Terminal Theme: Dracula:
 if [[ $OSTYPE == darwin* ]]; then
