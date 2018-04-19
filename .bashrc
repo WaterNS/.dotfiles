@@ -97,7 +97,7 @@ if [ -f $HOME/.dotfiles/opt/lastupdate ]; then
 	oldtime=$(head -1 $HOME/.dotfiles/opt/lastupdate)
 	newtime=$(date +%s)
 	difftime=$(($newtime-$oldtime))
-	maxtime=$((8*60*60))
+	maxtime=$((5*24*60*60))
 fi
 if [ $difftime -gt $maxtime ] || [ ! -f $HOME/.dotfiles/opt/lastupdate ]; then
 	if [ ! -f $HOME/.dotfiles/opt/lastupdate ]; then
