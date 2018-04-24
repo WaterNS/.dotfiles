@@ -31,6 +31,7 @@ updategitrepo () {
 		# Restart the init script if it self updated
 		if [ "$reponame" == "dotfiles" ]; then
 			cd $olddir
+			echo ""
 			exec $SCRIPTPATH -u;
 		fi
 
