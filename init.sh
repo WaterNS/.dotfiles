@@ -32,6 +32,7 @@ updategitrepo () {
 		if [ "$reponame" == "dotfiles" ]; then
 			cd $olddir
 			echo ""
+			echo ""
 			exec $SCRIPTPATH -u;
 		fi
 
