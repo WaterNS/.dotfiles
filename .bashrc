@@ -84,6 +84,11 @@ else # Set to use LESS as fallback and undo gitconfig change
 	git config --global --unset include.path "~/.dotfiles/git_colors"
 fi
 
+# Set GIT Config Settings
+if [ -x "$(command -v git)" ]; then
+  git config --global push.default simple
+fi
+
 # Use lesspipe for binaries
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
