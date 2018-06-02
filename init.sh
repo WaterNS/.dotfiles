@@ -202,9 +202,9 @@ if [[ $OSTYPE == darwin* ]]; then
 fi
 
 #OSX: Show hidden files
-if [[ $OSTYPE == darwin* ]]; then
-	defaults write com.apple.finder AppleShowAllFiles YES
-fi
+#if [[ $OSTYPE == darwin* ]]; then
+#	defaults write com.apple.finder AppleShowAllFiles YES
+#fi
 
 #Write last update file
 if [ ! -f $HOMEREPO/opt/lastupdate ]; then
