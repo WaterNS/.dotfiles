@@ -26,4 +26,6 @@ fi
 # youtube-dl shorthand function that does auto retry
 if [ -x "$(command -v youtube-dl)" ]; then
   ytdl () { while ! youtube-dl "$1" -c --socket-timeout 5; do echo DISCONNECTED; sleep 5; done; }
+  ytdl-hq () { while ! youtube-dl -f 'bestvideo+bestaudio[ext=m4a]/bestvideo+bestaudio/best' "$1" -c --socket-timeout 5; do echo DISCONNECTED; sleep 5; done; }
+  #ytdl-mp3 () { while ! youtube-dl "$1" -c --socket-timeout 5; do echo DISCONNECTED; sleep 5; done; }
 fi
