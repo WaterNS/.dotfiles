@@ -26,6 +26,6 @@ if ( ($difftime -gt $maxtime) -OR (! (Test-Path $HOME\.dotfiles\opt\lastupdate))
 	. $profile
 }
 else {
-	echo "Last dotfiles update: $(seconds2time $difftime) ago / Update Interval: $(seconds2time $maxtime)"
-	#echo "Update <$maxtime seconds ago, skipping dotfiles update"
+  cls
+	Write-Host "Last dotfiles update: $(seconds2time $difftime) ago / Update Interval: $(seconds2time $maxtime)"
 }
