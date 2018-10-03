@@ -9,3 +9,6 @@ $HOMEREPOlit='~\.dotfiles'
 
 # Source Powershell Profile Updater 
 . "$HOMEREPO\powershell\powershell-dotfilesupdater.ps1"
+
+# Source git prompt
+. "$HOMEREPO\powershell\powershell-gitprompt.ps1"
