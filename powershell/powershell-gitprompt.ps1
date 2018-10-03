@@ -1,10 +1,5 @@
 ﻿Function Prompt {
 
-Remove-Variable symbolicref
-Remove-Variable branch
-Remove-Variable differences
-Remove-Variable localchanges
-
 # ToDO:
 # - Capture how many commits ahead
 
