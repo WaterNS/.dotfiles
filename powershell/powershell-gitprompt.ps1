@@ -17,6 +17,8 @@ if ($symbolicref -ne $NULL) {
   $branch = $symbolicref.substring($symbolicref.LastIndexOf("/") +1)
   
   $differences = $(git diff-index --name-status HEAD)
+  $differences > log.txt
+  
   If ($differences -ne $NULL) {
     $localchanges = $true
     $git_create_count = [regex]::matches($differences, "A`t").count
