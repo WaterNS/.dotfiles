@@ -25,9 +25,9 @@ Function Powershell-Touch
 {
 
   If (($MyInvocation.InvocationName -eq "touch") -AND (Test-NotInScript)) {
-    "------"
-    "touch: Using non-Linux `'touch`' - this is my powershell polyfill of `'touch`'"
-    "------"
+    Write-Warning "------------------------------------------------------------------------------"
+    Write-Warning "touch: Using non-Linux `'touch`' - this is my powershell polyfill of `'touch`'"
+    Write-Warning "------------------------------------------------------------------------------"
   }
 
   $file = $args[0]
@@ -52,9 +52,9 @@ Function Powershell-VeryBasicGrep
 {
 
   If (($MyInvocation.InvocationName -eq "grep") -AND (Test-NotInScript)) {
-    "---------------------------------------------------------------------------"
-    "grep: Using non-Linux `'grep`' - this is my powershell polyfill of `'grep`'"
-    "---------------------------------------------------------------------------"
+    Write-Warning "---------------------------------------------------------------------------"
+    Write-Warning "grep: Using non-Linux `'grep`' - this is my powershell polyfill of `'grep`'"
+    Write-Warning "---------------------------------------------------------------------------"
   }
 
   $searchterm = $args[0]
@@ -121,9 +121,9 @@ Param
  )
 
    If (($MyInvocation.InvocationName -eq "tail") -AND (Test-NotInScript)) {
-    "---------------------------------------------------------------------------"
-    "tail: Using non-Linux `'tail`' - this is my powershell polyfill of `'tail`'"
-    "---------------------------------------------------------------------------"
+    Write-Warning "---------------------------------------------------------------------------"
+    Write-Warning "tail: Using non-Linux `'tail`' - this is my powershell polyfill of `'tail`'"
+    Write-Warning "---------------------------------------------------------------------------"
   }
 
  try {
@@ -160,9 +160,9 @@ Function Powershell-Head
 
 
   If (($MyInvocation.InvocationName -eq "head") -AND (Test-NotInScript)) {
-    "------"
-    "head: Using non-Linux `'head`' - this is my powershell polyfill of `'head`'"
-    "------"
+    Write-Warning "----------------------------------------------------------------------------"
+    Write-Warning "head: Using non-Linux `'head`' - this is my powershell polyfill of `'head`'"
+    Write-Warning "----------------------------------------------------------------------------"
   }
 
   
