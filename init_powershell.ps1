@@ -6,6 +6,8 @@
 #  - Add Git Prompt
 #  - Everything else
 #    - foreach dot file linking?
+#    - install less (for diff-so-fancy?)
+#    - recreate .bashrc?
 
 
 $SCRIPTDIR=$PSScriptRoot
@@ -62,6 +64,16 @@ if (!(Get-Content "$ProfileFile" | Where {$_ -like "*$ProfileDotFile*"})) {
   echo 'NOTE: Powershell Profile found, but missing reference to our dotfiles repo, adding!'
   echo ". $ProfileDotFile" >> $ProfileFile
 }
+
+#Perl binary: diff-so-fancy (better git diff)
+if (!(Test-Path "$HOMEREPO/opt/bin/diff-so-fancy")) {
+  echo ""; echo "Pulling down: diff-so-fancy (better git diff)"
+  wget https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy -UseBasicParsing -OutFile "$HOMEREPO/opt/bin/diff-so-fancy"
+} elseif ($update) {
+  echo ""; echo "--Updating diff-so-fancy"
+  wget https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy -UseBasicParsing -OutFile "$HOMEREPO/opt/bin/diff-so-fancy"
+}
+
 
 
 #Write last update file
