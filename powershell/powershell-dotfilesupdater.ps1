@@ -30,7 +30,6 @@ else{ #Presumed interactive or otherwise shell
 		. $profile
 	}
 	else {
-	  cls
 		Write-Host "Last dotfiles update: $(seconds2time $difftime) ago / Update Interval: $(seconds2time $maxtime)"
 	}
 }
