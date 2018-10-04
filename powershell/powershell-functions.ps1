@@ -101,3 +101,16 @@ Function Test-NotInScript {
   return $false
 
 }
+
+Function Test-IsNonInteractiveShell {
+  if ([Environment]::UserInteractive) {
+      foreach ($arg in [Environment]::GetCommandLineArgs()) {
+          # Test each Arg for match of abbreviated '-NonInteractive' command.
+          if (($arg -like '-NonI*') -OR ($arg -eq '-Command')) {
+              return $true
+          }
+      }
+  }
+
+  return $false
+}
