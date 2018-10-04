@@ -17,3 +17,6 @@ $HOMEREPOlit='~\.dotfiles'
 #Needed if using Windows Subsystem for Linux and Powershell on same repo
 git config --global core.autocrlf false
 git config --global core.eol lf
+
+# Enable Tab Expansion using `MenuComplete` style
+Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete
