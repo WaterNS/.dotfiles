@@ -2,7 +2,7 @@
 #
 # Recreate functionality of some bash commands in Powershell (e.g. touch)
 
-. powershell-functions.ps1
+. $PSScriptRoot\powershell-functions.ps1
 
 Function Powershell-Touch
 {
