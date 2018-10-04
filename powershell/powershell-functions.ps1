@@ -83,3 +83,21 @@ if ("$(git rev-parse master)" -ne "$(git rev-parse origin/master)") {
 cd $olddir
 
 }
+
+Function Test-InScript {
+  if ( ((Get-PSCallStack).Command -like "*.ps1*") ) {
+    return $true
+  }
+  
+  return $false
+
+}
+
+Function Test-NotInScript {
+  if (-NOT (Test-InScript)) {
+    return $true
+  }
+
+  return $false
+
+}

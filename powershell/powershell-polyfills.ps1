@@ -2,24 +2,7 @@
 #
 # Recreate functionality of some bash commands in Powershell (e.g. touch)
 
-
-Function Test-InScript {
-  if ( ((Get-PSCallStack).Command -like "*.ps1*") ) {
-    return $true
-  }
-  
-  return $false
-
-}
-
-Function Test-NotInScript {
-  if (-NOT (Test-InScript)) {
-    return $true
-  }
-
-  return $false
-
-}
+. powershell-functions.ps1
 
 Function Powershell-Touch
 {
