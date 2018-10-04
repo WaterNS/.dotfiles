@@ -103,6 +103,11 @@ Function Test-NotInScript {
 }
 
 Function Test-IsNonInteractiveShell {
+  if ([string]([Environment]::GetCommandLineArgs()) -like "*Start-EditorServices.ps1*") {
+    # Hack:
+    # Consider VS Code Powershell extension launched sessions as interactive
+    return $false
+  }
   if ([Environment]::UserInteractive) {
       foreach ($arg in [Environment]::GetCommandLineArgs()) {
           # Test each Arg for match of abbreviated '-NonInteractive' command.

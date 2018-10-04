@@ -47,23 +47,36 @@ cd $curpath
 
 # Create Powershell Profile if doesn't exist
 $ProfileFile="~\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
+If (!(Test-Path (Split-Path $ProfileFile))) {
+  echo "  Profile folder not found, creating..."
+  mkdir $(Split-Path $ProfileFile) > $null
+}
 if (!(Test-Path $ProfileFile)) {
-	
   echo "NOTE: $ProfileFile not found, creating!"
-  If (!(Test-Path (Split-Path $ProfileFile))) {
-    echo "  Profile folder not found, creating..."
-    mkdir $(Split-Path $ProfileFile) > $null
-  }
-
   touch $ProfileFile
   echo ""
 }
 
+# Create VS Code Powershell Profile if doesn't exist
+$VSCodeProfileFile="~\Documents\WindowsPowerShell\Microsoft.VSCode_profile.ps1"
+if (!(Test-Path $VSCodeProfileFile)) {
+  echo "NOTE: $VSCodeProfileFile not found, creating!"
+  touch $VSCodeProfileFile
+  echo ""
+}
+
+#Add Reference to our dotfile profile to each Powershell profile we use
 $ProfileDotFile='$HOME\.dotfiles\powershell\profile-powershell.ps1'
 if (!(Get-Content "$ProfileFile" | Where {$_ -like "*$ProfileDotFile*"})) {
   echo 'NOTE: Powershell Profile found, but missing reference to our dotfiles repo, adding!'
   echo ". $ProfileDotFile" >> $ProfileFile
 }
+if (!(Get-Content "$VSCodeProfileFile" | Where {$_ -like "*$ProfileDotFile*"})) {
+  echo 'NOTE: VSCode Powershell Profile found, but missing reference to our dotfiles repo, adding!'
+  echo ". $ProfileDotFile" >> $VSCodeProfileFile
+}
+
+
 
 #Perl binary: diff-so-fancy (better git diff)
 if (!(Test-Path "$HOMEREPO/opt/bin/diff-so-fancy")) {
