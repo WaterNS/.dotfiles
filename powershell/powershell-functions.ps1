@@ -9,10 +9,10 @@ param (
 )
 
  $t=$time
- $D=[int]($t/60/60/24)
- $H=[int]($t/60/60%24)
- $M=[int]($t/60%60)
- $S=[int]($t%60)
+ $D=[math]::Truncate($t/60/60/24)
+ $H=[math]::Truncate($t/60/60%24)
+ $M=[math]::Truncate($t/60%60)
+ $S=[math]::Truncate($t%60)
 
  $output=""
 
