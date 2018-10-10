@@ -34,7 +34,7 @@ if ($update) {
 }
 
 # Create dir for installation of packages for dotfiles
-If (!(Test-Path $HOMEREPO/opt)) {mkdir -p $HOMEREPO/opt/bin > $null}
+If (!(Test-Path $HOMEREPO/opt)) {New-Item $HOMEREPO/opt/bin -ItemType Directory > $null}
 
 # Set .dotfiles repo setting
 $curpath=$PWD
@@ -49,7 +49,7 @@ cd $curpath
 $ProfileFile=$PROFILE
 If (!(Test-Path (Split-Path $ProfileFile))) {
   echo "  Profile folder not found, creating..."
-  mkdir $(Split-Path $ProfileFile) > $null
+  New-Item $(Split-Path $ProfileFile) -ItemType Directory > $null
 }
 if (!(Test-Path $ProfileFile)) {
   echo "NOTE: $ProfileFile not found, creating!"
