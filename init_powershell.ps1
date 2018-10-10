@@ -46,7 +46,7 @@ cd $curpath
 
 
 # Create Powershell Profile if doesn't exist
-$ProfileFile="~\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1"
+$ProfileFile=$PROFILE
 If (!(Test-Path (Split-Path $ProfileFile))) {
   echo "  Profile folder not found, creating..."
   mkdir $(Split-Path $ProfileFile) > $null
