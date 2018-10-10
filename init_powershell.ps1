@@ -57,13 +57,7 @@ if (!(Test-Path $ProfileFile)) {
   echo ""
 }
 
-# Create VS Code Powershell Profile if doesn't exist
-$VSCodeProfileFile="~\Documents\WindowsPowerShell\Microsoft.VSCode_profile.ps1"
-if (!(Test-Path $VSCodeProfileFile)) {
-  echo "NOTE: $VSCodeProfileFile not found, creating!"
-  touch $VSCodeProfileFile
-  echo ""
-}
+
 
 #Add Reference to our dotfile profile to each Powershell profile we use
 $ProfileDotFile='$HOME\.dotfiles\powershell\profile-powershell.ps1'
@@ -71,9 +65,19 @@ if (!(Get-Content "$ProfileFile" | Where {$_ -like "*$ProfileDotFile*"})) {
   echo 'NOTE: Powershell Profile found, but missing reference to our dotfiles repo, adding!'
   echo ". $ProfileDotFile" >> $ProfileFile
 }
+
+# Create VS Code Powershell Profile if doesn't exist
+If (Test-Path "~\Documents") { #Don't run if ~\Documents doesnt exist, ala Azure hosted Shell
+$VSCodeProfileFile="~\Documents\WindowsPowerShell\Microsoft.VSCode_profile.ps1"
+if (!(Test-Path $VSCodeProfileFile)) {
+  echo "NOTE: $VSCodeProfileFile not found, creating!"
+  touch $VSCodeProfileFile
+  echo ""
+}
 if (!(Get-Content "$VSCodeProfileFile" | Where {$_ -like "*$ProfileDotFile*"})) {
   echo 'NOTE: VSCode Powershell Profile found, but missing reference to our dotfiles repo, adding!'
   echo ". $ProfileDotFile" >> $VSCodeProfileFile
+}
 }
 
 
