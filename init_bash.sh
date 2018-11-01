@@ -79,7 +79,6 @@ done
 
 # Create dir for installation of packages for dotfiles
 if [ $ri ] && [ -d "$HOMEREPO/opt" ]; then rm -rf "$HOMEREPO/opt"; fi
-if [ $ri ] && [ -d "$HOME/.vim" ]; then rm -rf "$HOME/.vim"; fi
 mkdir -p $HOMEREPO/opt
 mkdir -p $HOMEREPO/opt/bin
 
