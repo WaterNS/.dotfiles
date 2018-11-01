@@ -223,11 +223,11 @@ fi
 #fi
 
 #Write last update file
-SHAinitupdated=$(git log -n 1 --pretty=format:%H -- init.sh)
+SHAinitupdated=$(git log -n 1 --pretty=format:%H -- init_bash.sh)
 if [ ! -f $HOMEREPO/opt/lastupdate ]; then
 	date +%s > $HOMEREPO/opt/lastupdate
 	date '+%A %F %I:%M:%S %p %Z' >> $HOMEREPO/opt/lastupdate
-	echo "Last commit at which init.sh initialization ran:" >> $HOMEREPO/opt/lastupdate
+	echo "Last commit at which init_bash.sh initialization ran:" >> $HOMEREPO/opt/lastupdate
 	echo "$SHAinitupdated" >> $HOMEREPO/opt/lastupdate
 elif [ $u ] || [ $ri ]; then
 	echo ""
@@ -236,7 +236,7 @@ elif [ $u ] || [ $ri ]; then
 	date '+%A %F %I:%M:%S %p %Z' >> $HOMEREPO/opt/lastupdate
 
 	if [ $ri ]; then
-	  echo "Last commit at which init.sh initialization ran:" >> $HOMEREPO/opt/lastupdate
+	  echo "Last commit at which init_bash.sh initialization ran:" >> $HOMEREPO/opt/lastupdate
 	  echo "$SHAinitupdated" >> $HOMEREPO/opt/lastupdate >> $HOMEREPO/opt/lastupdate
 	fi
 fi

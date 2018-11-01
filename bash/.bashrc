@@ -110,7 +110,7 @@ if [ $difftime -gt $maxtime ] || [ ! -f $HOME/.dotfiles/opt/lastupdate ]; then
 	else
 		echo "Last update happened $(seconds2time $difftime) ago, updating dotfiles"
 	fi
-	$HOME/.dotfiles/init.sh -u
+	$HOME/.dotfiles/init_bash.sh -u
 	echo "Restarting shell..."
 	echo "------------------"
 	exec bash
