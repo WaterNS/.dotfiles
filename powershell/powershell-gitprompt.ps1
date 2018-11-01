@@ -5,7 +5,7 @@ $SYMBOL_GIT_MODIFIED='*'
 $SYMBOL_GIT_PUSH='↑'
 $SYMBOL_GIT_PULL='↓'
 
-if (Test-Path ".git" -PathType Container) {
+if (git rev-parse --git-dir 2> $null) {
 
   $symbolicref = $(git symbolic-ref --short HEAD 2>$NULL)
 
