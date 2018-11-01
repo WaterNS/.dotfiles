@@ -52,14 +52,22 @@ if [ $u ]; then
 fi
 
 shopt -s dotglob
-for dotfile in $(find $HOMEREPO -maxdepth 1 -type f -iname ".*")
+for dotfile in $(find $HOMEREPO -type f -iname ".*" -not -path "*opt/*")
 do
-	if [ "$(basename $dotfile)" != ".editorconfig" ] && [ "$(basename $dotfile)" != ".gitignore" ]; then
+	if [ "$(basename $dotfile)" != ".editorconfig" ] 
+		&& [ "$(basename $dotfile)" != ".gitignore" ]
+		&& [ "$(basename $dotfile)" != ".DS_Store" ]; then
+		
 		target=$HOME/$(basename $dotfile)
+		
 		if [ -f "$target" ] && [ ! -L "$target" ]; then
 			rm $target
 			echo "NOTE: Found existing $(basename $dotfile) in HOME, removing..."
+		elif [ -L "$target" ] && [ "`readlink $target`" -ef "$dotfile" ]; then
+			rm $target
+			echo "NOTE: Found SYMBOLIC Link with incorrect path $(basename $dotfile) in HOME, removing..."
 		fi
+
 		[ ! -r $target ] && ln -s $dotfile $target && echo "NOTE: Linked ~/$(basename $dotfile) to custom one in dotfiles repo"
 	fi
 done
