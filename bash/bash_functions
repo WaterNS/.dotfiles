@@ -39,3 +39,12 @@ elif [[ $T -eq 0 ]]; then
 	printf '0 seconds'
 fi
 }
+
+fixsshperms ()
+{
+  if [ -d ~/.ssh ]; then
+    chmod 700 ~/.ssh
+    chmod 644 ~/.ssh/*.pub
+    find ~/.ssh -type f -iname "id*" -not -path "*.pub" -print0 | xargs -0 chmod 600
+  fi 
+}

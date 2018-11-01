@@ -96,6 +96,9 @@ fi
 bind 'set show-all-if-ambiguous on'
 bind 'TAB:menu-complete'
 
+# Fix SSH permissions
+fixsshperms
+
 # DOTFILES updater
 # Check if last update was longer than set interval, kick off update if so
 if [ -f $HOME/.dotfiles/opt/lastupdate ]; then
