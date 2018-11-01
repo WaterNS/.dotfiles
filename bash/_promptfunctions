@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Source prompt colors/symbols
-if [ -f ~/.dotfiles/_promptcolors ];then
-	. ~/.dotfiles/_promptcolors
+if [ -f ~/.dotfiles/bash/_promptcolors ];then
+	. ~/.dotfiles/bash/_promptcolors
 fi
 
 git_prompt() {
