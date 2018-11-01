@@ -8,7 +8,7 @@ cmdlineargs=$@
 while getopts ":u:r" opt ; do
 	case $opt in
 		u) u=1 ;; # Handle -u, for Update flag
-		r) ri=1 ;; #Handle -r, for ReInit flag
+		r) ri=1 && u=1 ;; #Handle -r, for ReInit flag
 	esac
 done
 
@@ -43,10 +43,10 @@ updategitrepo () {
 	cd $olddir
 }
 
-if [ $u ]; then 
-	echo "UPDATING...";
-elif [ $ri ]; then
+if [ $ri ]; then 
 	echo "ReInitializing...";
+elif [ $u ]; then
+	echo "UPDATING...";
 fi
 
 HOMEREPO="$HOME/.dotfiles"
@@ -241,10 +241,10 @@ elif [ $u ] || [ $ri ]; then
 	fi
 fi
 
-if [ $u ]; then
-	echo ""
-	echo "UPDATING Completed!"
-elif [ $ri ]; then
+if [ $ri ]; then
 	echo ""
 	echo "ReINITIALIZATION Completed!"
+elif [ $u ]; then
+	echo ""
+	echo "UPDATING Completed!"
 fi
