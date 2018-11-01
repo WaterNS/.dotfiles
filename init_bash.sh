@@ -2,6 +2,7 @@
 
 SCRIPTDIR=$( cd $(dirname $0) ; pwd -P )
 SCRIPTPATH=$SCRIPTDIR/$(basename "$0")
+cmdlineargs=$@
 
 # Check passed options/args
 while getopts ":u:r" opt ; do
@@ -23,7 +24,7 @@ updategitrepo () {
 	cd "$repolocation"
 	git fetch
 
-	if [ "$(git rev-parse master)" != "$(git rev-parse origin/master)" ]; then
+	if [ "$(git rev-list --count master..origin/master)" -gt 0 ]; then
 		echo -n "--Updating $reponame $description repo "
 		echo -n "(from $(git rev-parse --short master) to "
 		echo -n "$(git rev-parse --short origin/master))"
@@ -34,7 +35,7 @@ updategitrepo () {
 			cd $olddir
 			echo ""
 			echo ""
-			exec $SCRIPTPATH -u;
+			exec $SCRIPTPATH $cmdlineargs;
 		fi
 
   fi
