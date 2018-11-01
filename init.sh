@@ -109,63 +109,64 @@ curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
 
 #VIM Theme: Badwolf
 if [ ! -d "$HOME/.vim/bundle/badwolf" ]; then
-	git clone https://github.com/sjl/badwolf/ ~/.vim/bundle/badwolf
+	git clone https://github.com/sjl/badwolf/ ~/.vim/bundle/badwolf; echo ""
 elif [ $u ]; then updategitrepo "BadWolf" "VIM theme" ~/.vim/bundle/badwolf ;
 fi
 
 #VIM Theme: Solarized
 if [ ! -d "$HOME/.vim/bundle/vim-colors-solarized" ]; then
-	git clone git://github.com/altercation/vim-colors-solarized.git ~/.vim/bundle/vim-colors-solarized
+	git clone git://github.com/altercation/vim-colors-solarized.git ~/.vim/bundle/vim-colors-solarized; echo ""
 elif [ $u ]; then updategitrepo "Solarized" "VIM theme" ~/.vim/bundle/vim-colors-solarized ;
 fi
 
 #VIM Plugin: gUndo (Undo on steriods)
 if [ ! -d "$HOME/.vim/bundle/gundo" ]; then
-	git clone http://github.com/sjl/gundo.vim.git ~/.vim/bundle/gundo
+	git clone http://github.com/sjl/gundo.vim.git ~/.vim/bundle/gundo; echo ""
 elif [ $u ]; then updategitrepo "gUndo" "VIM undo plugin" ~/.vim/bundle/gundo ;
 fi
 
 #Perl binary: Ack (searcher)
 if [ ! -f "$HOMEREPO/opt/bin/ack" ]; then
+	echo ""; echo "Pulling down: ack"
 	curl https://beyondgrep.com/ack-2.18-single-file > "$HOMEREPO/opt/bin/ack" && chmod 0755 "$HOMEREPO/opt/bin/ack"
 fi
 
 #Perl binary: diff-so-fancy (better git diff)
 if [ ! -f "$HOMEREPO/opt/bin/diff-so-fancy" ]; then
 	echo ""; echo "Pulling down: diff-so-fancy (better git diff)"
-  curl https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy > "$HOMEREPO/opt/bin/diff-so-fancy" && chmod 0755 "$HOMEREPO/opt/bin/diff-so-fancy"
+  curl https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy > "$HOMEREPO/opt/bin/diff-so-fancy" && chmod 0755 "$HOMEREPO/opt/bin/diff-so-fancy"; echo ""
 elif [ $u ]; then
 	echo ""; echo "--Updating diff-so-fancy"
-  curl https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy > "$HOMEREPO/opt/bin/diff-so-fancy" && chmod 0755 "$HOMEREPO/opt/bin/diff-so-fancy"
+  curl https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy > "$HOMEREPO/opt/bin/diff-so-fancy" && chmod 0755 "$HOMEREPO/opt/bin/diff-so-fancy"; echo ""
 fi
 
 #VIM Plugin: ack (Search files/folders within VIM)
 #TODO: Requires silver searcher (ag) to be installed
 if [ ! -d "$HOME/.vim/bundle/ack.vim" ]; then
-	git clone https://github.com/mileszs/ack.vim.git ~/.vim/bundle/ack.vim
+	git clone https://github.com/mileszs/ack.vim.git ~/.vim/bundle/ack.vim; echo ""
 elif [ $u ]; then updategitrepo "ack.vim" "VIM search plugin" ~/.vim/bundle/ack.vim ;
 fi
 
 #VIM Plugin: vim-airline (light weight vim powerline) + themes
 if [ ! -d "$HOME/.vim/bundle/vim-airline" ]; then
-	git clone https://github.com/vim-airline/vim-airline ~/.vim/bundle/vim-airline
+	git clone https://github.com/vim-airline/vim-airline ~/.vim/bundle/vim-airline; echo ""
 elif [ $u ]; then updategitrepo "vim-airline" "VIM status bar plugin" ~/.vim/bundle/vim-airline ;
 fi
 
 if [ ! -d "$HOME/.vim/bundle/vim-airline-themes" ]; then
-	git clone https://github.com/vim-airline/vim-airline-themes ~/.vim/bundle/vim-airline-themes
+	git clone https://github.com/vim-airline/vim-airline-themes ~/.vim/bundle/vim-airline-themes; echo ""
 elif [ $u ]; then updategitrepo "vim-airline-themes" "vim-airline themes" ~/.vim/bundle/vim-airline-themes ;
 fi
 
 #VIM Plugin: vim-gitgutter (git plugin)
 if [ ! -d "$HOME/.vim/bundle/vim-gitgutter" ]; then
-	git clone git://github.com/airblade/vim-gitgutter.git ~/.vim/bundle/vim-gitgutter
+	git clone git://github.com/airblade/vim-gitgutter.git ~/.vim/bundle/vim-gitgutter; echo ""
 elif [ $u ]; then updategitrepo "vim-gitgutter" "VIM git statusbar plugin" ~/.vim/bundle/vim-gitgutter ;
 fi
 
 #VIM Plugin: Adds git capabilities to VIM
 if [ ! -d "$HOME/.vim/bundle/vim-fugitive" ]; then
-	git clone https://github.com/tpope/vim-fugitive.git ~/.vim/bundle/vim-fugitive
+	git clone https://github.com/tpope/vim-fugitive.git ~/.vim/bundle/vim-fugitive; echo ""
 elif [ $u ]; then updategitrepo "vim-fugitive" "VIM git plugin" ~/.vim/bundle/vim-fugitive ;
 fi
 
