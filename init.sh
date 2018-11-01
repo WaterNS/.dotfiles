@@ -4,9 +4,10 @@ SCRIPTDIR=$( cd $(dirname $0) ; pwd -P )
 SCRIPTPATH=$SCRIPTDIR/$(basename "$0")
 
 # Check passed options/args
-while getopts ":u" opt ; do
+while getopts ":u:r" opt ; do
 	case $opt in
-		u) u=1 ;; # Handle -u switch
+		u) u=1 ;; # Handle -u, for Update flag
+		r) ri=1 ;; #Handle -r, for ReInit flag
 	esac
 done
 
@@ -41,7 +42,11 @@ updategitrepo () {
 	cd $olddir
 }
 
-if [ $u ]; then echo "UPDATING..."; fi
+if [ $u ]; then 
+	echo "UPDATING...";
+elif [ $ri ]; then
+	echo "ReInitializing...";
+fi
 
 HOMEREPO="$HOME/.dotfiles"
 HOMEREPOlit='~/.dotfiles'
@@ -73,6 +78,8 @@ do
 done
 
 # Create dir for installation of packages for dotfiles
+if [ $ri ] && [ -d "$HOMEREPO/opt" ]; then rm -rf "$HOMEREPO/opt"; fi
+if [ $ri ] && [ -d "$HOME/.vim" ]; then rm -rf "$HOME/.vim"; fi
 mkdir -p $HOMEREPO/opt
 mkdir -p $HOMEREPO/opt/bin
 
@@ -216,17 +223,28 @@ fi
 #fi
 
 #Write last update file
+SHAinitupdated=$(git log -n 1 --pretty=format:%H -- init.sh)
 if [ ! -f $HOMEREPO/opt/lastupdate ]; then
 	date +%s > $HOMEREPO/opt/lastupdate
 	date '+%A %F %I:%M:%S %p %Z' >> $HOMEREPO/opt/lastupdate
-elif [ $u ]; then
+	echo "Last commit at which init.sh initialization ran:" >> $HOMEREPO/opt/lastupdate
+	echo "$SHAinitupdated" >> $HOMEREPO/opt/lastupdate
+elif [ $u ] || [ $ri ]; then
 	echo ""
 	echo "Updating last update time file with current date"
 	date +%s > $HOMEREPO/opt/lastupdate
 	date '+%A %F %I:%M:%S %p %Z' >> $HOMEREPO/opt/lastupdate
+
+	if [ $ri ]; then
+	  echo "Last commit at which init.sh initialization ran:" >> $HOMEREPO/opt/lastupdate
+	  echo "$SHAinitupdated" >> $HOMEREPO/opt/lastupdate >> $HOMEREPO/opt/lastupdate
+	fi
 fi
 
 if [ $u ]; then
 	echo ""
 	echo "UPDATING Completed!"
+elif [ $ri ]; then
+	echo ""
+	echo "ReINITIALIZATION Completed!"
 fi
