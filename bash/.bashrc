@@ -31,16 +31,16 @@ if [ ! -d ~/.vim/swaps ]; then mkdir -p ~/.vim/swaps; fi
 if [ ! -d ~/.vim/undo ]; then mkdir -p ~/.vim/undo; fi
 
 ############################################
-if [ -f ~/.dotfiles/bash_functions ]; then
-	. ~/.dotfiles/bash_functions
+if [ -f ~/.dotfiles/bash/bash_functions ]; then
+	. ~/.dotfiles/bash/bash_functions
 fi
 
 if [ -f ~/.bash_aliases ]; then
 	. ~/.bash_aliases
 fi
 
-if [ -f ~/.dotfiles/bash_prompt ]; then
-	. ~/.dotfiles/bash_prompt
+if [ -f ~/.dotfiles/bash/bash_prompt ]; then
+	. ~/.dotfiles/bash/bash_prompt
 fi
 
 # PATH: Include .dotfiles bin
@@ -77,11 +77,11 @@ if [ -x "$(command -v diff-so-fancy)" ]; then
 	export LESS="-x2 -RFX $LESS"
 
 	# Include diff-so-fancy colors
-	git config --global include.path "~/.dotfiles/git_colors"
+	git config --global include.path "~/.dotfiles/git/git_colors"
 else # Set to use LESS as fallback and undo gitconfig change
   export GIT_PAGER='less'
   export LESS="-x2 -RFX $LESS"
-	git config --global --unset include.path "~/.dotfiles/git_colors"
+	git config --global --unset include.path "~/.dotfiles/git/git_colors"
 fi
 
 # Set GIT Config Settings

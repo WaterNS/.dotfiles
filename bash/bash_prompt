@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Source prompt functions
-if [ -f ~/.dotfiles/_promptfunctions ];then
-	. ~/.dotfiles/_promptfunctions
+if [ -f ~/.dotfiles/bash/_promptfunctions ];then
+	. ~/.dotfiles/bash/_promptfunctions
 fi
 
 
