@@ -193,13 +193,13 @@ fi
 #vim -c 'call pathogen#helptags()|q'
 # Commented out because vim throws a 2R character when run, spitting out to terminal
 
-#OSX Terminal Theme: Dracula:
-if [[ $OSTYPE == darwin* ]]; then
-	if [ ! -d "$HOMEREPO/opt/osxterminal/dracula" ]; then
-		git clone https://github.com/dracula/terminal.app.git $HOMEREPO/opt/osxterminal/dracula
-		open $HOMEREPO/opt/osxterminal/dracula/Dracula.terminal
-	fi
-fi
+##OSX Terminal Theme: Dracula:
+#if [[ $OSTYPE == darwin* ]]; then
+#	if [ ! -d "$HOMEREPO/opt/osxterminal/dracula" ]; then
+#		git clone https://github.com/dracula/terminal.app.git $HOMEREPO/opt/osxterminal/dracula
+#		open $HOMEREPO/opt/osxterminal/dracula/Dracula.terminal
+#	fi
+#fi
 
 #OSX: Show hidden files
 #if [[ $OSTYPE == darwin* ]]; then
