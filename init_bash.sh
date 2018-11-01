@@ -28,7 +28,7 @@ updategitrepo () {
 		echo -n "--Updating $reponame $description repo "
 		echo -n "(from $(git rev-parse --short master) to "
 		echo -n "$(git rev-parse --short origin/master))"
-		git pull --quiet
+		git pull origin master --quiet
 
 		# Restart the init script if it self updated
 		if [ "$reponame" == "dotfiles" ]; then
