@@ -54,16 +54,16 @@ fi
 shopt -s dotglob
 for dotfile in $(find $HOMEREPO -type f -iname ".*" -not -path "*opt/*")
 do
-	if [ "$(basename $dotfile)" != ".editorconfig" ] 
-		&& [ "$(basename $dotfile)" != ".gitignore" ]
+	if [ "$(basename $dotfile)" != ".editorconfig" ] \
+		&& [ "$(basename $dotfile)" != ".gitignore" ] \
+		&& [ "$(basename $dotfile)" != ".gitattributes" ] \
 		&& [ "$(basename $dotfile)" != ".DS_Store" ]; then
-		
 		target=$HOME/$(basename $dotfile)
 		
 		if [ -f "$target" ] && [ ! -L "$target" ]; then
 			rm $target
 			echo "NOTE: Found existing $(basename $dotfile) in HOME, removing..."
-		elif [ -L "$target" ] && [ "`readlink $target`" -ef "$dotfile" ]; then
+		elif [ -L "$target" ] && [ ! "`readlink $target`" -ef "$dotfile" ]; then
 			rm $target
 			echo "NOTE: Found SYMBOLIC Link with incorrect path $(basename $dotfile) in HOME, removing..."
 		fi
