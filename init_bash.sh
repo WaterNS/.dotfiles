@@ -223,7 +223,7 @@ fi
 #fi
 
 #Write last update file
-SHAinitupdated=$(git log -n 1 --pretty=format:%H -- init_bash.sh)
+SHAinitupdated=$(git --git-dir $HOMEREPO/.git log -n 1 --pretty=format:%H -- init_bash.sh)
 if [ ! -f $HOMEREPO/opt/lastupdate ]; then
 	date +%s > $HOMEREPO/opt/lastupdate
 	date '+%A %F %I:%M:%S %p %Z' >> $HOMEREPO/opt/lastupdate

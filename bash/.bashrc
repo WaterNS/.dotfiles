@@ -103,8 +103,15 @@ if [ -f $HOME/.dotfiles/opt/lastupdate ]; then
 	newtime=$(date +%s)
 	difftime=$(($newtime-$oldtime))
 	maxtime=$((5*24*60*60))
+	SHAinitscript=$(git --git-dir $HOME/.dotfiles/.git log -n 1 --pretty=format:%H -- init_bash.sh)
 fi
-if [ $difftime -gt $maxtime ] || [ ! -f $HOME/.dotfiles/opt/lastupdate ]; then
+if [ $SHAinitscript != "$(head -4 $HOME/.dotfiles/opt/lastupdate | tail -1)" ]; then
+	echo "Init script has been updated since last run, Executing init_bash.sh with ReInitialization flag"
+	$HOME/.dotfiles/init_bash.sh -r
+	echo "Restarting shell..."
+	echo "------------------"
+	exec bash
+elif [ $difftime -gt $maxtime ] || [ ! -f $HOME/.dotfiles/opt/lastupdate ]; then
 	if [ ! -f $HOME/.dotfiles/opt/lastupdate ]; then
 		echo "No update time file found, running update now"
 	else
