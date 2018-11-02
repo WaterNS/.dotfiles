@@ -2,6 +2,13 @@
 
 ### History Stuffs
 
+exit_session() {
+  if [ -f $HOME/.bash_logout ]; then
+    . "$HOME/.bash_logout"
+  fi
+}
+trap exit_session SIGHUP
+
 # BASH: Disable history, and clear it
 # set +o history # Enabling will show ZERO history, not even in current session
 unset HISTFILE # On exit, will not write history file
