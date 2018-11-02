@@ -23,6 +23,12 @@ if [ -x "$(command -v vim)" ]; then
   alias vim='vim -i NONE'
 fi
 
+# add Visual Studio Code aliases
+if [ -f "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" ]; then
+  alias code='/Applications/"Visual Studio Code.app"/Contents/Resources/app/bin/code'
+  alias vscode=code
+fi
+
 # youtube-dl shorthand function that does auto retry
 if [ -x "$(command -v youtube-dl)" ]; then
   ytdl () { while ! youtube-dl "$1" -c --socket-timeout 5; do echo DISCONNECTED; sleep 5; done; }
