@@ -50,6 +50,10 @@ if [ -f ~/.dotfiles/bash/bash_prompt ]; then
 	. ~/.dotfiles/bash/bash_prompt
 fi
 
+if [ -f ~/.dotfiles/bash/installerfunctions ]; then
+	. ~/.dotfiles/bash/installerfunctions
+fi
+
 # PATH: Include .dotfiles bin
 PATH=$PATH:~/.dotfiles/opt/bin
 

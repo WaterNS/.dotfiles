@@ -1,0 +1,83 @@
+#!/bin/bash
+
+install_youtubedl () {
+    if [ ! -x "$(command -v youtube-dl)" ]; then    
+        echo "NOTE: youtube-dl not found, downloading to dotfiles bin location"
+        echo "------------------------------------------------"
+        curl -L https://yt-dl.org/downloads/latest/youtube-dl -o $HOME/.dotfiles/opt/bin/youtube-dl; echo ""
+        chmod a+rx $HOME/.dotfiles/opt/bin/youtube-dl
+
+        install_ffmpeg
+        install_ffprobe
+    fi
+}
+
+install_unar () {
+    if [ ! -x "$(command -v unar)" ]; then
+        if [[ $OSTYPE == darwin* ]]; then
+            echo "NOTE: unar not found, installing into dotfiles bin"
+            echo "------------------------------------------------"
+            curl -L https://cdn.theunarchiver.com/downloads/unarMac.zip -o /tmp/unarMac.zip; echo ""
+            unzip -a -qq /tmp/unarMac.zip -d /tmp/unar
+
+            cp /tmp/unar/unar $HOME/.dotfiles/opt/bin/
+            rm -r /tmp/unar /tmp/unarMac.zip
+
+            if [ -x "$(command -v unar)" ]; then
+                echo "GOOD - unar is now available"
+            else
+                echo "BAD - unar doesn't seem to be available"
+            fi
+        else
+            echo "Unable to install unar - OS version doesn't have supported function"
+        fi
+    fi
+}
+
+install_ffmpeg () {
+    if [ ! -x "$(command -v ffmpeg)" ]; then
+      if [[ $OSTYPE == darwin* ]]; then
+        install_unar
+        echo "NOTE: ffmpeg not found, installing into dotfiles bin"
+        echo "------------------------------------------------"
+        local ffmpeg="https://evermeet.cx/pub/ffmpeg/snapshots/"
+        local latest=$(curl $ffmpeg | grep .7z | head -1 | sed -n 's/.*href="\([^"]*\).*/\1/p')
+        curl "$ffmpeg$latest" -o /tmp/ffmpeg.7z; echo ""
+
+        unar /tmp/ffmpeg.7z -o $HOME/.dotfiles/opt/bin/
+        rm -r /tmp/ffmpeg.7z
+               
+        if [ -x "$(command -v ffmpeg)" ]; then
+            echo "GOOD - ffmpeg is now available"
+        else
+            echo "BAD - ffmpeg doesn't seem to be available"
+        fi
+      else
+          echo "Unable to install ffmpeg - OS version doesn't have supported function"
+      fi
+    fi
+}
+
+install_ffprobe () {
+    if [ ! -x "$(command -v ffprobe)" ]; then
+      if [[ $OSTYPE == darwin* ]]; then
+        install_unar
+        echo "NOTE: ffprobe not found, installing into dotfiles bin"
+        echo "------------------------------------------------"
+        local ffprobe="https://evermeet.cx/pub/ffprobe/snapshots/"
+        local latest=$(curl $ffprobe | grep .7z | head -1 | sed -n 's/.*href="\([^"]*\).*/\1/p')
+        curl "$ffprobe/$latest" -o /tmp/ffprobe.7z; echo ""
+
+        unar /tmp/ffprobe.7z -o $HOME/.dotfiles/opt/bin/
+        rm -r /tmp/ffprobe.7z
+               
+        if [ -x "$(command -v ffprobe)" ]; then
+            echo "GOOD - ffprobe is now available"
+        else
+            echo "BAD - ffprobe doesn't seem to be available"
+        fi
+      else
+          echo "Unable to install ffprobe - OS version doesn't have supported function"
+      fi
+    fi
+}
