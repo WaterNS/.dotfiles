@@ -20,9 +20,15 @@ fi
 # pubkey function to spit out pubkey
 pubkey () { echo "$(cat ~/.ssh/id_rsa.pub)"; }
 
-# add vim alias to v, run vim with viminfo disabled
+# add vim alias, run vim with viminfo disabled
 if [ -x "$(command -v vim)" ]; then
   alias vim='vim -i NONE'
+fi
+
+# add common clear screen alias
+if [ -x "$(command -v clear)" ]; then
+  alias cls='clear'
+  alias clea='clear' #typo fix
 fi
 
 # add Visual Studio Code aliases
