@@ -38,6 +38,9 @@ if [ ! -d ~/.vim/swaps ]; then mkdir -p ~/.vim/swaps; fi
 if [ ! -d ~/.vim/undo ]; then mkdir -p ~/.vim/undo; fi
 
 ############################################
+# PATH: Include .dotfiles bin
+PATH=$PATH:~/.dotfiles/opt/bin
+
 if [ -f ~/.dotfiles/bash/bash_functions ]; then
 	. ~/.dotfiles/bash/bash_functions
 fi
@@ -53,9 +56,6 @@ fi
 if [ -f ~/.dotfiles/bash/installerfunctions ]; then
 	. ~/.dotfiles/bash/installerfunctions
 fi
-
-# PATH: Include .dotfiles bin
-PATH=$PATH:~/.dotfiles/opt/bin
 
 #############################################
 
