@@ -18,7 +18,13 @@ if [ -x "$(command -v git)" ]; then
 fi
 
 # pubkey function to spit out pubkey
-pubkey () { echo "$(cat ~/.ssh/id_rsa.pub)"; }
+pubkey () { 
+  echo "$(cat ~/.ssh/id_rsa.pub)"; 
+  if [ -x "$(command -v pbcopy)" ]; then
+    echo -n "$(cat ~/.ssh/id_rsa.pub)"| pbcopy 
+    echo ""; echo "Copied to Clipboard!"
+  fi
+}
 
 # add vim alias, run vim with viminfo disabled
 if [ -x "$(command -v vim)" ]; then
