@@ -81,7 +81,7 @@ done
 #Handle linking VSCode in OSX and Linux
 if [[ $OSTYPE == darwin* ]] || [[ $OSTYPE == linux* ]]; then
 
-	repovscodefile="$HOMEREPO/vscode/settings.json"
+	repovscodefile="$HOME/.dotfiles/vscode/settings.json"
 
 	if [[ $OSTYPE == darwin* ]]; then
 		vscodedir="$HOME/Library/Application Support/Code/User/"
@@ -92,20 +92,20 @@ if [[ $OSTYPE == darwin* ]] || [[ $OSTYPE == linux* ]]; then
 	fi
 
 	# Create VScode profile folder if doesn't exist
-	if [ ! -d $vscodedir ]; then
-		mkdir -p $vscodedir
+	if [ ! -d "$vscodedir" ]; then
+		mkdir -p "$vscodedir"
 	fi
 	
 	# Remove existing VScode file (if its not a linked one)
-	if [ -f $vscodefile ] && [ ! -L $vscodefile ]; then
-		rm $vscodefile
+	if [ -f "$vscodefile" ] && [ ! -L "$vscodefile" ]; then
+		rm "$vscodefile"
 		echo "Found existing VScode file at $vscodefile, removing..."
-	elif [ -L "$vscodefile" ] && [ ! "`readlink $vscodefile`" -ef "$repovscodefile" ]; then
-		rm $vscodefile
+	elif [ -L "$vscodefile" ] && [ ! "`readlink "$vscodefile"`" -ef "$repovscodefile" ]; then
+		rm "$vscodefile"
 		echo "NOTE: Found existing LINK for VSCode file but with incorrect path, removing..."	
 	fi
 
-	[ ! -r $vscodefile ] && ln -s $repovscodefile $vscodefile && echo "NOTE: Linked $vscodefile to custom one at $repovscodefile"
+	[ ! -r "$vscodefile" ] && ln -s "$repovscodefile" "$vscodefile" && echo "NOTE: Linked $vscodefile to custom one at $repovscodefile"
 fi
 
 # Create dir for installation of packages for dotfiles
