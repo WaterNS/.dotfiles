@@ -5,7 +5,7 @@ SCRIPTPATH=$SCRIPTDIR/$(basename "$0")
 cmdlineargs=$@
 
 # Check passed options/args
-while getopts ":u:r" opt ; do
+while getopts ":ur" opt ; do
 	case $opt in
 		u) u=1 ;; # Handle -u, for Update flag
 		r) ri=1 && u=1 ;; #Handle -r, for ReInit flag
