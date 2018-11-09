@@ -1,13 +1,14 @@
-Param (
+﻿Param (
   [switch][Alias('u')]$update
 )
 
 # ToDo:
-#  - Add Git Prompt
-#  - Everything else
+# - Handle changed init file? Rerun with -r
+# - Everything else
 #    - foreach dot file linking?
 #    - install less (for diff-so-fancy?)
 #    - recreate .bashrc?
+#    - Backport gitprompt u/d/a to bash git prompt
 
 
 $SCRIPTDIR=$PSScriptRoot
@@ -71,16 +72,16 @@ If (Test-Path "~\Documents") {
   #Only run if ~\Documents exists, 
   # places like Azure hosted Shell don't have a ~\Documents folder
 
-$VSCodeProfileFile="~\Documents\WindowsPowerShell\Microsoft.VSCode_profile.ps1"
-if (!(Test-Path $VSCodeProfileFile)) {
-  echo "NOTE: $VSCodeProfileFile not found, creating!"
-  touch $VSCodeProfileFile
-  echo ""
-}
-if (!(Get-Content "$VSCodeProfileFile" | Where {$_ -like "*$ProfileDotFile*"})) {
-  echo 'NOTE: VSCode Powershell Profile found, but missing reference to our dotfiles repo, adding!'
-  echo ". $ProfileDotFile" >> $VSCodeProfileFile
-}
+  $VSCodeProfileFile="~\Documents\WindowsPowerShell\Microsoft.VSCode_profile.ps1"
+  if (!(Test-Path $VSCodeProfileFile)) {
+    echo "NOTE: $VSCodeProfileFile not found, creating!"
+    touch $VSCodeProfileFile
+    echo ""
+  }
+  if (!(Get-Content "$VSCodeProfileFile" | Where {$_ -like "*$ProfileDotFile*"})) {
+    echo 'NOTE: VSCode Powershell Profile found, but missing reference to our dotfiles repo, adding!'
+    echo ". $ProfileDotFile" >> $VSCodeProfileFile
+  }
 
   # VS Code settings.json
   $VSCodeSettingsRepoFile="$HOME\.dotfiles\vscode\settings.json"
@@ -89,7 +90,7 @@ if (!(Get-Content "$VSCodeProfileFile" | Where {$_ -like "*$ProfileDotFile*"})) 
   If (-NOT (Test-Path "$VScodeSettingsdir")) {
     echo "No vscode user dir found, creating"
     mkdir $VScodeSettingsdir > $null
-}
+  }
   If (Test-Path "$VSCodeSettingsFile") {
     echo "Found existing VScode file, removing"
     Remove-Item "$VSCodeSettingsFile"
