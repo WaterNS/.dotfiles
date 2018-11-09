@@ -13,6 +13,9 @@ $HOMEREPOlit='~\.dotfiles'
 # Source git prompt
 . "$HOMEREPO\powershell\powershell-gitprompt.ps1"
 
+# Source Powershell Aliases
+. "$HOMEREPO\powershell\powershell-aliases.ps1"
+
 #Use LineFeeds in Repo, Not CarriageReturn+LineFeeds
 #Needed if using Windows Subsystem for Linux and Powershell on same repo
 git config --global core.autocrlf false
