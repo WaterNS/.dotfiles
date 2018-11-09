@@ -1,6 +1,8 @@
 {
-    "git.autofetch": true,
+    "editor.renderWhitespace": "boundary",
+    "editor.tabSize": 2,
     "search.exclude": {
         "<node_modules>/**": true
-    }
+    },
+    "git.autofetch": true,
 }
