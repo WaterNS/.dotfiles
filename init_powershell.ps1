@@ -1,4 +1,4 @@
-﻿Param (
+Param (
   [switch][Alias('u')]$update
 )
 
@@ -67,7 +67,10 @@ if (!(Get-Content "$ProfileFile" | Where {$_ -like "*$ProfileDotFile*"})) {
 }
 
 # Create VS Code Powershell Profile if doesn't exist
-If (Test-Path "~\Documents") { #Don't run if ~\Documents doesnt exist, ala Azure hosted Shell
+If (Test-Path "~\Documents") { 
+  #Only run if ~\Documents exists, 
+  # places like Azure hosted Shell don't have a ~\Documents folder
+
 $VSCodeProfileFile="~\Documents\WindowsPowerShell\Microsoft.VSCode_profile.ps1"
 if (!(Test-Path $VSCodeProfileFile)) {
   echo "NOTE: $VSCodeProfileFile not found, creating!"
@@ -78,8 +81,25 @@ if (!(Get-Content "$VSCodeProfileFile" | Where {$_ -like "*$ProfileDotFile*"})) 
   echo 'NOTE: VSCode Powershell Profile found, but missing reference to our dotfiles repo, adding!'
   echo ". $ProfileDotFile" >> $VSCodeProfileFile
 }
-}
 
+  # VS Code settings.json
+  $VSCodeSettingsRepoFile="$HOME\.dotfiles\vscode\settings.json"
+  $VScodeSettingsdir="$env:APPDATA\Code\User\"
+  $VSCodeSettingsFile="$env:APPDATA\Code\User\settings.json"
+  If (-NOT (Test-Path "$VScodeSettingsdir")) {
+    echo "No vscode user dir found, creating"
+    mkdir $VScodeSettingsdir > $null
+}
+  If (Test-Path "$VSCodeSettingsFile") {
+    echo "Found existing VScode file, removing"
+    Remove-Item "$VSCodeSettingsFile"
+  }
+  
+  # Requires Admin Permissions
+  echo "Linking $VSCodeSettingsFile to $VSCodeSettingsRepoFile"
+  New-Item -ItemType SymbolicLink -Path "$VSCodeSettingsFile" -Value "$VSCodeSettingsRepoFile" > $null
+
+}
 
 
 #Perl binary: diff-so-fancy (better git diff)
