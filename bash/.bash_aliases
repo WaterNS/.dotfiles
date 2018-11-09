@@ -35,6 +35,7 @@ fi
 if [ -x "$(command -v clear)" ]; then
   alias cls='clear'
   alias clea='clear' #typo fix
+  alias ckear='clear' #typo fix
 fi
 
 # add Visual Studio Code aliases
