@@ -1,8 +1,10 @@
 {
     "editor.renderWhitespace": "boundary",
     "editor.tabSize": 2,
+    "editor.autoClosingQuotes": "beforeWhitespace",
     "search.exclude": {
         "<node_modules>/**": true
     },
     "git.autofetch": true,
+    "workbench.colorTheme": "Monokai"
 }
