@@ -6,5 +6,6 @@
         "<node_modules>/**": true
     },
     "git.autofetch": true,
-    "workbench.colorTheme": "Monokai"
+    "workbench.colorTheme": "Monokai",
+    "terminal.integrated.rendererType": "dom"
 }
