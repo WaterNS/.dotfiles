@@ -92,13 +92,19 @@ If (Test-Path "~\Documents") {
     mkdir $VScodeSettingsdir > $null
   }
   If (Test-Path "$VSCodeSettingsFile") {
-    echo "Found existing VScode file, removing"
+
+    If (-NOT (Get-Item "$VSCodeSettingsFile" | Select-Object -ExpandProperty Target) -like "*VSCodeSettingsRepoFile*") {
+      Write-Output "Found existing VScode file, removing"
     Remove-Item "$VSCodeSettingsFile"
   }
   
+  }
+  
+  If (-NOT (Test-Path "$VSCodeSettingsFile")) {
   # Requires Admin Permissions
-  echo "Linking $VSCodeSettingsFile to $VSCodeSettingsRepoFile"
+    Write-Output "Linking $VSCodeSettingsFile to $VSCodeSettingsRepoFile"
   New-Item -ItemType SymbolicLink -Path "$VSCodeSettingsFile" -Value "$VSCodeSettingsRepoFile" > $null
+  }
 
 }
 
