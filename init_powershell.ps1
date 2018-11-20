@@ -1,4 +1,4 @@
-﻿Param (
+Param (
   [switch][Alias('u')]$update
 )
 
@@ -12,10 +12,10 @@
 
 
 $SCRIPTDIR=$PSScriptRoot
-$SCRIPTPATH=$PSCommandPath
+#$SCRIPTPATH=$PSCommandPath
 
 $HOMEREPO="$HOME\.dotfiles"
-$HOMEREPOlit='~\.dotfiles'
+#$HOMEREPOlit='~\.dotfiles'
 
 #Source our powershell polyfills & functions
 . "$SCRIPTDIR\powershell\powershell-polyfills.ps1"
