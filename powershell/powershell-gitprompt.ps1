@@ -27,8 +27,8 @@ if ($symbolicref -ne $NULL) {
   # Stops from showing CRLF/LF differences as updates
   git status > $NULL
   
+  #Identify how many changes of specific types from diff-index
   $differences = $(git diff-index --name-status HEAD)
-  
   If ($differences -ne $NULL) {
     $git_create_count = [regex]::matches($differences, "A`t").count
     $git_update_count = [regex]::matches($differences, "M`t").count
@@ -39,6 +39,22 @@ if ($symbolicref -ne $NULL) {
     $git_update_count = 0
     $git_delete_count = 0
   }
+
+  #Identify untracked files
+  $untracked = $(git ls-files --others --exclude-standard 2>$NULL)
+  if ($untracked -ne $NULL) {
+    $git_untracked_count=($untracked | Measure-Object -Line).Lines
+  }
+  else {
+    $git_untracked_count=0
+  }
+
+  #Identify stashes 
+  $stashes = $(git stash list 2>$NULL)
+  if ($stashes -ne $NULL) {
+    $git_stashes_count=($stashes | Measure-Object -Line).Lines
+  }
+  else {$git_stashes_count=0}
 
   #Identify how many commits ahead and behind we are
   #by reading first two lines of `git status`
@@ -51,7 +67,6 @@ if ($symbolicref -ne $NULL) {
       }
   }
   $branchText+="$marks"
-
 
 }
 
@@ -96,7 +111,21 @@ if ($symbolicref -ne $NULL) {
     Write-Host (" d:") -nonewline -foregroundcolor White
     Write-Host ($git_delete_count) -nonewline -foregroundcolor Red
   }
-  
+
+  If (($git_untracked_count -gt 0) -OR ($git_stashes_count -gt 0))  {
+    Write-Host (" |") -nonewline -foregroundcolor White
+  }
+
+  If ($git_untracked_count -gt 0)  {
+    Write-Host (" untracked:") -nonewline -foregroundcolor White
+    Write-Host ($git_untracked_count) -nonewline -foregroundcolor Red
+  }
+
+  If ($git_stashes_count -gt 0)  {
+    Write-Host (" stashes:") -nonewline -foregroundcolor White
+    Write-Host ($git_stashes_count) -nonewline -foregroundcolor Yellow
+  }
+
   Write-Host (" ]") -nonewline -foregroundcolor Magenta
 
 }
