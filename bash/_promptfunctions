@@ -42,23 +42,34 @@ fi
 local marks
 while IFS= read -r line; do
 	if [[ $line =~ ^'##' ]]; then # header line
-		[[ $line =~ ahead\ ([0-9]+) ]] && marks+=" $SYMBOL_GIT_PUSH${BASH_REMATCH[1]}"
-		[[ $line =~ behind\ ([0-9]+) ]] && marks+=" $SYMBOL_GIT_PULL${BASH_REMATCH[1]}"
+		if [[ $line =~ ahead\ ([0-9]+) ]]; then 
+			marks+=" $SYMBOL_GIT_PUSH"
+			#style number as GREEN
+			marks+="\e[32m";marks+="${BASH_REMATCH[1]}";marks+="\e[m"
+		fi
+		if [[ $line =~ behind\ ([0-9]+) ]]; then
+			marks+=" $SYMBOL_GIT_PULL"
+			#style number as YELLOW
+			marks+="\e[33m";marks+="${BASH_REMATCH[1]}";marks+="\e[m"
+		fi
 	fi
 
 done < <($git_eng status --porcelain --branch 2>/dev/null)  # note the space between the two <
 
 if [ "$git_create_count" -gt 0 ]; then
 	marks+=" \e[97m";marks+="c:";marks+="\e[m"
-	marks+="\e[92m";marks+="$git_create_count";marks+="\e[m" # light green
+	# style count as LIGHT GREEN
+	marks+="\e[92m";marks+="$git_create_count";marks+="\e[m"
 fi
 if [ "$git_update_count" -gt 0 ]; then
-	marks+=" \e[97m";marks+="u:";marks+="\e[m" 
-	marks+="\e[93m";marks+="$git_update_count";marks+="\e[m" # light yellow
+	marks+=" \e[97m";marks+="u:";marks+="\e[m"
+	# style count as LIGHT YELLOW
+	marks+="\e[93m";marks+="$git_update_count";marks+="\e[m"
 fi
 if [ "$git_delete_count" -gt 0 ]; then
 	marks+=" \e[97m";marks+="d:";marks+="\e[m"
-	marks+="\e[92\1m";marks+="$git_delete_count";marks+="\e[m" # light red
+	# style count as LIGHT RED
+	marks+="\e[92\1m";marks+="$git_delete_count";marks+="\e[m"
 fi
 
 
