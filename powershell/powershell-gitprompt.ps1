@@ -26,6 +26,22 @@ if ($symbolicref -ne $NULL) {
   # When WSL and Powershell terminals concurrently viewing same repo
   # Stops from showing CRLF/LF differences as updates
   git status > $NULL
+
+  #Do git fetch if no changes in last 10 minutes
+  # Last Reflog: Last time upstream was updated
+  # Last Fetch: Last time fetch/pull was ATTEMPTED
+  # Between the two can identify when last updated or attempted a fetch.
+  $MaxFetchSeconds = 600
+  $upstream = $(git rev-parse --abbrev-ref "@{upstream}")
+  $lastreflog = [datetime]$(git reflog show --date=iso $upstream -n1 | %{ [Regex]::Matches($_, "{(.*)}") }).groups[1].Value
+  $lastfetch =  (Get-Item .\.git\FETCH_HEAD).LastWriteTime
+  $TimeSinceReflog = (New-TimeSpan -Start $lastreflog).TotalSeconds
+  $TimeSinceFetch = (New-TimeSpan -Start $lastfetch).TotalSeconds
+  if (($TimeSinceReflog -gt $MaxFetchSeconds) -AND ($TimeSinceFetch -gt $MaxFetchSeconds)) {
+    #Write-Host "Time since last reflog: $TimeSinceReflog"
+    #Write-Host "Time since last fetch: $TimeSinceFetch"
+    git fetch --all | Out-Null
+  }
   
   #Identify how many changes of specific types from diff-index
   $differences = $(git diff-index --name-status HEAD)
