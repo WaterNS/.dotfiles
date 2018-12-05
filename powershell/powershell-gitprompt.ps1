@@ -80,7 +80,7 @@ if ($symbolicref -ne $NULL) {
         If ($_ -match 'ahead\ ([0-9]+)') {$git_ahead_count=[int]$Matches[1]}
         If ($_ -match 'behind\ ([0-9]+)') {$git_behind_count=[int]$Matches[1]}
       }
-      elseIf ($_ -match '\?\?\ ') {
+      elseIf ($_ -match '^\?\?\ ') {
         $git_untracked_count++
       }
   }
