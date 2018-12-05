@@ -25,20 +25,42 @@ fi
 
 [[ -n "$ref" ]] || return  # not a git repo
 
+#Identify how many changes of specific types from diff-index
+differences=$(git diff-index --name-status HEAD 2>/dev/null)
+if [[ -n "$differences" ]]; then
+	git_create_count=`printf "$differences" | grep -c "A\t"`
+	git_update_count=`printf "$differences" | grep -c "M\t"`
+	git_delete_count=`printf "$differences" | grep -c "D\t"`
+else 
+	git_create_count=0
+	git_update_count=0
+	git_delete_count=0
+fi
 
+#Identify how many commits ahead and behind we are
+#by reading first two lines of output from `git status`
 local marks
-
-# scan first two lines of output from `git status`
 while IFS= read -r line; do
 	if [[ $line =~ ^'##' ]]; then # header line
 		[[ $line =~ ahead\ ([0-9]+) ]] && marks+=" $SYMBOL_GIT_PUSH${BASH_REMATCH[1]}"
 		[[ $line =~ behind\ ([0-9]+) ]] && marks+=" $SYMBOL_GIT_PULL${BASH_REMATCH[1]}"
-	else # branch is modified if output contains more lines after the header line
-		marks=" $SYMBOL_GIT_MODIFIED$marks"
-		break
 	fi
 
 done < <($git_eng status --porcelain --branch 2>/dev/null)  # note the space between the two <
+
+if [ "$git_create_count" -gt 0 ]; then
+	marks+=" \e[97m";marks+="c:";marks+="\e[m"
+	marks+="\e[92m";marks+="$git_create_count";marks+="\e[m" # light green
+fi
+if [ "$git_update_count" -gt 0 ]; then
+	marks+=" \e[97m";marks+="u:";marks+="\e[m" 
+	marks+="\e[93m";marks+="$git_update_count";marks+="\e[m" # light yellow
+fi
+if [ "$git_delete_count" -gt 0 ]; then
+	marks+=" \e[97m";marks+="d:";marks+="\e[m"
+	marks+="\e[92\1m";marks+="$git_delete_count";marks+="\e[m" # light red
+fi
+
 
 # print the git branch segment without a trailing newline
 printf " [ $ref$marks ]"
