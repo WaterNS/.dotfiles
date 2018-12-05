@@ -37,14 +37,6 @@ else
 	git_delete_count=0
 fi
 
-#Identify untracked files
-untracked=$(git ls-files --others --exclude-standard 2>/dev/null)
-if [[ -n "$untracked" ]]; then
-	git_untracked_count=`printf "$untracked" | grep -c ^`
-else 
-	git_untracked_count=0
-fi
-
 #Identify stashes
 stashes=$(git stash list 2>/dev/null)
 if [[ -n "$stashes" ]]; then
@@ -53,21 +45,29 @@ else
 	git_stashed_count=0
 fi
 
-#Identify how many commits ahead and behind we are
-#by reading first two lines of output from `git status`
-local marks
+#Parse `git status --porcelain --branch` output
+git_untracked_count=0
 while IFS= read -r line; do
 	if [[ $line =~ ^'##' ]]; then # header line
+		
+		#Identify number of commits ahead
 		if [[ $line =~ ahead\ ([0-9]+) ]]; then 
 			marks+=" $SYMBOL_GIT_PUSH"
 			#style number as GREEN
 			marks+="\e[32m";marks+="${BASH_REMATCH[1]}";marks+="\e[m"
 		fi
+		
+		#Identify number of commits behind
 		if [[ $line =~ behind\ ([0-9]+) ]]; then
 			marks+=" $SYMBOL_GIT_PULL"
 			#style number as YELLOW
 			marks+="\e[33m";marks+="${BASH_REMATCH[1]}";marks+="\e[m"
 		fi
+
+	#Identify untracked files
+	elif [[ $line =~ ^'??'[[:blank:]] ]]; then
+		git_untracked_count=$((git_untracked_count + 1))
+	
 	fi
 
 done < <($git_eng status --porcelain --branch 2>/dev/null)  # note the space between the two <
