@@ -33,13 +33,19 @@ if ($symbolicref -ne $NULL) {
   # Between the two can identify when last updated or attempted a fetch.
   $MaxFetchSeconds = 600
   $upstream = $(git rev-parse --abbrev-ref "@{upstream}")
-  $lastreflog = [datetime]$(git reflog show --date=iso $upstream -n1 | %{ [Regex]::Matches($_, "{(.*)}") }).groups[1].Value
+  $lastreflog = $(git reflog show --date=iso $upstream -n1)
+  if ($lastreflog -eq $NULL) {
+    $lastreflog = (Get-Date).AddSeconds(-$MaxFetchSeconds)
+  }
+  else {
+    $lastreflog = [datetime]$($lastreflog | %{ [Regex]::Matches($_, "{(.*)}") }).groups[1].Value
+  }
   $lastfetch =  (Get-Item .\.git\FETCH_HEAD).LastWriteTime
   $TimeSinceReflog = (New-TimeSpan -Start $lastreflog).TotalSeconds
   $TimeSinceFetch = (New-TimeSpan -Start $lastfetch).TotalSeconds
+  #Write-Host "Time since last reflog: $TimeSinceReflog"
+  #Write-Host "Time since last fetch: $TimeSinceFetch"
   if (($TimeSinceReflog -gt $MaxFetchSeconds) -AND ($TimeSinceFetch -gt $MaxFetchSeconds)) {
-    #Write-Host "Time since last reflog: $TimeSinceReflog"
-    #Write-Host "Time since last fetch: $TimeSinceFetch"
     git fetch --all | Out-Null
   }
   
