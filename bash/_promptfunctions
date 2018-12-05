@@ -46,9 +46,9 @@ else
 fi
 
 #Identify stashes
-stashed=$(git stash list 2>/dev/null)
-if [[ -n "$stashed" ]]; then
-	git_stashed_count=`printf "$stashed" | grep -c ^`
+stashes=$(git stash list 2>/dev/null)
+if [[ -n "$stashes" ]]; then
+	git_stashed_count=`printf "$stashes" | grep -c ^`
 else 
 	git_stashed_count=0
 fi
