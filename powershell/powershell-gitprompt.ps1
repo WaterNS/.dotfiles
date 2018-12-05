@@ -1,4 +1,4 @@
-﻿Function Prompt {
+Function Prompt {
 
 $SYMBOL_GIT_BRANCH='⑂'
 $SYMBOL_GIT_MODIFIED='*'
@@ -40,7 +40,8 @@ if ($symbolicref -ne $NULL) {
   else {
     $lastreflog = [datetime]$($lastreflog | %{ [Regex]::Matches($_, "{(.*)}") }).groups[1].Value
   }
-  $lastfetch =  (Get-Item .\.git\FETCH_HEAD).LastWriteTime
+  $gitdir = $(git rev-parse --git-dir)
+  $lastfetch =  (Get-Item $gitdir/FETCH_HEAD).LastWriteTime
   $TimeSinceReflog = (New-TimeSpan -Start $lastreflog).TotalSeconds
   $TimeSinceFetch = (New-TimeSpan -Start $lastfetch).TotalSeconds
   #Write-Host "Time since last reflog: $TimeSinceReflog"
