@@ -37,6 +37,14 @@ else
 	git_delete_count=0
 fi
 
+#Identify untracked files
+untracked=$(git ls-files --others --exclude-standard 2>/dev/null)
+if [[ -n "$untracked" ]]; then
+	git_untracked_count=`printf "$untracked" | grep -c ^`
+else 
+	git_untracked_count=0
+fi
+
 #Identify how many commits ahead and behind we are
 #by reading first two lines of output from `git status`
 local marks
@@ -70,6 +78,11 @@ if [ "$git_delete_count" -gt 0 ]; then
 	marks+=" \e[97m";marks+="d:";marks+="\e[m"
 	# style count as LIGHT RED
 	marks+="\e[91\1m";marks+="$git_delete_count";marks+="\e[m"
+fi
+if [ "$git_untracked_count" -gt 0 ]; then
+	marks+=" | \e[97m";marks+="untracked:";marks+="\e[m"
+	# style count as LIGHT RED
+	marks+="\e[91\1m";marks+="$git_untracked_count";marks+="\e[m"
 fi
 
 
