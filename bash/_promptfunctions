@@ -69,7 +69,7 @@ fi
 if [ "$git_delete_count" -gt 0 ]; then
 	marks+=" \e[97m";marks+="d:";marks+="\e[m"
 	# style count as LIGHT RED
-	marks+="\e[92\1m";marks+="$git_delete_count";marks+="\e[m"
+	marks+="\e[91\1m";marks+="$git_delete_count";marks+="\e[m"
 fi
 
 
