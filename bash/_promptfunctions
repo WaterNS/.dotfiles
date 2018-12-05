@@ -45,7 +45,7 @@ else
 	git_untracked_count=0
 fi
 
-#Identify stashed files
+#Identify stashes
 stashed=$(git stash list 2>/dev/null)
 if [[ -n "$stashed" ]]; then
 	git_stashed_count=`printf "$stashed" | grep -c ^`
@@ -97,7 +97,7 @@ if [ "$git_untracked_count" -gt 0 ]; then
 	marks+="\e[91\1m";marks+="$git_untracked_count";marks+="\e[m"
 fi
 if [ "$git_stashed_count" -gt 0 ]; then
-	marks+=" \e[97m";marks+="stashed:";marks+="\e[m"
+	marks+=" \e[97m";marks+="stashes:";marks+="\e[m"
 	# style count as LIGHT YELLOW
 	marks+="\e[93\1m";marks+="$git_stashed_count";marks+="\e[m"
 fi
