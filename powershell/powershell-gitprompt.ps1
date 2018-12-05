@@ -1,4 +1,4 @@
-Function Prompt {
+﻿Function Prompt {
 
 $SYMBOL_GIT_BRANCH='⑂'
 $SYMBOL_GIT_MODIFIED='*'
@@ -63,15 +63,6 @@ if ($symbolicref -ne $NULL) {
     $git_delete_count = 0
   }
 
-  #Identify untracked files
-  $untracked = $(git ls-files --others --exclude-standard 2>$NULL)
-  if ($untracked -ne $NULL) {
-    $git_untracked_count=($untracked | Measure-Object -Line).Lines
-  }
-  else {
-    $git_untracked_count=0
-  }
-
   #Identify stashes 
   $stashes = $(git stash list 2>$NULL)
   if ($stashes -ne $NULL) {
@@ -81,12 +72,16 @@ if ($symbolicref -ne $NULL) {
 
   #Identify how many commits ahead and behind we are
   #by reading first two lines of `git status`
+  #Identify how many untracked files (matching `?? `)
   $marks=$NULL
   (git status --porcelain --branch 2>$NULL) | ForEach-Object { 
   
       If ($_ -match '^##') {
         If ($_ -match 'ahead\ ([0-9]+)') {$git_ahead_count=[int]$Matches[1]}
         If ($_ -match 'behind\ ([0-9]+)') {$git_behind_count=[int]$Matches[1]}
+      }
+      elseIf ($_ -match '\?\?\ ') {
+        $git_untracked_count++
       }
   }
   $branchText+="$marks"
