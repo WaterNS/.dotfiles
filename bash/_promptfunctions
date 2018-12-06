@@ -29,15 +29,9 @@ fi
 stashes=$(git stash list 2>/dev/null)
 if [[ -n "$stashes" ]]; then
 	git_stashed_count=`printf "$stashes" | grep -c ^`
-else 
-	git_stashed_count=0
 fi
 
 #Parse `git status --porcelain --branch` output
-git_untracked_count=0
-git_added_count=0
-git_modified_count=0
-git_deleted_count=0
 while IFS= read -r line; do
 	if [[ $line =~ ^'##' ]]; then # header line
 		
@@ -75,36 +69,35 @@ while IFS= read -r line; do
 
 done < <($git_eng status --porcelain --branch 2>/dev/null)  # note the space between the two <
 
-if [ "$git_added_count" -gt 0 ]; then
+if [ "$git_added_count" ]; then
 	marks+=" \e[97m";marks+="a:";marks+="\e[m"
 	# style count as LIGHT GREEN
 	marks+="\e[92m";marks+="$git_added_count";marks+="\e[m"
 fi
-if [ "$git_modified_count" -gt 0 ]; then
+if [ "$git_modified_count" ]; then
 	marks+=" \e[97m";marks+="m:";marks+="\e[m"
 	# style count as LIGHT YELLOW
 	marks+="\e[93m";marks+="$git_modified_count";marks+="\e[m"
 fi
-if [ "$git_deleted_count" -gt 0 ]; then
+if [ "$git_deleted_count" ]; then
 	marks+=" \e[97m";marks+="d:";marks+="\e[m"
 	# style count as LIGHT RED
 	marks+="\e[91\1m";marks+="$git_deleted_count";marks+="\e[m"
 fi
 
-if [ "$git_untracked_count" -gt 0 ] || [ "$git_stashed_count" -gt 0 ]; then
+if [ "$git_untracked_count" ] || [ "$git_stashed_count" ]; then
 	marks+=" |"
 fi
-if [ "$git_untracked_count" -gt 0 ]; then
+if [ "$git_untracked_count" ]; then
 	marks+=" \e[97m";marks+="untracked:";marks+="\e[m"
 	# style count as LIGHT RED
 	marks+="\e[91\1m";marks+="$git_untracked_count";marks+="\e[m"
 fi
-if [ "$git_stashed_count" -gt 0 ]; then
+if [ "$git_stashed_count" ]; then
 	marks+=" \e[97m";marks+="stashes:";marks+="\e[m"
 	# style count as LIGHT YELLOW
 	marks+="\e[93\1m";marks+="$git_stashed_count";marks+="\e[m"
 fi
-
 
 # print the git branch segment without a trailing newline
 printf " [ $ref$marks ]"
