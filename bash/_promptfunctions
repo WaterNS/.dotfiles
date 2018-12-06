@@ -25,18 +25,6 @@ fi
 
 [[ -n "$ref" ]] || return  # not a git repo
 
-#Identify how many changes of specific types from diff-index
-differences=$(git diff-index --name-status HEAD 2>/dev/null)
-if [[ -n "$differences" ]]; then
-	git_create_count=`printf "$differences" | grep -c "A\t"`
-	git_update_count=`printf "$differences" | grep -c "M\t"`
-	git_delete_count=`printf "$differences" | grep -c "D\t"`
-else 
-	git_create_count=0
-	git_update_count=0
-	git_delete_count=0
-fi
-
 #Identify stashes
 stashes=$(git stash list 2>/dev/null)
 if [[ -n "$stashes" ]]; then
@@ -47,6 +35,9 @@ fi
 
 #Parse `git status --porcelain --branch` output
 git_untracked_count=0
+git_added_count=0
+git_modified_count=0
+git_deleted_count=0
 while IFS= read -r line; do
 	if [[ $line =~ ^'##' ]]; then # header line
 		
@@ -64,6 +55,18 @@ while IFS= read -r line; do
 			marks+="\e[33m";marks+="${BASH_REMATCH[1]}";marks+="\e[m"
 		fi
 
+	#Identify modified files
+	elif [[ $line =~ ^[[:blank:]]'A'[[:blank:]] ]]; then
+		git_added_count=$((git_added_count + 1))
+
+	#Identify modified files
+	elif [[ $line =~ ^[[:blank:]]'M'[[:blank:]] ]]; then
+		git_modified_count=$((git_modified_count + 1))
+
+	#Identify deleted files
+	elif [[ $line =~ ^[[:blank:]]'D'[[:blank:]] ]]; then
+		git_deleted_count=$((git_deleted_count + 1))
+
 	#Identify untracked files
 	elif [[ $line =~ ^'??'[[:blank:]] ]]; then
 		git_untracked_count=$((git_untracked_count + 1))
@@ -72,20 +75,20 @@ while IFS= read -r line; do
 
 done < <($git_eng status --porcelain --branch 2>/dev/null)  # note the space between the two <
 
-if [ "$git_create_count" -gt 0 ]; then
-	marks+=" \e[97m";marks+="c:";marks+="\e[m"
+if [ "$git_added_count" -gt 0 ]; then
+	marks+=" \e[97m";marks+="a:";marks+="\e[m"
 	# style count as LIGHT GREEN
-	marks+="\e[92m";marks+="$git_create_count";marks+="\e[m"
+	marks+="\e[92m";marks+="$git_added_count";marks+="\e[m"
 fi
-if [ "$git_update_count" -gt 0 ]; then
-	marks+=" \e[97m";marks+="u:";marks+="\e[m"
+if [ "$git_modified_count" -gt 0 ]; then
+	marks+=" \e[97m";marks+="m:";marks+="\e[m"
 	# style count as LIGHT YELLOW
-	marks+="\e[93m";marks+="$git_update_count";marks+="\e[m"
+	marks+="\e[93m";marks+="$git_modified_count";marks+="\e[m"
 fi
-if [ "$git_delete_count" -gt 0 ]; then
+if [ "$git_deleted_count" -gt 0 ]; then
 	marks+=" \e[97m";marks+="d:";marks+="\e[m"
 	# style count as LIGHT RED
-	marks+="\e[91\1m";marks+="$git_delete_count";marks+="\e[m"
+	marks+="\e[91\1m";marks+="$git_deleted_count";marks+="\e[m"
 fi
 
 if [ "$git_untracked_count" -gt 0 ] || [ "$git_stashed_count" -gt 0 ]; then
