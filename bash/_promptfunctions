@@ -25,6 +25,28 @@ fi
 
 [[ -n "$ref" ]] || return  # not a git repo
 
+#Git Fetch sequence:
+# Last Reflog: Last time upstream was updated
+# Last Fetch: Last time fetch/pull was ATTEMPTED
+# Between the two can identify when last updated or attempted a fetch.
+MaxFetchSeconds=600
+upstream=$(git rev-parse --abbrev-ref "@{upstream}")
+
+lastreflog=$(git reflog show --date=unix $upstream -n1 | grep -o "{.*}" | tr -d '{}')
+if [ -z "$lastreflog" ]; then
+  lastreflog=$(date -j -v-${MaxFetchSeconds}S +%s)
+fi
+
+gitdir=$(git rev-parse --git-dir)
+lastfetch=$(stat -f "%m" $gitdir/FETCH_HEAD) #date +%s -r .git/FETCH_HEAD in GNUlinux
+TimeSinceReflog=$(( $(date +%s) - $lastreflog ))
+TimeSinceFetch=$(( $(date +%s) - $lastfetch ))
+#echo "Time since last reflog: $TimeSinceReflog"
+#echo "Time since last fetch: $TimeSinceFetch"
+if [ "$TimeSinceReflog" -gt "$MaxFetchSeconds" ] && [ "$TimeSinceFetch" -gt "$MaxFetchSeconds" ]; then
+	git fetch --all >/dev/null 2>&1
+fi
+
 #Identify stashes
 stashes=$(git stash list 2>/dev/null)
 if [[ -n "$stashes" ]]; then
