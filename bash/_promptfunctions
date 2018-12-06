@@ -31,20 +31,32 @@ fi
 # Between the two can identify when last updated or attempted a fetch.
 MaxFetchSeconds=600
 upstream=$(git rev-parse --abbrev-ref "@{upstream}")
+gitdir=$(git rev-parse --git-dir)
+if [[ $OSTYPE == darwin* ]]; then
+	OSX=true
+fi
 
 lastreflog=$(git reflog show --date=unix $upstream -n1 | grep -o "{.*}" | tr -d '{}')
 if [ -z "$lastreflog" ]; then
-  lastreflog=$(date -j -v-${MaxFetchSeconds}S +%s)
+	if [ $OSX ]; then
+  	lastreflog=$(date -j -v-${MaxFetchSeconds}S +%s)
+	else
+		lastreflog=$(date --date "-${MaxFetchSeconds} sec")
+	fi
 fi
 
-gitdir=$(git rev-parse --git-dir)
-lastfetch=$(stat -f "%m" $gitdir/FETCH_HEAD) #date +%s -r .git/FETCH_HEAD in GNUlinux
+if [ $OSX ]; then
+	lastfetch=$(stat -f "%m" $gitdir/FETCH_HEAD)
+else
+	lastfetch=$(date +%s -r $gitdir/FETCH_HEAD)
+fi
+
 TimeSinceReflog=$(( $(date +%s) - $lastreflog ))
 TimeSinceFetch=$(( $(date +%s) - $lastfetch ))
 #echo "Time since last reflog: $TimeSinceReflog"
 #echo "Time since last fetch: $TimeSinceFetch"
 if [ "$TimeSinceReflog" -gt "$MaxFetchSeconds" ] && [ "$TimeSinceFetch" -gt "$MaxFetchSeconds" ]; then
-	git fetch --all >/dev/null 2>&1
+	git fetch --all >/dev/null
 fi
 
 #Identify stashes
