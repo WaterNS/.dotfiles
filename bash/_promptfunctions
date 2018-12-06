@@ -70,17 +70,17 @@ while IFS= read -r line; do
 done < <($git_eng status --porcelain --branch 2>/dev/null)  # note the space between the two <
 
 if [ "$git_added_count" ]; then
-	marks+=" \e[97m";marks+="a:";marks+="\e[m"
+	marks+=" \e[97m";marks+="A:";marks+="\e[m"
 	# style count as LIGHT GREEN
 	marks+="\e[92m";marks+="$git_added_count";marks+="\e[m"
 fi
 if [ "$git_modified_count" ]; then
-	marks+=" \e[97m";marks+="m:";marks+="\e[m"
+	marks+=" \e[97m";marks+="M:";marks+="\e[m"
 	# style count as LIGHT YELLOW
 	marks+="\e[93m";marks+="$git_modified_count";marks+="\e[m"
 fi
 if [ "$git_deleted_count" ]; then
-	marks+=" \e[97m";marks+="d:";marks+="\e[m"
+	marks+=" \e[97m";marks+="D:";marks+="\e[m"
 	# style count as LIGHT RED
 	marks+="\e[91\1m";marks+="$git_deleted_count";marks+="\e[m"
 fi
