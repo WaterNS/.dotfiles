@@ -7,5 +7,6 @@
     },
     "git.autofetch": true,
     "workbench.colorTheme": "Monokai",
-    "terminal.integrated.rendererType": "dom"
+    "terminal.integrated.rendererType": "dom",
+    "diffEditor.ignoreTrimWhitespace": false
 }
