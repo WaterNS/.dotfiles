@@ -49,19 +49,6 @@ if ($symbolicref -ne $NULL) {
   if (($TimeSinceReflog -gt $MaxFetchSeconds) -AND ($TimeSinceFetch -gt $MaxFetchSeconds)) {
     git fetch --all | Out-Null
   }
-  
-  #Identify how many changes of specific types from diff-index
-  $differences = $(git diff-index --name-status HEAD)
-  If ($differences -ne $NULL) {
-    $git_create_count = [regex]::matches($differences, "A`t").count
-    $git_update_count = [regex]::matches($differences, "M`t").count
-    $git_delete_count = [regex]::matches($differences, "D`t").count
-  }
-  else {
-    $git_create_count = 0
-    $git_update_count = 0
-    $git_delete_count = 0
-  }
 
   #Identify stashes 
   $stashes = $(git stash list 2>$NULL)
@@ -80,6 +67,19 @@ if ($symbolicref -ne $NULL) {
         If ($_ -match 'ahead\ ([0-9]+)') {$git_ahead_count=[int]$Matches[1]}
         If ($_ -match 'behind\ ([0-9]+)') {$git_behind_count=[int]$Matches[1]}
       }
+      #Identify Added files
+      elseIf ($_ -match '^A\s\s') {
+        $git_added_count++
+      }
+      #Identify Modified files
+      elseIf ($_ -match '^\sM\s') {
+        $git_modified_count++
+      }
+      #Identify Deleted files
+      elseIf ($_ -match '^\sD\s') {
+        $git_deleted_count++
+      }
+      #Identify untracked files
       elseIf ($_ -match '^\?\?\ ') {
         $git_untracked_count++
       }
@@ -106,28 +106,28 @@ if ($symbolicref -ne $NULL) {
 
   #Output commits ahead/behind, in pretty colors
   If ($git_ahead_count -gt 0) {
-      Write-Host (" $SYMBOL_GIT_PUSH") -nonewline -foregroundcolor White
-      Write-Host ($git_ahead_count) -nonewline -foregroundcolor Green
+    Write-Host (" $SYMBOL_GIT_PUSH") -nonewline -foregroundcolor White
+    Write-Host ($git_ahead_count) -nonewline -foregroundcolor Green
   }
   If ($git_behind_count -gt 0) {
-      Write-Host (" $SYMBOL_GIT_PULL") -nonewline -foregroundcolor White
-      Write-Host ($git_behind_count) -nonewline -foregroundcolor Yellow
+    Write-Host (" $SYMBOL_GIT_PULL") -nonewline -foregroundcolor White
+    Write-Host ($git_behind_count) -nonewline -foregroundcolor Yellow
   }
   
   #Output unstaged changes count, if any, in pretty colors   
-  If ($git_create_count -gt 0) {
-      Write-Host (" c:") -nonewline -foregroundcolor White
-      Write-Host ($git_create_count) -nonewline -foregroundcolor Green
+  If ($git_added_count -gt 0) {
+    Write-Host (" A:") -nonewline -foregroundcolor White
+    Write-Host ($git_added_count) -nonewline -foregroundcolor Green
   }
   
-  If ($git_update_count -gt 0) {
-    Write-Host (" u:") -nonewline -foregroundcolor White
-    Write-Host ($git_update_count) -nonewline -foregroundcolor Yellow
+  If ($git_modified_count -gt 0) {
+    Write-Host (" M:") -nonewline -foregroundcolor White
+    Write-Host ($git_modified_count) -nonewline -foregroundcolor Yellow
   }
   
-  If ($git_delete_count -gt 0) {
-    Write-Host (" d:") -nonewline -foregroundcolor White
-    Write-Host ($git_delete_count) -nonewline -foregroundcolor Red
+  If ($git_deleted_count -gt 0) {
+    Write-Host (" D:") -nonewline -foregroundcolor White
+    Write-Host ($git_deleted_count) -nonewline -foregroundcolor Red
   }
 
   If (($git_untracked_count -gt 0) -OR ($git_stashes_count -gt 0))  {
