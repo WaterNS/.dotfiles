@@ -8,5 +8,6 @@
     "git.autofetch": true,
     "workbench.colorTheme": "Monokai",
     "terminal.integrated.rendererType": "dom",
-    "diffEditor.ignoreTrimWhitespace": false
+    "diffEditor.ignoreTrimWhitespace": false,
+    "telemetry.enableTelemetry": false
 }
