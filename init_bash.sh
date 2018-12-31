@@ -207,20 +207,6 @@ if [ ! -d "$HOME/.vim/bundle/vim-fugitive" ]; then
 elif [ $u ]; then updategitrepo "vim-fugitive" "VIM git plugin" ~/.vim/bundle/vim-fugitive ;
 fi
 
-#VIM Plugin: Add tree explorer
-if [ ! -d "$HOME/.vim/bundle/nerdtree" ]; then
-	echo "- Installing: nerdtree (VIM explorer plugin)";
-	git clone https://github.com/scrooloose/nerdtree.git ~/.vim/bundle/nerdtree; echo ""
-elif [ $u ]; then updategitrepo "nerdtree" "VIM tree explorer plugin" ~/.vim/bundle/nerdtree ;
-fi
-
-#VIM Plugin: Add git to NERDTree explorer
-if [ ! -d "$HOME/.vim/bundle/nerdtree-git-plugin" ]; then
-  echo "- Installing: nerdtree-git-plugin (Git for VIM tree explorer plugin)";
-  git clone https://github.com/Xuyuanp/nerdtree-git-plugin.git ~/.vim/bundle/nerdtree-git-plugin; echo ""
-elif [ $u ]; then updategitrepo "nerdtree-git-plugin" "Git for VIM tree explorer plugin" ~/.vim/bundle/nerdtree-git-plugin ;
-fi
-
 #VIM Plugin: Add commenting capabilities to VIM
 if [ ! -d "$HOME/.vim/bundle/nerdcommenter" ]; then
 	echo "- Installing: nerdcommenter (VIM commenting plugin)";

@@ -95,23 +95,11 @@ command ConvertSpaceTabstoTabs call RetabIndents() " convert indent spaces into 
 command TrimWhiteSpace call TrimWhitespace()
 command SudoWriteFile :execute ':silent w !sudo tee % > /dev/null' | :edit!
 
-" Toggle Git Gutters, Line Numbers, Hidden Chars, NERDTree (handy for copying text)
+" Toggle Git Gutters, Line Numbers, Hidden Chars (handy for copying text)
 function ToggleGuttersandChars()
-	" Is NERDTree in focus?
-	if (exists("t:NERDTreeBufName") && bufwinnr(t:NERDTreeBufName) == winnr())
-		wincmd p
-	endif
 	:set invnumber
 	:set list!
 	:GitGutterSignsToggle
-	" Is NERDTree present in current tab?
-	if (exists("t:NERDTreeBufName"))
-		:NERDTreeToggle
-	endif
-	" Is NERDTree in focus?
-	if (exists("t:NERDTreeBufName") && bufwinnr(t:NERDTreeBufName) == winnr())
-		wincmd p
-	endif
 endfunction
 noremap <leader>t<space> :call ToggleGuttersandChars()<CR>
 
@@ -129,17 +117,6 @@ if !v:shell_error && s:uname == "Darwin"
 	vmap <C-x> :!pbcopy<CR>
 	vmap <C-c> :w !pbcopy<CR><CR>
 endif
-
-" Autostart NERDTree
-autocmd vimenter * NERDTree
-" Jump to the main window.
-autocmd VimEnter * wincmd p
-" Jump to the main window (when coming into tab)
-autocmd TabEnter * if (exists("t:NERDTreeBufName") && bufwinnr(t:NERDTreeBufName) == winnr()) | wincmd p | endif
-" Close if NERDTree is only other tab
-autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-" Show hidden files in NERDTree
-let NERDTreeShowHidden=1
 
 " TAB switch shortcuts using <leader>+number
 noremap <leader>1 1gt
