@@ -29,6 +29,9 @@ catch [System.Management.Automation.CommandNotFoundException]
     exit 1
 }
 
+# Import dotfiles gitconfig
+git config --global include.path "~/.dotfiles/git/git_tweaks"
+
 if ($update) {
   Write-Output "UPDATING..."
   updategitrepo "dotfiles" "profile configs" "$HOMEREPO"

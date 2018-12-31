@@ -88,16 +88,16 @@ if [ -x "$(command -v diff-so-fancy)" ]; then
 	export LESS="-x2 -RFX $LESS"
 
 	# Include diff-so-fancy colors
-	git config --global include.path "~/.dotfiles/git/git_colors"
+	git config --global include.path "~/.dotfiles/git/git_diffsofancy"
 else # Set to use LESS as fallback and undo gitconfig change
   export GIT_PAGER='less'
   export LESS="-x2 -RFX $LESS"
-	git config --global --unset include.path "~/.dotfiles/git/git_colors"
+	git config --global --unset include.path "~/.dotfiles/git/git_diffsofancy"
 fi
 
 # Set GIT Config Settings
 if [ -x "$(command -v git)" ]; then
-  git config --global push.default simple
+  git config --global include.path "~/.dotfiles/git/git_tweaks"
 fi
 
 # Use lesspipe for binaries
