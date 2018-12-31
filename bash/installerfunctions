@@ -13,6 +13,9 @@ install_youtubedl () {
     if [ ! -x "$(command -v ffprobe)" ]; then
         install_ffprobe
     fi
+    if [ ! -x "$(command -v phantomjs)" ]; then
+        install_phantomjs
+    fi
 }
 
 install_unar () {
@@ -81,6 +84,29 @@ install_ffprobe () {
         fi
       else
           echo "Unable to install ffprobe - OS version doesn't have supported function"
+      fi
+    fi
+}
+
+install_phantomjs () {
+    if [ ! -x "$(command -v phantomjs)" ]; then
+      if [[ $OSTYPE == darwin* ]]; then
+        echo "NOTE: phantomjs not found, installing into dotfiles bin"
+        echo "------------------------------------------------"
+        local phantomjs="http://phantomjs.org/download.html"
+        local latest=$(curl $phantomjs | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep osx.zip)
+        curl -L "$latest" -o /tmp/phantomjs.zip; echo ""
+
+        unzip -j "/tmp/phantomjs.zip" "*/bin/phantomjs" -d "$HOME/.dotfiles/opt/bin/"
+        rm -r /tmp/phantomjs.zip
+               
+        if [ -x "$(command -v phantomjs)" ]; then
+            echo "GOOD - phantomjs is now available"
+        else
+            echo "BAD - phantomjs doesn't seem to be available"
+        fi
+      else
+          echo "Unable to install phantomjs - OS version doesn't have supported function"
       fi
     fi
 }
