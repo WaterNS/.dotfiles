@@ -1,13 +1,16 @@
 #!/bin/bash
 
 install_youtubedl () {
-    if [ ! -x "$(command -v youtube-dl)" ]; then    
+    if [ ! -x "$(command -v youtube-dl)" ] && [ ! -f $HOME/.dotfiles/opt/bin/youtube-dl ]; then    
         echo "NOTE: youtube-dl not found, downloading to dotfiles bin location"
         echo "------------------------------------------------"
         curl -L https://yt-dl.org/downloads/latest/youtube-dl -o $HOME/.dotfiles/opt/bin/youtube-dl; echo ""
         chmod a+rx $HOME/.dotfiles/opt/bin/youtube-dl
-
+    fi
+    if [ ! -x "$(command -v ffmpeg)" ]; then
         install_ffmpeg
+    fi
+    if [ ! -x "$(command -v ffprobe)" ]; then
         install_ffprobe
     fi
 }
