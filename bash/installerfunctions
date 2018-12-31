@@ -41,7 +41,7 @@ install_ffmpeg () {
         echo "NOTE: ffmpeg not found, installing into dotfiles bin"
         echo "------------------------------------------------"
         local ffmpeg="https://evermeet.cx/pub/ffmpeg/snapshots/"
-        local latest=$(curl $ffmpeg | grep .7z | head -1 | sed -n 's/.*href="\([^"]*\).*/\1/p')
+        local latest=$(curl $ffmpeg | grep -v ".7z.sig" | grep .7z | head -1 | sed -n 's/.*href="\([^"]*\).*/\1/p')
         curl "$ffmpeg$latest" -o /tmp/ffmpeg.7z; echo ""
 
         unar /tmp/ffmpeg.7z -o $HOME/.dotfiles/opt/bin/
@@ -65,7 +65,7 @@ install_ffprobe () {
         echo "NOTE: ffprobe not found, installing into dotfiles bin"
         echo "------------------------------------------------"
         local ffprobe="https://evermeet.cx/pub/ffprobe/snapshots/"
-        local latest=$(curl $ffprobe | grep .7z | head -1 | sed -n 's/.*href="\([^"]*\).*/\1/p')
+        local latest=$(curl $ffprobe | grep -v ".7z.sig" | grep .7z | head -1 | sed -n 's/.*href="\([^"]*\).*/\1/p')
         curl "$ffprobe/$latest" -o /tmp/ffprobe.7z; echo ""
 
         unar /tmp/ffprobe.7z -o $HOME/.dotfiles/opt/bin/
