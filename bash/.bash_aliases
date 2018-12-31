@@ -45,7 +45,10 @@ if [ -f "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" ]
 fi
 
 # youtube-dl shorthand function that does auto retry
-if [ -x "$(command -v youtube-dl)" ]; then
+if [ -x "$(command -v youtube-dl)" ] &&
+   [ -x "$(command -v ffmpeg)" ] &&
+   [ -x "$(command -v ffprobe)" ] &&
+   [ -x "$(command -v phantomjs)" ]; then
   ytdl () { while ! youtube-dl "$1" -c --socket-timeout 5; do echo DISCONNECTED; sleep 5; done; }
   ytdl-hq () { while ! youtube-dl -f 'bestvideo+bestaudio[ext=m4a]/bestvideo+bestaudio/best' "$1" -c --socket-timeout 5; do echo DISCONNECTED; sleep 5; done; }
   ytdl-mp3 () { while ! youtube-dl -f bestaudio --embed-thumbnail --add-metadata --extract-audio --audio-format mp3 -o "%(title)s.%(ext)s" "$1" -c --socket-timeout 5; do echo DISCONNECTED; sleep 5; done; }
