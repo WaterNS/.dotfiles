@@ -74,9 +74,9 @@ if ("$(git rev-parse master)" -ne "$(git rev-parse origin/master)") {
   # Restart the init script if it self updated
   if ("$reponame" -eq "dotfiles") {
     cd $olddir
-	echo ""
-	echo ""
-	exec $SCRIPTPATH -u;
+	  echo ""
+	  echo ""
+	  .\$SCRIPTPATH -u;
   }
 }
 
