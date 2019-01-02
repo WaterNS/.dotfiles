@@ -56,7 +56,7 @@ TimeSinceFetch=$(( $(date +%s) - $lastfetch ))
 #echo "Time since last reflog: $TimeSinceReflog"
 #echo "Time since last fetch: $TimeSinceFetch"
 if [ "$TimeSinceReflog" -gt "$MaxFetchSeconds" ] && [ "$TimeSinceFetch" -gt "$MaxFetchSeconds" ]; then
-	git fetch --all >/dev/null
+	git fetch --all > /dev/null
 fi
 
 #Identify stashes
