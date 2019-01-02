@@ -7,7 +7,7 @@ $HOMEREPOlit='~\.dotfiles'
 # Source my powershell functions
 . "$HOMEREPO\powershell\powershell-functions.ps1"
 
-# Source Powershell Profile Updater 
+# Source Powershell Profile Updater
 . "$HOMEREPO\powershell\powershell-dotfilesupdater.ps1"
 
 # Source git prompt

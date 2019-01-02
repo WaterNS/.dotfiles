@@ -2,7 +2,7 @@
 
 If (Test-IsNonInteractiveShell) {
 	#Do Nothing if in Non-Interactive Shell
-} 
+}
 else{ #Presumed interactive or otherwise shell
 	# Time, in seconds, between updates
 	$maxtime=$((5*24*60*60))

@@ -102,7 +102,7 @@ If (Test-Path "~\Documents") {
     }
 
   }
-  
+
   If (-NOT (Test-Path "$VSCodeSettingsFile")) {
     # Requires Admin Permissions
     Write-Output "Linking $VSCodeSettingsFile to $VSCodeSettingsRepoFile"

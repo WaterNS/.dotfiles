@@ -22,7 +22,7 @@ if (git rev-parse --git-dir 2> $null) {
 
 
 if ($symbolicref -ne $NULL) {
-  # Tweak: 
+  # Tweak:
   # When WSL and Powershell terminals concurrently viewing same repo
   # Stops from showing CRLF/LF differences as updates
   git status > $NULL
@@ -50,7 +50,7 @@ if ($symbolicref -ne $NULL) {
     git fetch --all | Out-Null
   }
 
-  #Identify stashes 
+  #Identify stashes
   $stashes = $(git stash list 2>$NULL)
   if ($stashes -ne $NULL) {
     $git_stashes_count=($stashes | Measure-Object -Line).Lines
@@ -61,8 +61,8 @@ if ($symbolicref -ne $NULL) {
   #by reading first two lines of `git status`
   #Identify how many untracked files (matching `?? `)
   $marks=$NULL
-  (git status --porcelain --branch 2>$NULL) | ForEach-Object { 
-  
+  (git status --porcelain --branch 2>$NULL) | ForEach-Object {
+
       If ($_ -match '^##') {
         If ($_ -match 'ahead\ ([0-9]+)') {$git_ahead_count=[int]$Matches[1]}
         If ($_ -match 'behind\ ([0-9]+)') {$git_behind_count=[int]$Matches[1]}
@@ -88,7 +88,7 @@ if ($symbolicref -ne $NULL) {
 
 }
 
-if (test-path variable:/PSDebugContext) { 
+if (test-path variable:/PSDebugContext) {
   Write-Host '[DBG]: ' -nonewline -foregroundcolor Yellow
 }
 
@@ -113,18 +113,18 @@ if ($symbolicref -ne $NULL) {
     Write-Host (" $SYMBOL_GIT_PULL") -nonewline -foregroundcolor White
     Write-Host ($git_behind_count) -nonewline -foregroundcolor Yellow
   }
-  
-  #Output unstaged changes count, if any, in pretty colors   
+
+  #Output unstaged changes count, if any, in pretty colors
   If ($git_added_count -gt 0) {
     Write-Host (" A:") -nonewline -foregroundcolor White
     Write-Host ($git_added_count) -nonewline -foregroundcolor Green
   }
-  
+
   If ($git_modified_count -gt 0) {
     Write-Host (" M:") -nonewline -foregroundcolor White
     Write-Host ($git_modified_count) -nonewline -foregroundcolor Yellow
   }
-  
+
   If ($git_deleted_count -gt 0) {
     Write-Host (" D:") -nonewline -foregroundcolor White
     Write-Host ($git_deleted_count) -nonewline -foregroundcolor Red

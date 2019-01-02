@@ -42,7 +42,7 @@ Function Powershell-VeryBasicGrep
 
   $searchterm = $args[0]
   $searchfile = $args[1]
-  
+
   if($searchfile -eq $null) {
       throw "No filename supplied"
   }
@@ -148,7 +148,7 @@ Function Powershell-Head
     Write-Warning "----------------------------------------------------------------------------"
   }
 
-  
+
   if($file -eq $null) {
       throw "No filename supplied"
   }
