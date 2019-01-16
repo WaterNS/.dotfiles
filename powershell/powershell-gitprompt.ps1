@@ -41,9 +41,13 @@ if ($symbolicref -ne $NULL) {
     $lastreflog = [datetime]$($lastreflog | %{ [Regex]::Matches($_, "{(.*)}") }).groups[1].Value
   }
   $gitdir = $(git rev-parse --git-dir)
-  $lastfetch =  (Get-Item $gitdir/FETCH_HEAD).LastWriteTime
   $TimeSinceReflog = (New-TimeSpan -Start $lastreflog).TotalSeconds
-  $TimeSinceFetch = (New-TimeSpan -Start $lastfetch).TotalSeconds
+  if (Test-Path $gitdir/FETCH_HEAD) {
+    $lastfetch =  (Get-Item $gitdir/FETCH_HEAD).LastWriteTime
+    $TimeSinceFetch = (New-TimeSpan -Start $lastfetch).TotalSeconds
+  } else {
+    $TimeSinceFetch = $MaxFetchSeconds + 1
+  }
   #Write-Host "Time since last reflog: $TimeSinceReflog"
   #Write-Host "Time since last fetch: $TimeSinceFetch"
   if (($TimeSinceReflog -gt $MaxFetchSeconds) -AND ($TimeSinceFetch -gt $MaxFetchSeconds)) {
