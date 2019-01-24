@@ -240,20 +240,29 @@ fi
 
 #Write last update file
 SHAinitupdated=$(git --git-dir $HOMEREPO/.git log -n 1 --pretty=format:%H -- init_bash.sh)
-if [ ! -f $HOMEREPO/opt/lastupdate ]; then
-	date +%s > $HOMEREPO/opt/lastupdate
-	date '+%A %F %I:%M:%S %p %Z' >> $HOMEREPO/opt/lastupdate
-	echo "Last commit at which init_bash.sh initialization ran:" >> $HOMEREPO/opt/lastupdate
-	echo "$SHAinitupdated" >> $HOMEREPO/opt/lastupdate
+if [ ! -f $HOMEREPO/opt/lastupdate ] || [ ! -f $HOMEREPO/opt/lastinit ]; then
+	if [ ! -f $HOMEREPO/opt/lastupdate ]; then
+		date +%s > $HOMEREPO/opt/lastupdate
+		date '+%A %F %I:%M:%S %p %Z' >> $HOMEREPO/opt/lastupdate
+	fi
+
+	if [ ! -f $HOMEREPO/opt/lastinit ]; then
+		echo "Last commit at which init_bash.sh initialization ran:" > $HOMEREPO/opt/lastinit
+		echo "$SHAinitupdated" >> $HOMEREPO/opt/lastinit
+	fi
 elif [ $u ] || [ $ri ]; then
-	echo ""
-	echo "Updating last update time file with current date"
-	date +%s > $HOMEREPO/opt/lastupdate
-	date '+%A %F %I:%M:%S %p %Z' >> $HOMEREPO/opt/lastupdate
+	if [ $u ]; then
+		echo ""
+		echo "Updating last update time file with current date"
+		date +%s > $HOMEREPO/opt/lastupdate
+		date '+%A %F %I:%M:%S %p %Z' >> $HOMEREPO/opt/lastupdate
+	fi
 
 	if [ $ri ]; then
-	  echo "Last commit at which init_bash.sh initialization ran:" >> $HOMEREPO/opt/lastupdate
-	  echo "$SHAinitupdated" >> $HOMEREPO/opt/lastupdate >> $HOMEREPO/opt/lastupdate
+		echo ""
+		echo "Updating lastinit time with current SHA: $SHAinitupdated"
+	  echo "Last commit at which init_bash.sh initialization ran:" > $HOMEREPO/opt/lastinit
+	  echo "$SHAinitupdated" >> $HOMEREPO/opt/lastupdate >> $HOMEREPO/opt/lastinit
 	fi
 fi
 
