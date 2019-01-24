@@ -262,7 +262,7 @@ elif [ $u ] || [ $ri ]; then
 		echo ""
 		echo "Updating lastinit time with current SHA: $SHAinitupdated"
 	  echo "Last commit at which init_bash.sh initialization ran:" > $HOMEREPO/opt/lastinit
-	  echo "$SHAinitupdated" >> $HOMEREPO/opt/lastupdate >> $HOMEREPO/opt/lastinit
+	  echo "$SHAinitupdated" >> $HOMEREPO/opt/lastinit
 	fi
 fi
 
