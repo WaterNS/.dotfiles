@@ -12,7 +12,7 @@
 
 
 $SCRIPTDIR=$PSScriptRoot
-#$SCRIPTPATH=$PSCommandPath
+$SCRIPTPATH=$PSCommandPath #used in powershell-functions.ps1
 
 $HOMEREPO="$HOME\.dotfiles"
 #$HOMEREPOlit='~\.dotfiles'
