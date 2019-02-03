@@ -44,6 +44,14 @@ if [ -f "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" ]
   alias vscode=code
 fi
 
+# add icloud shortcut alias
+if [[ $OSTYPE == darwin* ]]; then
+  if [ -d ~/Library/Mobile\ Documents/com~apple~CloudDocs/ ]; then
+    shopt -s cdable_vars
+    export icloud=~/Library/Mobile\ Documents/com~apple~CloudDocs/
+  fi
+fi
+
 # youtube-dl shorthand function that does auto retry
 if [ -x "$(command -v youtube-dl)" ] &&
    [ -x "$(command -v ffmpeg)" ] &&
