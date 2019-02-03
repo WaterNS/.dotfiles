@@ -48,3 +48,30 @@ fixsshperms ()
     find ~/.ssh -type f -iname "id*" -not -path "*.pub" -print0 | xargs -0 chmod 600
   fi 
 }
+
+calcfiletotals() {
+#Function to calculate total of directory of receipts
+# eg. "2019-01-01 Amazon - Books - $104.51"
+#         +
+#     "2019-01-01 Bestbuy - Movies - $50.13"
+local location="$1"
+echo "Calculating totals for: $location"
+
+array=()
+while IFS=  read -r -d $'\0'; do
+  filename=$(echo $REPLY | xargs -0 basename)
+  filenameNoExt="${filename%.*}"
+
+  if [[ $filenameNoExt == *'$'* ]];then
+    amt=$(cut -d '$' -f 2 <<< "$filenameNoExt")
+    if [[ $amt =~ ^[0-9]+([.][0-9]+)?$ ]] ;then
+      array+=("$amt")
+    else
+      echo "Not amount: $amt"
+    fi
+  fi
+done < <(find "$location" -type f -not -path "*DS_Store*" -print0)
+
+#Ref: https://stackoverflow.com/questions/13635293/unix-shell-script-adding-the-elements-of-an-array-together
+dc <<< '[+]sa[z2!>az2!>b]sb'"${array[*]}lbxp"
+}
