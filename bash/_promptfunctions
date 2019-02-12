@@ -83,31 +83,50 @@ while IFS= read -r line; do
 			marks+="\e[33m";marks+="${BASH_REMATCH[1]}";marks+="\e[m"
 		fi
 
-	#Identify Added files
+	#Identify Added/Untracked files
 	elif [[ $line =~ ^'A'[[:blank:]][[:blank:]] ]]; then
-		git_added_count=$((git_added_count + 1))
+		git_index_added_count=$((git_index_added_count + 1))
+	elif [[ $line =~ ^'??'[[:blank:]] ]]; then
+		git_untracked_count=$((git_untracked_count + 1))
 
 	#Identify Modified files
+	elif [[ $line =~ ^'M'[[:blank:]][[:blank:]] ]]; then
+		git_index_modified_count=$((git_index_modified_count + 1))
 	elif [[ $line =~ ^[[:blank:]]'M'[[:blank:]] ]]; then
 		git_modified_count=$((git_modified_count + 1))
 
 	#Identify Deleted files
+	elif [[ $line =~ ^'D'[[:blank:]][[:blank:]] ]]; then
+		git_index_deleted_count=$((git_index_deleted_count + 1))
 	elif [[ $line =~ ^[[:blank:]]'D'[[:blank:]] ]]; then
 		git_deleted_count=$((git_deleted_count + 1))
 
-	#Identify untracked files
-	elif [[ $line =~ ^'??'[[:blank:]] ]]; then
-		git_untracked_count=$((git_untracked_count + 1))
-	
 	fi
 
 done < <($git_eng status --porcelain --branch 2>/dev/null)  # note the space between the two <
 
-if [ "$git_added_count" ]; then
-	marks+=" \e[97m";marks+="A:";marks+="\e[m"
+if [ "$git_index_added_count" ]; then
+	marks+=" \e[97m";marks+="Ai:";marks+="\e[m"
 	# style count as LIGHT GREEN
-	marks+="\e[92m";marks+="$git_added_count";marks+="\e[m"
+	marks+="\e[92m";marks+="$git_index_added_count";marks+="\e[m"
 fi
+if [ "$git_index_modified_count" ]; then
+	marks+=" \e[97m";marks+="Mi:";marks+="\e[m"
+	# style count as LIGHT YELLOW
+	marks+="\e[93m";marks+="$git_index_modified_count";marks+="\e[m"
+fi
+if [ "$git_index_deleted_count" ]; then
+	marks+=" \e[97m";marks+="Di:";marks+="\e[m"
+	# style count as LIGHT RED
+	marks+="\e[91\1m";marks+="$git_index_deleted_count";marks+="\e[m"
+fi
+
+if [ "$git_index_added_count" ] || [ "$git_index_modified_count" ] || [ "$git_index_deleted_count" ]; then
+	if [ "$git_modified_count" ] || [ "$git_deleted_count" ]; then
+		marks+=" |"
+	fi
+fi
+
 if [ "$git_modified_count" ]; then
 	marks+=" \e[97m";marks+="M:";marks+="\e[m"
 	# style count as LIGHT YELLOW
