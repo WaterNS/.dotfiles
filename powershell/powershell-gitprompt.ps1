@@ -71,22 +71,34 @@ if ($symbolicref -ne $NULL) {
         If ($_ -match 'ahead\ ([0-9]+)') {$git_ahead_count=[int]$Matches[1]}
         If ($_ -match 'behind\ ([0-9]+)') {$git_behind_count=[int]$Matches[1]}
       }
-      #Identify Added files
+      #Identify Added/UnTracked files
       elseIf ($_ -match '^A\s\s') {
-        $git_added_count++
+        $git_index_added_count++
       }
-      #Identify Modified files
-      elseIf ($_ -match '^\sM\s') {
-        $git_modified_count++
-      }
-      #Identify Deleted files
-      elseIf ($_ -match '^\sD\s') {
-        $git_deleted_count++
-      }
-      #Identify untracked files
       elseIf ($_ -match '^\?\?\ ') {
         $git_untracked_count++
       }
+
+      #Identify Modified files
+      elseIf ($_ -match '^MM\s') {
+        $git_index_modified_count++
+        $git_modified_count++
+      }
+      elseIf ($_ -match '^M\s\s') {
+        $git_index_modified_count++
+      }
+      elseIf ($_ -match '^\sM\s') {
+        $git_modified_count++
+      }
+
+      #Identify Deleted files
+      elseIf ($_ -match '^D\s\s') {
+        $git_index_deleted_count++
+      }
+      elseIf ($_ -match '^\sD\s') {
+        $git_deleted_count++
+      }
+
   }
   $branchText+="$marks"
 
@@ -118,10 +130,27 @@ if ($symbolicref -ne $NULL) {
     Write-Host ($git_behind_count) -nonewline -foregroundcolor Yellow
   }
 
+  #Output staged changes count, if any, in pretty colors
+  If ($git_index_added_count -gt 0) {
+    Write-Host (" Ai:") -nonewline -foregroundcolor White
+    Write-Host ($git_index_added_count) -nonewline -foregroundcolor Green
+  }
+
+  If ($git_index_modified_count -gt 0) {
+    Write-Host (" Mi:") -nonewline -foregroundcolor White
+    Write-Host ($git_index_modified_count) -nonewline -foregroundcolor Yellow
+  }
+
+  If ($git_index_deleted_count -gt 0) {
+    Write-Host (" Di:") -nonewline -foregroundcolor White
+    Write-Host ($git_index_deleted_count) -nonewline -foregroundcolor Red
+  }
+
   #Output unstaged changes count, if any, in pretty colors
-  If ($git_added_count -gt 0) {
-    Write-Host (" A:") -nonewline -foregroundcolor White
-    Write-Host ($git_added_count) -nonewline -foregroundcolor Green
+  If (($git_index_added_count) -OR ($git_index_modified_count) -OR ($git_index_deleted_count)) {
+    If (($git_modified_count -gt 0) -OR ($git_deleted_count -gt 0))  {
+      Write-Host (" |") -nonewline -foregroundcolor White
+    }
   }
 
   If ($git_modified_count -gt 0) {
