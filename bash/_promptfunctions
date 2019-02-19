@@ -68,14 +68,14 @@ fi
 #Parse `git status --porcelain --branch` output
 while IFS= read -r line; do
 	if [[ $line =~ ^'##' ]]; then # header line
-		
+
 		#Identify number of commits ahead
 		if [[ $line =~ ahead\ ([0-9]+) ]]; then 
 			marks+=" $SYMBOL_GIT_PUSH"
 			#style number as GREEN
 			marks+="\e[32m";marks+="${BASH_REMATCH[1]}";marks+="\e[m"
 		fi
-		
+
 		#Identify number of commits behind
 		if [[ $line =~ behind\ ([0-9]+) ]]; then
 			marks+=" $SYMBOL_GIT_PULL"
@@ -90,6 +90,9 @@ while IFS= read -r line; do
 		git_untracked_count=$((git_untracked_count + 1))
 
 	#Identify Modified files
+	elif [[ $line =~ ^'MM'[[:blank:]] ]]; then
+		git_index_modified_count=$((git_index_modified_count + 1))
+		git_modified_count=$((git_modified_count + 1))
 	elif [[ $line =~ ^'M'[[:blank:]][[:blank:]] ]]; then
 		git_index_modified_count=$((git_index_modified_count + 1))
 	elif [[ $line =~ ^[[:blank:]]'M'[[:blank:]] ]]; then
