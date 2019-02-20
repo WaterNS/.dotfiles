@@ -63,9 +63,8 @@ while IFS=  read -r -d $'\0'; do
   filenameNoExt="${filename%.*}"
 
   if [[ $filenameNoExt == *'$'* ]];then
-    amt=$(cut -d '$' -f 2 <<< "$filenameNoExt")
-    if [[ $amt =~ ^[0-9]+([.][0-9]+)?$ ]] ;then
-      array+=("$amt")
+    if [[ $filenameNoExt =~ -?\$[0-9]+([.][0-9]+)?$ ]] ;then
+      array+=("${BASH_REMATCH[0]//$/}")
     else
       echo "Not amount: $amt"
     fi
@@ -73,5 +72,5 @@ while IFS=  read -r -d $'\0'; do
 done < <(find "$location" -type f -not -path "*DS_Store*" -print0)
 
 #Ref: https://stackoverflow.com/questions/13635293/unix-shell-script-adding-the-elements-of-an-array-together
-dc <<< '[+]sa[z2!>az2!>b]sb'"${array[*]}lbxp"
+dc <<< '[+]sa[z2!>az2!>b]sb'"${array[*]//-/_}lbxp"
 }
