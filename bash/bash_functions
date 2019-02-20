@@ -49,7 +49,7 @@ fixsshperms ()
   fi 
 }
 
-calcfiletotals() {
+foldertotal() {
 #Function to calculate total of directory of receipts
 # eg. "2019-01-01 Amazon - Books - $104.51"
 #         +
