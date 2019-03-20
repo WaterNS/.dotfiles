@@ -119,3 +119,7 @@ Function Test-IsNonInteractiveShell {
 
   return $false
 }
+
+Function find-string([String]$regex) {
+  Get-ChildItem -recurse | Select-String -pattern ([Regex]::Escape("$regex")) | group path | select name
+}
