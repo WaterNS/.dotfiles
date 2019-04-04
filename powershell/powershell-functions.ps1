@@ -122,5 +122,5 @@ Function Test-IsNonInteractiveShell {
 
 Function find-string([String]$regex, $path) {
   if (!$path) {$path = "."}
-  Get-ChildItem $path -file -recurse | Select-String -pattern ([Regex]::Escape("$regex")) | group path | select name
+  Get-ChildItem $path -file -recurse | Select-String -pattern ([Regex]::Escape("$regex")) | group path | select -ExpandProperty name
 }
