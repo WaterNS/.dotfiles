@@ -91,6 +91,11 @@ if ($symbolicref -ne $NULL) {
         $git_modified_count++
       }
 
+      #Identify Renamed files
+      elseIf ($_ -match '^R\s\s') {
+        $git_index_renamed_count++
+      }
+
       #Identify Deleted files
       elseIf ($_ -match '^D\s\s') {
         $git_index_deleted_count++
@@ -134,6 +139,11 @@ if ($symbolicref -ne $NULL) {
   If ($git_index_added_count -gt 0) {
     Write-Host (" Ai:") -nonewline -foregroundcolor White
     Write-Host ($git_index_added_count) -nonewline -foregroundcolor Green
+  }
+
+  If ($git_index_renamed_count -gt 0) {
+    Write-Host (" Ri:") -nonewline -foregroundcolor White
+    Write-Host ($git_index_renamed_count) -nonewline -foregroundcolor DarkGreen
   }
 
   If ($git_index_modified_count -gt 0) {

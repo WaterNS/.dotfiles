@@ -89,6 +89,10 @@ while IFS= read -r line; do
 	elif [[ $line =~ ^'??'[[:blank:]] ]]; then
 		git_untracked_count=$((git_untracked_count + 1))
 
+	#Identify Renamed files
+	elif [[ $line =~ ^'R'[[:blank:]][[:blank:]] ]]; then
+		git_index_renamed_count=$((git_index_renamed_count + 1))
+
 	#Identify Modified files
 	elif [[ $line =~ ^'MM'[[:blank:]] ]]; then
 		git_index_modified_count=$((git_index_modified_count + 1))
@@ -113,6 +117,11 @@ if [ "$git_index_added_count" ]; then
 	# style count as LIGHT GREEN
 	marks+="\e[92m";marks+="$git_index_added_count";marks+="\e[m"
 fi
+if [ "$git_index_renamed_count" ]; then
+	marks+=" \e[97m";marks+="Ri:";marks+="\e[m"
+	# style count as LIGHT BLUE
+	marks+="\e[94m";marks+="$git_index_renamed_count";marks+="\e[m"
+fi
 if [ "$git_index_modified_count" ]; then
 	marks+=" \e[97m";marks+="Mi:";marks+="\e[m"
 	# style count as LIGHT YELLOW
@@ -124,7 +133,7 @@ if [ "$git_index_deleted_count" ]; then
 	marks+="\e[91\1m";marks+="$git_index_deleted_count";marks+="\e[m"
 fi
 
-if [ "$git_index_added_count" ] || [ "$git_index_modified_count" ] || [ "$git_index_deleted_count" ]; then
+if [ "$git_index_added_count" ] || [ "$git_index_renamed_count" ] || [ "$git_index_modified_count" ] || [ "$git_index_deleted_count" ]; then
 	if [ "$git_modified_count" ] || [ "$git_deleted_count" ]; then
 		marks+=" |"
 	fi
