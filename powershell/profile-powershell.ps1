@@ -23,3 +23,6 @@ git config --global core.eol lf
 
 # Enable Tab Expansion using `MenuComplete` style
 Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete
+
+# Add dotfiles bin to PATH
+$env:PATH += ";$HOMEREPO/opt/bin"
