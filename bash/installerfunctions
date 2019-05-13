@@ -110,3 +110,27 @@ install_phantomjs () {
       fi
     fi
 }
+
+install_jq () {
+    if [ ! -x "$(command -v jq)" ]; then
+      if [[ $OSTYPE == darwin* ]]; then
+        echo "NOTE: jq not found, availing into dotfiles bin"
+        echo "------------------------------------------------"
+        local jq="https://api.github.com/repos/stedolan/jq/releases/latest"
+        local latest=$(curl $jq -s  | grep url | grep osx | sed 's/.*\(http[s?]:\/\/.*[^"]\).*/\1/')
+        curl -L "$latest" -o /tmp/jq; echo ""
+
+        chmod +x /tmp/jq
+        mv /tmp/jq "$HOME/.dotfiles/opt/bin/"
+        rm -r /tmp/jq &> /dev/null
+
+        if [ -x "$(command -v jq)" ]; then
+            echo "GOOD - jq is now available"
+        else
+            echo "BAD - jq doesn't seem to be available"
+        fi
+      else
+          echo "Unable to install jq - OS version doesn't have supported function"
+      fi
+    fi
+}

@@ -12,6 +12,11 @@ while getopts ":ur" opt ; do
 	esac
 done
 
+# Source installer functions
+if [ -f ~/.dotfiles/bash/installerfunctions ]; then
+	. ~/.dotfiles/bash/installerfunctions
+fi
+
 # Function: Update git repo (if needed)
 updategitrepo () {
 	olddir=$PWD
@@ -149,6 +154,8 @@ fi
 # Install VIM plugins
 source $HOMEREPO/vim/init_vim.sh
 
+# Install jq
+install_jq
 
 #Write last update file
 SHAinitupdated=$(git --git-dir $HOMEREPO/.git log -n 1 --pretty=format:%H -- init_bash.sh)
