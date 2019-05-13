@@ -11,8 +11,6 @@ execute pathogen#infect()
 
 " Color Theme
 set background=dark
-" colorscheme solarized
-  " Badwolf Theme
 colorscheme badwolf
 let g:badwolf_darkgutter = 1 " Make the gutters darker than the background.
 let g:airline_theme='bubblegum'
@@ -62,10 +60,6 @@ set foldenable          " enable folding
 set foldlevelstart=10   " open most folds by default
 set foldnestmax=10      " 10 nested fold max
 
-" Commenting behavior
-let g:NERDCommentEmptyLines = 1 " Allow commenting and inverting empty lines
-let g:NERDDefaultAlign = 'left' " Comments are aligned to left instead of code indentation
-
 " Tab Functionality
 set tabstop=2     " number of visual spaces per TAB
 set softtabstop=2 " number of spaces in tab when editing
@@ -79,35 +73,21 @@ if exists("&undodir")
 	set undodir=~/.vim/undo
 endif
 
-" Tools/Plugins:
-
-	" Toggle gundo ',u'
-nnoremap <leader>u :GundoToggle<CR>
-
-	" Ack - Use Silver Searcher if available
-if executable('ag')
-	let g:ackprg = 'ag --nogroup --nocolor --column'
-endif
-
 " Shortcut keys/commands
 command Convert2unix :set ff=unix " convert to unix file endings
 command ConvertSpaceTabstoTabs call RetabIndents() " convert indent spaces into tabs
 command TrimWhiteSpace call TrimWhitespace()
 command SudoWriteFile :execute ':silent w !sudo tee % > /dev/null' | :edit!
 
-" Toggle Git Gutters, Line Numbers, Hidden Chars (handy for copying text)
+" Toggle Line Numbers, Hidden Chars (handy for copying text)
 function ToggleGuttersandChars()
 	:set invnumber
 	:set list!
-	:GitGutterSignsToggle
 endfunction
 noremap <leader>t<space> :call ToggleGuttersandChars()<CR>
 
 " search: exit highlighted results (,Return)
 nnoremap <leader><CR> :nohlsearch<CR>
-
-" open ag.vim (,a)
-nnoremap <leader>a :Ack!<space>
 
 " Select all text (Ctrl+A)
 map <C-a> <esc>gg0vG$<CR>
@@ -117,18 +97,6 @@ if !v:shell_error && s:uname == "Darwin"
 	vmap <C-x> :!pbcopy<CR>
 	vmap <C-c> :w !pbcopy<CR><CR>
 endif
-
-" TAB switch shortcuts using <leader>+number
-noremap <leader>1 1gt
-noremap <leader>2 2gt
-noremap <leader>3 3gt
-noremap <leader>4 4gt
-noremap <leader>5 5gt
-noremap <leader>6 6gt
-noremap <leader>7 7gt
-noremap <leader>8 8gt
-noremap <leader>9 9gt
-noremap <leader>0 :tablast<cr>
 
 " Custom Functions
 

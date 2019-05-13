@@ -137,41 +137,7 @@ if [ -f ~/.ssh/WaterNS ]; then
 fi
 cd $curpath
 
-
-#Setup Pathogen
-mkdir -p ~/.vim/autoload ~/.vim/bundle && \
-curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
-	if [ $u ]; then
-		echo ""
-		echo "--Updating Pathogen"
-		curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
-	fi
-
-#VIM Theme: Badwolf
-if [ ! -d "$HOME/.vim/bundle/badwolf" ]; then
-	git clone https://github.com/sjl/badwolf/ ~/.vim/bundle/badwolf; echo ""
-elif [ $u ]; then updategitrepo "BadWolf" "VIM theme" ~/.vim/bundle/badwolf ;
-fi
-
-#VIM Theme: Solarized
-if [ ! -d "$HOME/.vim/bundle/vim-colors-solarized" ]; then
-	git clone git://github.com/altercation/vim-colors-solarized.git ~/.vim/bundle/vim-colors-solarized; echo ""
-elif [ $u ]; then updategitrepo "Solarized" "VIM theme" ~/.vim/bundle/vim-colors-solarized ;
-fi
-
-#VIM Plugin: gUndo (Undo on steriods)
-if [ ! -d "$HOME/.vim/bundle/gundo" ]; then
-	git clone http://github.com/sjl/gundo.vim.git ~/.vim/bundle/gundo; echo ""
-elif [ $u ]; then updategitrepo "gUndo" "VIM undo plugin" ~/.vim/bundle/gundo ;
-fi
-
-#Perl binary: Ack (searcher)
-if [ ! -f "$HOMEREPO/opt/bin/ack" ]; then
-	echo ""; echo "Pulling down: ack"
-	curl https://beyondgrep.com/ack-2.18-single-file > "$HOMEREPO/opt/bin/ack" && chmod 0755 "$HOMEREPO/opt/bin/ack"
-fi
-
-#Perl binary: diff-so-fancy (better git diff)
+#Git: diff-so-fancy (better git diff)
 if [ ! -f "$HOMEREPO/opt/bin/diff-so-fancy" ]; then
 	echo ""; echo "Pulling down: diff-so-fancy (better git diff)"
   curl https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy > "$HOMEREPO/opt/bin/diff-so-fancy" && chmod 0755 "$HOMEREPO/opt/bin/diff-so-fancy"; echo ""
@@ -180,61 +146,8 @@ elif [ $u ]; then
   curl https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy > "$HOMEREPO/opt/bin/diff-so-fancy" && chmod 0755 "$HOMEREPO/opt/bin/diff-so-fancy"; echo ""
 fi
 
-#VIM Plugin: ack (Search files/folders within VIM)
-#TODO: Requires silver searcher (ag) to be installed
-if [ ! -d "$HOME/.vim/bundle/ack.vim" ]; then
-	git clone https://github.com/mileszs/ack.vim.git ~/.vim/bundle/ack.vim; echo ""
-elif [ $u ]; then updategitrepo "ack.vim" "VIM search plugin" ~/.vim/bundle/ack.vim ;
-fi
-
-#VIM Plugin: vim-airline (light weight vim powerline) + themes
-if [ ! -d "$HOME/.vim/bundle/vim-airline" ]; then
-	git clone https://github.com/vim-airline/vim-airline ~/.vim/bundle/vim-airline; echo ""
-elif [ $u ]; then updategitrepo "vim-airline" "VIM status bar plugin" ~/.vim/bundle/vim-airline ;
-fi
-
-if [ ! -d "$HOME/.vim/bundle/vim-airline-themes" ]; then
-	git clone https://github.com/vim-airline/vim-airline-themes ~/.vim/bundle/vim-airline-themes; echo ""
-elif [ $u ]; then updategitrepo "vim-airline-themes" "vim-airline themes" ~/.vim/bundle/vim-airline-themes ;
-fi
-
-#VIM Plugin: vim-gitgutter (git plugin)
-if [ ! -d "$HOME/.vim/bundle/vim-gitgutter" ]; then
-	git clone git://github.com/airblade/vim-gitgutter.git ~/.vim/bundle/vim-gitgutter; echo ""
-elif [ $u ]; then updategitrepo "vim-gitgutter" "VIM git statusbar plugin" ~/.vim/bundle/vim-gitgutter ;
-fi
-
-#VIM Plugin: Adds git capabilities to VIM
-if [ ! -d "$HOME/.vim/bundle/vim-fugitive" ]; then
-	git clone https://github.com/tpope/vim-fugitive.git ~/.vim/bundle/vim-fugitive; echo ""
-elif [ $u ]; then updategitrepo "vim-fugitive" "VIM git plugin" ~/.vim/bundle/vim-fugitive ;
-fi
-
-#VIM Plugin: Add commenting capabilities to VIM
-if [ ! -d "$HOME/.vim/bundle/nerdcommenter" ]; then
-	echo "- Installing: nerdcommenter (VIM commenting plugin)";
-	git clone https://github.com/scrooloose/nerdcommenter.git ~/.vim/bundle/nerdcommenter; echo ""
-elif [ $u ]; then updategitrepo "nerdcommenter" "VIM commenting plugin" ~/.vim/bundle/nerdcommenter ;
-fi
-
-#VIM Plugin: Super Tab (tab to complete)
-if [ ! -d "$HOME/.vim/bundle/supertab" ]; then
-	echo "- Installing: SuperTab (VIM tab completion plugin)";
-	git clone https://github.com/ervandew/supertab.git ~/.vim/bundle/supertab; echo ""
-elif [ $u ]; then updategitrepo "supertab" "VIM tab completion plugin" ~/.vim/bundle/supertab ;
-fi
-
-# Regenerate VIM help catalog
-#vim -c 'call pathogen#helptags()|q'
-# Commented out because vim throws a 2R character when run, spitting out to terminal
-
-##OSX Terminal Theme: Dracula:
-#if [[ $OSTYPE == darwin* ]]; then
-#	if [ ! -d "$HOMEREPO/opt/osxterminal/dracula" ]; then
-#		git clone https://github.com/dracula/terminal.app.git $HOMEREPO/opt/osxterminal/dracula
-#		open $HOMEREPO/opt/osxterminal/dracula/Dracula.terminal
-#	fi
-#fi
+# Install VIM plugins
+source $HOMEREPO/vim/init_vim.sh
 
 #OSX: Show hidden files
 #if [[ $OSTYPE == darwin* ]]; then
