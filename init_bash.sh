@@ -19,8 +19,8 @@ updategitrepo () {
 	description=$2
 	repolocation=$3
 
-	echo ""
-	echo "-Check updates: $reponame ($description)"
+	#echo ""
+	#echo "-Check updates: $reponame ($description)"
 	cd "$repolocation"
 	git fetch
 
@@ -43,7 +43,7 @@ updategitrepo () {
 	cd $olddir
 }
 
-if [ $ri ]; then 
+if [ $ri ]; then
 	echo "ReInitializing...";
 elif [ $u ]; then
 	echo "UPDATING...";
@@ -65,7 +65,7 @@ do
 		&& [ "$(basename $dotfile)" != ".gitattributes" ] \
 		&& [ "$(basename $dotfile)" != ".DS_Store" ]; then
 		target=$HOME/$(basename $dotfile)
-		
+
 		if [ -f "$target" ] && [ ! -L "$target" ]; then
 			rm $target
 			echo "NOTE: Found existing $(basename $dotfile) in HOME, removing..."
@@ -95,14 +95,14 @@ if [[ $OSTYPE == darwin* ]] || [[ $OSTYPE == linux* ]]; then
 	if [ ! -d "$vscodedir" ]; then
 		mkdir -p "$vscodedir"
 	fi
-	
+
 	# Remove existing VScode file (if its not a linked one)
 	if [ -f "$vscodefile" ] && [ ! -L "$vscodefile" ]; then
 		rm "$vscodefile"
 		echo "Found existing VScode file at $vscodefile, removing..."
 	elif [ -L "$vscodefile" ] && [ ! "`readlink "$vscodefile"`" -ef "$repovscodefile" ]; then
 		rm "$vscodefile"
-		echo "NOTE: Found existing LINK for VSCode file but with incorrect path, removing..."	
+		echo "NOTE: Found existing LINK for VSCode file but with incorrect path, removing..."
 	fi
 
 	[ ! -r "$vscodefile" ] && ln -s "$repovscodefile" "$vscodefile" && echo "NOTE: Linked $vscodefile to custom one at $repovscodefile"
@@ -126,7 +126,7 @@ if ! grep -q "bashrc" ~/.bash_profile; then
 	echo "source ~/.bashrc" >> ~/.bash_profile
 fi
 
-# Set .dotfiles repo setting
+# Set .dotfiles git repo setting
 curpath=$PWD
 cd $HOMEREPO
 git config user.name "User"
@@ -149,10 +149,6 @@ fi
 # Install VIM plugins
 source $HOMEREPO/vim/init_vim.sh
 
-#OSX: Show hidden files
-#if [[ $OSTYPE == darwin* ]]; then
-#	defaults write com.apple.finder AppleShowAllFiles YES
-#fi
 
 #Write last update file
 SHAinitupdated=$(git --git-dir $HOMEREPO/.git log -n 1 --pretty=format:%H -- init_bash.sh)
