@@ -1,7 +1,7 @@
 #!/bin/bash
 
 install_youtubedl () {
-    if [ ! -x "$(command -v youtube-dl)" ] && [ ! -f $HOME/.dotfiles/opt/bin/youtube-dl ]; then    
+    if [ ! -x "$(command -v youtube-dl)" ] && [ ! -f $HOME/.dotfiles/opt/bin/youtube-dl ]; then
         echo "NOTE: youtube-dl not found, downloading to dotfiles bin location"
         echo "------------------------------------------------"
         curl -L https://yt-dl.org/downloads/latest/youtube-dl -o $HOME/.dotfiles/opt/bin/youtube-dl; echo ""
@@ -52,7 +52,7 @@ install_ffmpeg () {
 
         unar /tmp/ffmpeg.7z -o $HOME/.dotfiles/opt/bin/
         rm -r /tmp/ffmpeg.7z
-               
+
         if [ -x "$(command -v ffmpeg)" ]; then
             echo "GOOD - ffmpeg is now available"
         else
@@ -76,7 +76,7 @@ install_ffprobe () {
 
         unar /tmp/ffprobe.7z -o $HOME/.dotfiles/opt/bin/
         rm -r /tmp/ffprobe.7z
-               
+
         if [ -x "$(command -v ffprobe)" ]; then
             echo "GOOD - ffprobe is now available"
         else
@@ -99,7 +99,7 @@ install_phantomjs () {
 
         unzip -j "/tmp/phantomjs.zip" "*/bin/phantomjs" -d "$HOME/.dotfiles/opt/bin/"
         rm -r /tmp/phantomjs.zip
-               
+
         if [ -x "$(command -v phantomjs)" ]; then
             echo "GOOD - phantomjs is now available"
         else
