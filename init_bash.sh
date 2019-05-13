@@ -154,8 +154,9 @@ fi
 # Install VIM plugins
 source $HOMEREPO/vim/init_vim.sh
 
-# Install jq
+# Make dev tools available in dotfiles bin
 install_jq
+install_shellcheck
 
 #Write last update file
 SHAinitupdated=$(git --git-dir $HOMEREPO/.git log -n 1 --pretty=format:%H -- init_bash.sh)

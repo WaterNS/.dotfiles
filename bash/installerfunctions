@@ -134,3 +134,34 @@ install_jq () {
       fi
     fi
 }
+
+install_shellcheck () {
+    if [ ! -x "$(command -v jq)" ]; then
+        install_jq
+    fi
+    if [ ! -x "$(command -v shellcheck)" ]; then
+      if [[ $OSTYPE == darwin* ]]; then
+        echo "NOTE: shellcheck not found, availing into dotfiles bin"
+        echo "------------------------------------------------"
+        local shellcheck="https://formulae.brew.sh/api/formula/shellcheck.json"
+        local latest=$(curl -S $shellcheck | jq -r "[.bottle.stable.files[]][0]".url)
+        local filename=$(echo ${latest##*/})
+        curl -L "$latest" -o /tmp/$filename; echo ""
+
+        mkdir /tmp/shellcheck
+        tar -xzf /tmp/$filename -C /tmp/shellcheck/
+        mv /tmp/shellcheck/shellcheck/*/bin/shellcheck ~/.dotfiles/opt/bin
+
+        rm /tmp/$filename
+        rm -r /tmp/shellcheck
+
+        if [ -x "$(command -v shellcheck)" ]; then
+            echo "GOOD - shellcheck is now available"
+        else
+            echo "BAD - shellcheck doesn't seem to be available"
+        fi
+      else
+          echo "Unable to install shellcheck - OS version doesn't have supported function"
+      fi
+    fi
+}

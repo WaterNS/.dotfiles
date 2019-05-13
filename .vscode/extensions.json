@@ -1,6 +1,7 @@
 {
   "recommendations": [
       "shardulm94.trailing-spaces",
-      "dunstontc.viml"
+      "dunstontc.viml",
+      "timonwong.shellcheck"
   ]
 }
