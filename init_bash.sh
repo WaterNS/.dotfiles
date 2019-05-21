@@ -113,8 +113,17 @@ if [[ $OSTYPE == darwin* ]] || [[ $OSTYPE == linux* ]]; then
 	[ ! -r "$vscodefile" ] && ln -s "$repovscodefile" "$vscodefile" && echo "NOTE: Linked $vscodefile to custom one at $repovscodefile"
 fi
 
+# If ReInitializing, remove existing bin folders
+if [ $ri ] && [ -d "$HOMEREPO/opt" ]; then
+	if [ -d "$HOMEREPO/opt" ]; then rm -rf "$HOMEREPO/opt"; fi
+	if [[ $OSTYPE == darwin* ]]; then
+		if [ -d "$HOME/Library/Fonts/dotfiles" ]; then
+			rm -rf "$HOME/Library/Fonts/dotfiles";
+		fi
+	fi
+fi
+
 # Create dir for installation of packages for dotfiles
-if [ $ri ] && [ -d "$HOMEREPO/opt" ]; then rm -rf "$HOMEREPO/opt"; fi
 mkdir -p $HOMEREPO/opt
 mkdir -p $HOMEREPO/opt/bin
 
@@ -157,6 +166,7 @@ source $HOMEREPO/vim/init_vim.sh
 # Make dev tools available in dotfiles bin
 install_jq
 install_shellcheck
+install_lsd
 
 #Write last update file
 SHAinitupdated=$(git --git-dir $HOMEREPO/.git log -n 1 --pretty=format:%H -- init_bash.sh)
