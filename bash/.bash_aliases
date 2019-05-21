@@ -9,7 +9,7 @@ else # Most likely GNU Linux ls
   alias ls='LC_COLLATE=C /bin/ls -alhpF --color --group-directories-first'
 fi
 if [ -x "$(command -v lsd)" ]; then
-  alias ls='lsd -alh --group-dirs first --icon never'
+  alias ls='lsd --group-dirs first --icon "never" -alh'
 fi
 
 # alias common git commands to shorthand
