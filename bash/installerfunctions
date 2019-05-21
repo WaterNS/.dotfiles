@@ -165,3 +165,55 @@ install_shellcheck () {
       fi
     fi
 }
+
+install_nerd-fonts () {
+    local fontname="Droid Sans Mono for Powerline Nerd Font Complete.otf"
+    if [ ! -f "$HOME/.dotfiles/opt/fonts/$fontname" ] && [ ! -f "$HOME/Library/Fonts/dotfiles/$fontname" ]; then
+      if [[ $OSTYPE == darwin* ]]; then
+        echo "NOTE: nerd-fonts not found, availing into $HOME/Library/Fonts/dotfiles/"
+        echo "------------------------------------------------------------------------"
+
+        if [ ! -d "$HOME/Library/Fonts/dotfiles" ]; then mkdir "$HOME/Library/Fonts/dotfiles"; fi
+
+        curl -fLo "$HOME/Library/Fonts/dotfiles/$fontname" \
+          https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/DroidSansMono/complete/Droid%20Sans%20Mono%20Nerd%20Font%20Complete.otf
+
+        if [ -f "$HOME/Library/Fonts/dotfiles/$fontname" ]; then
+            echo "GOOD - nerd-fonts are now available"
+        else
+            echo "BAD - nerd-fonts don't seem to be available"
+        fi
+      else
+          echo "Unable to install nerd-fonts - OS version doesn't have supported function"
+      fi
+    fi
+}
+
+install_lsd () {
+    if [ ! -x "$(command -v lsd)" ]; then
+      if [[ $OSTYPE == darwin* ]]; then
+        echo "NOTE: lsd not found, availing into dotfiles bin"
+        echo "------------------------------------------------"
+        local lsd="https://formulae.brew.sh/api/formula/lsd.json"
+        local latest
+        latest=$(curl -S $lsd | jq -r "[.bottle.stable.files[]][0]".url)
+        local filename=${latest##*/}
+        curl -L "$latest" -o "/tmp/$filename"; echo ""
+
+        mkdir /tmp/lsd
+        tar -xzf "/tmp/$filename" -C /tmp/lsd/
+        mv /tmp/lsd/lsd/*/bin/lsd ~/.dotfiles/opt/bin
+
+        rm "/tmp/$filename"
+        rm -r /tmp/lsd
+
+        if [ -x "$(command -v lsd)" ]; then
+            echo "GOOD - lsd is now available"
+        else
+            echo "BAD - lsd doesn't seem to be available"
+        fi
+      else
+          echo "Unable to install lsd - OS version doesn't have supported function"
+      fi
+    fi
+}
