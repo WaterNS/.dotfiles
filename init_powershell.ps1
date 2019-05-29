@@ -17,9 +17,10 @@ $SCRIPTPATH=$PSCommandPath #used in powershell-functions.ps1
 $HOMEREPO="$HOME\.dotfiles"
 #$HOMEREPOlit='~\.dotfiles'
 
-#Source our powershell polyfills & functions
+#Source our powershell polyfills & functions & installers
 . "$SCRIPTDIR\powershell\powershell-polyfills.ps1"
 . "$SCRIPTDIR\powershell\powershell-functions.ps1"
+. "$SCRIPTDIR\powershell\powershell-installers.ps1"
 
 #Check if Git is available
 try {git | Out-Null}
@@ -123,6 +124,9 @@ if (!(Test-Path "$HOMEREPO/opt/bin/diff-so-fancy")) {
   Write-Output ""; Write-Output "--Updating diff-so-fancy"
   Invoke-WebRequest https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy -UseBasicParsing -OutFile "$HOMEREPO/opt/bin/diff-so-fancy"
 }
+
+# Install some handy dev tools
+install-jq
 
 
 

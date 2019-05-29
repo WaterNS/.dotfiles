@@ -4,8 +4,9 @@ $HOMEREPOlit='~\.dotfiles'
 # Source my powershell polyfills
 . "$HOMEREPO\powershell\powershell-polyfills.ps1"
 
-# Source my powershell functions
+# Source my powershell functions/installers
 . "$HOMEREPO\powershell\powershell-functions.ps1"
+. "$HOMEREPO\powershell\powershell-installers.ps1"
 
 # Source Powershell Profile Updater
 . "$HOMEREPO\powershell\powershell-dotfilesupdater.ps1"
