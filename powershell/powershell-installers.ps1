@@ -15,3 +15,21 @@ Function install-jq {
     }
   }
 }
+
+Function install-shellcheck {
+  if (!(Check-Command shellcheck)) {
+    "NOTE: shellcheck not found, availing into dotfiles bin"
+    "------------------------------------------------"
+    [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
+    $local:latest="https://shellcheck.storage.googleapis.com/shellcheck-latest.exe"
+
+    "Downloading shellcheck..."
+    Powershell-FileDownload "$latest" -o "$HOME/.dotfiles/opt/bin/shellcheck.exe"
+
+    if (Check-Command shellcheck) {
+      "GOOD - shellcheck is now available"
+    } else {
+      "BAD - shellcheck doesn't seem to be available"
+    }
+  }
+}
