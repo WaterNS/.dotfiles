@@ -167,6 +167,7 @@ source "$HOMEREPO/vim/init_vim.sh"
 # Make dev tools available in dotfiles bin
 install_jq
 install_shellcheck
+install_shfmt
 install_lsd
 
 #Write last update file
