@@ -1,11 +1,11 @@
 #!/bin/bash
 
 install_youtubedl () {
-    if [ ! -x "$(command -v youtube-dl)" ] && [ ! -f $HOME/.dotfiles/opt/bin/youtube-dl ]; then
+    if [ ! -x "$(command -v youtube-dl)" ] && [ ! -f "$HOME/.dotfiles/opt/bin/youtube-dl" ]; then
         echo "NOTE: youtube-dl not found, downloading to dotfiles bin location"
         echo "------------------------------------------------"
-        curl -L https://yt-dl.org/downloads/latest/youtube-dl -o $HOME/.dotfiles/opt/bin/youtube-dl; echo ""
-        chmod a+rx $HOME/.dotfiles/opt/bin/youtube-dl
+        curl -L https://yt-dl.org/downloads/latest/youtube-dl -o "$HOME/.dotfiles/opt/bin/youtube-dl"; echo ""
+        chmod a+rx "$HOME/.dotfiles/opt/bin/youtube-dl"
     fi
     if [ ! -x "$(command -v ffmpeg)" ]; then
         install_ffmpeg
@@ -26,7 +26,7 @@ install_unar () {
             curl -L https://cdn.theunarchiver.com/downloads/unarMac.zip -o /tmp/unarMac.zip; echo ""
             unzip -a -qq /tmp/unarMac.zip -d /tmp/unar
 
-            cp /tmp/unar/unar $HOME/.dotfiles/opt/bin/
+            cp /tmp/unar/unar "$HOME/.dotfiles/opt/bin/"
             rm -r /tmp/unar /tmp/unarMac.zip
 
             if [ -x "$(command -v unar)" ]; then
@@ -47,10 +47,11 @@ install_ffmpeg () {
         echo "NOTE: ffmpeg not found, installing into dotfiles bin"
         echo "------------------------------------------------"
         local ffmpeg="https://evermeet.cx/pub/ffmpeg/snapshots/"
-        local latest=$(curl $ffmpeg | grep -v ".7z.sig" | grep .7z | head -1 | sed -n 's/.*href="\([^"]*\).*/\1/p')
+        local latest
+        latest=$(curl $ffmpeg | grep -v ".7z.sig" | grep .7z | head -1 | sed -n 's/.*href="\([^"]*\).*/\1/p')
         curl "$ffmpeg$latest" -o /tmp/ffmpeg.7z; echo ""
 
-        unar /tmp/ffmpeg.7z -o $HOME/.dotfiles/opt/bin/
+        unar /tmp/ffmpeg.7z -o "$HOME/.dotfiles/opt/bin/"
         rm -r /tmp/ffmpeg.7z
 
         if [ -x "$(command -v ffmpeg)" ]; then
@@ -71,10 +72,11 @@ install_ffprobe () {
         echo "NOTE: ffprobe not found, installing into dotfiles bin"
         echo "------------------------------------------------"
         local ffprobe="https://evermeet.cx/pub/ffprobe/snapshots/"
-        local latest=$(curl $ffprobe | grep -v ".7z.sig" | grep .7z | head -1 | sed -n 's/.*href="\([^"]*\).*/\1/p')
+        local latest
+        latest=$(curl $ffprobe | grep -v ".7z.sig" | grep .7z | head -1 | sed -n 's/.*href="\([^"]*\).*/\1/p')
         curl "$ffprobe/$latest" -o /tmp/ffprobe.7z; echo ""
 
-        unar /tmp/ffprobe.7z -o $HOME/.dotfiles/opt/bin/
+        unar /tmp/ffprobe.7z -o "$HOME/.dotfiles/opt/bin/"
         rm -r /tmp/ffprobe.7z
 
         if [ -x "$(command -v ffprobe)" ]; then
@@ -94,7 +96,8 @@ install_phantomjs () {
         echo "NOTE: phantomjs not found, installing into dotfiles bin"
         echo "------------------------------------------------"
         local phantomjs="http://phantomjs.org/download.html"
-        local latest=$(curl $phantomjs | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep osx.zip)
+        local latest
+        latest=$(curl $phantomjs | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep osx.zip)
         curl -L "$latest" -o /tmp/phantomjs.zip; echo ""
 
         unzip -j "/tmp/phantomjs.zip" "*/bin/phantomjs" -d "$HOME/.dotfiles/opt/bin/"
@@ -117,7 +120,8 @@ install_jq () {
         echo "NOTE: jq not found, availing into dotfiles bin"
         echo "------------------------------------------------"
         local jq="https://api.github.com/repos/stedolan/jq/releases/latest"
-        local latest=$(curl $jq -s  | grep url | grep osx | sed 's/.*\(http[s?]:\/\/.*[^"]\).*/\1/')
+        local latest
+        latest=$(curl $jq -s  | grep url | grep osx | sed 's/.*\(http[s?]:\/\/.*[^"]\).*/\1/')
         curl -L "$latest" -o /tmp/jq; echo ""
 
         chmod +x /tmp/jq
@@ -144,15 +148,16 @@ install_shellcheck () {
         echo "NOTE: shellcheck not found, availing into dotfiles bin"
         echo "------------------------------------------------"
         local shellcheck="https://formulae.brew.sh/api/formula/shellcheck.json"
-        local latest=$(curl -S $shellcheck | jq -r "[.bottle.stable.files[]][0]".url)
-        local filename=$(echo ${latest##*/})
-        curl -L "$latest" -o /tmp/$filename; echo ""
+        local latest
+        latest=$(curl -S $shellcheck | jq -r "[.bottle.stable.files[]][0]".url)
+        local filename=${latest##*/}
+        curl -L "$latest" -o "/tmp/$filename"; echo ""
 
         mkdir /tmp/shellcheck
-        tar -xzf /tmp/$filename -C /tmp/shellcheck/
+        tar -xzf "/tmp/$filename" -C /tmp/shellcheck/
         mv /tmp/shellcheck/shellcheck/*/bin/shellcheck ~/.dotfiles/opt/bin
 
-        rm /tmp/$filename
+        rm "/tmp/$filename"
         rm -r /tmp/shellcheck
 
         if [ -x "$(command -v shellcheck)" ]; then

@@ -46,7 +46,7 @@ fixsshperms ()
     chmod 700 ~/.ssh
     chmod 644 ~/.ssh/*.pub
     find ~/.ssh -type f -iname "id*" -not -path "*.pub" -print0 | xargs -0 chmod 600
-  fi 
+  fi
 }
 
 foldertotal() {
@@ -59,14 +59,14 @@ echo "Calculating totals for: $location"
 
 array=()
 while IFS=  read -r -d $'\0'; do
-  filename=$(echo $REPLY | xargs -0 basename)
+  filename=$(echo "$REPLY" | xargs -0 basename)
   filenameNoExt="${filename%.*}"
 
   if [[ $filenameNoExt == *'$'* ]];then
     if [[ $filenameNoExt =~ -?\$[0-9]+([.][0-9]+)?$ ]] ;then
       array+=("${BASH_REMATCH[0]//$/}")
     else
-      echo "Not amount: $amt"
+      echo "Not amount: $filename"
     fi
   fi
 done < <(find "$location" -type f -not -path "*DS_Store*" -print0)

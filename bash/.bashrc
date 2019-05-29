@@ -3,7 +3,7 @@
 ### History Stuffs
 
 exit_session() {
-  if [ -f $HOME/.bash_logout ]; then
+  if [ -f "$HOME/.bash_logout" ]; then
     . "$HOME/.bash_logout"
   fi
 }
@@ -88,16 +88,16 @@ if [ -x "$(command -v diff-so-fancy)" ]; then
 	export LESS="-x2 -RFX $LESS"
 
 	# Include diff-so-fancy colors
-	git config --global include.path "~/.dotfiles/git/git_diffsofancy"
+	git config --global include.path '~/.dotfiles/git/git_diffsofancy'
 else # Set to use LESS as fallback and undo gitconfig change
   export GIT_PAGER='less'
   export LESS="-x2 -RFX $LESS"
-	git config --global --unset include.path "~/.dotfiles/git/git_diffsofancy"
+	git config --global --unset include.path '~/.dotfiles/git/git_diffsofancy'
 fi
 
 # Set GIT Config Settings
 if [ -x "$(command -v git)" ]; then
-  git config --global include.path "~/.dotfiles/git/git_tweaks"
+  git config --global include.path '~/.dotfiles/git/git_tweaks'
 fi
 
 # Use lesspipe for binaries
@@ -112,35 +112,35 @@ fixsshperms
 
 # DOTFILES updater
 # Check if last update was longer than set interval, kick off update if so
-if [ -f $HOME/.dotfiles/opt/lastupdate ]; then
-	oldtime=$(head -1 $HOME/.dotfiles/opt/lastupdate)
+if [ -f "$HOME/.dotfiles/opt/lastupdate" ]; then
+	oldtime=$(head -1 "$HOME/.dotfiles/opt/lastupdate")
 	newtime=$(date +%s)
-	difftime=$(($newtime-$oldtime))
+	difftime=$newtime-$oldtime
 	maxtime=$((5*24*60*60))
 fi
 
-SHAinitscript=$(git --git-dir $HOME/.dotfiles/.git log -n 1 --pretty=format:%H -- init_bash.sh)
-if [ ! -f $HOME/.dotfiles/opt/lastinit ] || [ $SHAinitscript != "$(head -2 $HOME/.dotfiles/opt/lastinit | tail -1)" ]; then
-	if [ ! -f $HOME/.dotfiles/opt/lastinit ]; then
+SHAinitscript=$(git --git-dir "$HOME/.dotfiles/.git" log -n 1 --pretty=format:%H -- init_bash.sh)
+if [ ! -f "$HOME/.dotfiles/opt/lastinit" ] || [ "$SHAinitscript" != "$(head -2 "$HOME/.dotfiles/opt/lastinit" | tail -1)" ]; then
+	if [ ! -f "$HOME/.dotfiles/opt/lastinit" ]; then
 		echo "No init time file found, running initialization now"
 	else
 	 echo "Init script has been updated since last run, Executing init_bash.sh with ReInitialization flag"
 	fi
-	$HOME/.dotfiles/init_bash.sh -r
+	"$HOME/.dotfiles/init_bash.sh" -r
 	echo "Restarting shell..."
 	echo "------------------"
 	exec bash
-elif [ $difftime -gt $maxtime ] || [ ! -f $HOME/.dotfiles/opt/lastupdate ]; then
-	if [ ! -f $HOME/.dotfiles/opt/lastupdate ]; then
+elif [ "$difftime" -gt $maxtime ] || [ ! -f "$HOME/.dotfiles/opt/lastupdate" ]; then
+	if [ ! -f "$HOME/.dotfiles/opt/lastupdate" ]; then
 		echo "No update time file found, running update now"
 	else
-		echo "Last update happened $(seconds2time $difftime) ago, updating dotfiles"
+		echo "Last update happened $(seconds2time "$difftime") ago, updating dotfiles"
 	fi
-	$HOME/.dotfiles/init_bash.sh -u
+	"$HOME/.dotfiles/init_bash.sh" -u
 	echo "Restarting shell..."
 	echo "------------------"
 	exec bash
 else
-	echo "Last dotfiles update: $(seconds2time $difftime) ago / Update Interval: $(seconds2time $maxtime)"
+	echo "Last dotfiles update: $(seconds2time "$difftime") ago / Update Interval: $(seconds2time $maxtime)"
 	#echo "Update <$maxtime seconds ago, skipping dotfiles update"
 fi

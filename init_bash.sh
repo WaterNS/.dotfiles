@@ -1,20 +1,21 @@
 #!/bin/bash
 
-SCRIPTDIR=$( cd $(dirname $0) ; pwd -P )
+SCRIPTDIR=$( cd "$(dirname "$0")" || exit ; pwd -P )
 SCRIPTPATH=$SCRIPTDIR/$(basename "$0")
-cmdlineargs=$@
+cmdlineargs=( "$@" )
 
 # Check passed options/args
 while getopts ":ur" opt ; do
 	case $opt in
 		u) u=1 ;; # Handle -u, for Update flag
 		r) ri=1 && u=1 ;; #Handle -r, for ReInit flag
+		*) ;;
 	esac
 done
 
 # Source installer functions
-if [ -f ~/.dotfiles/bash/installerfunctions ]; then
-	. ~/.dotfiles/bash/installerfunctions
+if [ -f "$HOME/.dotfiles/bash/installerfunctions" ]; then
+	. "$HOME/.dotfiles/bash/installerfunctions"
 fi
 
 # Function: Update git repo (if needed)
@@ -26,7 +27,7 @@ updategitrepo () {
 
 	#echo ""
 	#echo "-Check updates: $reponame ($description)"
-	cd "$repolocation"
+	cd "$repolocation" || return
 	git fetch
 
 	if [ "$(git rev-list --count master..origin/master)" -gt 0 ]; then
@@ -37,15 +38,15 @@ updategitrepo () {
 
 		# Restart the init script if it self updated
 		if [ "$reponame" == "dotfiles" ]; then
-			cd $olddir
+			cd "$olddir" || return
 			echo ""
 			echo ""
-			exec $SCRIPTPATH $cmdlineargs;
+			exec "$SCRIPTPATH" "${cmdlineargs[@]}";
 		fi
 
   fi
 
-	cd $olddir
+	cd "$olddir" || return
 }
 
 if [ $ri ]; then
@@ -55,33 +56,33 @@ elif [ $u ]; then
 fi
 
 HOMEREPO="$HOME/.dotfiles"
-HOMEREPOlit='~/.dotfiles'
 
 # Update dotfiles repo
 if [ $u ]; then
-	updategitrepo "dotfiles" "profile configs" $HOMEREPO
+	updategitrepo "dotfiles" "profile configs" "$HOMEREPO"
 fi
 
 shopt -s dotglob
-for dotfile in $(find $HOMEREPO -type f -iname ".*" -not -path "*opt/*")
+#See https://github.com/koalaman/shellcheck/wiki/SC2044
+while IFS= read -r -d '' dotfile
 do
-	if [ "$(basename $dotfile)" != ".editorconfig" ] \
-		&& [ "$(basename $dotfile)" != ".gitignore" ] \
-		&& [ "$(basename $dotfile)" != ".gitattributes" ] \
-		&& [ "$(basename $dotfile)" != ".DS_Store" ]; then
-		target=$HOME/$(basename $dotfile)
+	if [ "$(basename "$dotfile")" != ".editorconfig" ] \
+		&& [ "$(basename "$dotfile")" != ".gitignore" ] \
+		&& [ "$(basename "$dotfile")" != ".gitattributes" ] \
+		&& [ "$(basename "$dotfile")" != ".DS_Store" ]; then
+		target=$HOME/$(basename "$dotfile")
 
 		if [ -f "$target" ] && [ ! -L "$target" ]; then
-			rm $target
-			echo "NOTE: Found existing $(basename $dotfile) in HOME, removing..."
-		elif [ -L "$target" ] && [ ! "`readlink $target`" -ef "$dotfile" ]; then
-			rm $target
-			echo "NOTE: Found SYMBOLIC Link with incorrect path $(basename $dotfile) in HOME, removing..."
+			rm "$target"
+			echo "NOTE: Found existing $(basename "$dotfile") in HOME, removing..."
+		elif [ -L "$target" ] && [ ! "$(readlink "$target")" -ef "$dotfile" ]; then
+			rm "$target"
+			echo "NOTE: Found SYMBOLIC Link with incorrect path $(basename "$dotfile") in HOME, removing..."
 		fi
 
-		[ ! -r $target ] && ln -s $dotfile $target && echo "NOTE: Linked ~/$(basename $dotfile) to custom one in dotfiles repo"
+		[ ! -r "$target" ] && ln -s "$dotfile" "$target" && echo "NOTE: Linked ~/$(basename "$dotfile") to custom one in dotfiles repo"
 	fi
-done
+done <   <(find "$HOMEREPO" -type f -iname ".*" -not -path "*opt/*" -print0)
 
 #Handle linking VSCode in OSX and Linux
 if [[ $OSTYPE == darwin* ]] || [[ $OSTYPE == linux* ]]; then
@@ -105,7 +106,7 @@ if [[ $OSTYPE == darwin* ]] || [[ $OSTYPE == linux* ]]; then
 	if [ -f "$vscodefile" ] && [ ! -L "$vscodefile" ]; then
 		rm "$vscodefile"
 		echo "Found existing VScode file at $vscodefile, removing..."
-	elif [ -L "$vscodefile" ] && [ ! "`readlink "$vscodefile"`" -ef "$repovscodefile" ]; then
+	elif [ -L "$vscodefile" ] && [ ! "$(readlink "$vscodefile")" -ef "$repovscodefile" ]; then
 		rm "$vscodefile"
 		echo "NOTE: Found existing LINK for VSCode file but with incorrect path, removing..."
 	fi
@@ -124,8 +125,8 @@ if [ $ri ] && [ -d "$HOMEREPO/opt" ]; then
 fi
 
 # Create dir for installation of packages for dotfiles
-mkdir -p $HOMEREPO/opt
-mkdir -p $HOMEREPO/opt/bin
+mkdir -p "$HOMEREPO/opt"
+mkdir -p "$HOMEREPO/opt/bin"
 
 # Create .bash_profile if doesn't exist
 if [ ! -f ~/.bash_profile ]; then
@@ -142,14 +143,14 @@ fi
 
 # Set .dotfiles git repo setting
 curpath=$PWD
-cd $HOMEREPO
+cd "$HOMEREPO" || exit
 git config user.name "User"
 git config user.email waterns@users.noreply.github.com
 git config push.default matching
 if [ -f ~/.ssh/WaterNS ]; then
 	git config core.sshCommand "ssh -i ~/.ssh/WaterNS"
 fi
-cd $curpath
+cd "$curpath" || exit
 
 #Git: diff-so-fancy (better git diff)
 if [ ! -f "$HOMEREPO/opt/bin/diff-so-fancy" ]; then
@@ -161,7 +162,7 @@ elif [ $u ]; then
 fi
 
 # Install VIM plugins
-source $HOMEREPO/vim/init_vim.sh
+source "$HOMEREPO/vim/init_vim.sh"
 
 # Make dev tools available in dotfiles bin
 install_jq
@@ -169,30 +170,30 @@ install_shellcheck
 install_lsd
 
 #Write last update file
-SHAinitupdated=$(git --git-dir $HOMEREPO/.git log -n 1 --pretty=format:%H -- init_bash.sh)
-if [ ! -f $HOMEREPO/opt/lastupdate ] || [ ! -f $HOMEREPO/opt/lastinit ]; then
-	if [ ! -f $HOMEREPO/opt/lastupdate ]; then
-		date +%s > $HOMEREPO/opt/lastupdate
-		date '+%A %F %I:%M:%S %p %Z' >> $HOMEREPO/opt/lastupdate
+SHAinitupdated=$(git --git-dir "$HOMEREPO/.git" log -n 1 --pretty=format:%H -- init_bash.sh)
+if [ ! -f "$HOMEREPO/opt/lastupdate" ] || [ ! -f "$HOMEREPO/opt/lastinit" ]; then
+	if [ ! -f "$HOMEREPO/opt/lastupdate" ]; then
+		date +%s > "$HOMEREPO/opt/lastupdate"
+		date '+%A %F %I:%M:%S %p %Z' >> "$HOMEREPO/opt/lastupdate"
 	fi
 
-	if [ ! -f $HOMEREPO/opt/lastinit ]; then
-		echo "Last commit at which init_bash.sh initialization ran:" > $HOMEREPO/opt/lastinit
-		echo "$SHAinitupdated" >> $HOMEREPO/opt/lastinit
+	if [ ! -f "$HOMEREPO/opt/lastinit" ]; then
+		echo "Last commit at which init_bash.sh initialization ran:" > "$HOMEREPO/opt/lastinit"
+		echo "$SHAinitupdated" >> "$HOMEREPO/opt/lastinit"
 	fi
 elif [ $u ] || [ $ri ]; then
 	if [ $u ]; then
 		echo ""
 		echo "Updating last update time file with current date"
-		date +%s > $HOMEREPO/opt/lastupdate
-		date '+%A %F %I:%M:%S %p %Z' >> $HOMEREPO/opt/lastupdate
+		date +%s > "$HOMEREPO/opt/lastupdate"
+		date '+%A %F %I:%M:%S %p %Z' >> "$HOMEREPO/opt/lastupdate"
 	fi
 
 	if [ $ri ]; then
 		echo ""
 		echo "Updating lastinit time with current SHA: $SHAinitupdated"
-	  echo "Last commit at which init_bash.sh initialization ran:" > $HOMEREPO/opt/lastinit
-	  echo "$SHAinitupdated" >> $HOMEREPO/opt/lastinit
+	  echo "Last commit at which init_bash.sh initialization ran:" > "$HOMEREPO/opt/lastinit"
+	  echo "$SHAinitupdated" >> "$HOMEREPO/opt/lastinit"
 	fi
 fi
 
