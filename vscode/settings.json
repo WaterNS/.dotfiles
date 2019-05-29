@@ -1,14 +1,16 @@
 {
-    "editor.renderWhitespace": "boundary",
-    "editor.tabSize": 2,
-    "editor.autoClosingQuotes": "beforeWhitespace",
-    "search.exclude": {
-        "<node_modules>/**": true
-    },
-    "git.autofetch": true,
-    "workbench.colorTheme": "Monokai",
-    "terminal.integrated.rendererType": "dom",
-    "diffEditor.ignoreTrimWhitespace": false,
-    "telemetry.enableTelemetry": false,
-    "workbench.startupEditor": "newUntitledFile"
+  "editor.renderWhitespace": "boundary",
+  "editor.tabSize": 2,
+  "editor.insertspaces": true,
+  "editor.detectIndentation": false,
+  "editor.autoClosingQuotes": "beforeWhitespace",
+  "search.exclude": {
+    "<node_modules>/**": true
+  },
+  "git.autofetch": true,
+  "workbench.colorTheme": "Monokai",
+  "terminal.integrated.rendererType": "dom",
+  "diffEditor.ignoreTrimWhitespace": false,
+  "telemetry.enableTelemetry": false,
+  "workbench.startupEditor": "newUntitledFile"
 }
