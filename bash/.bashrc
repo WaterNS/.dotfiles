@@ -115,7 +115,7 @@ fixsshperms
 if [ -f "$HOME/.dotfiles/opt/lastupdate" ]; then
 	oldtime=$(head -1 "$HOME/.dotfiles/opt/lastupdate")
 	newtime=$(date +%s)
-	difftime=$newtime-$oldtime
+	difftime=$((newtime-oldtime))
 	maxtime=$((5*24*60*60))
 fi
 
@@ -130,7 +130,7 @@ if [ ! -f "$HOME/.dotfiles/opt/lastinit" ] || [ "$SHAinitscript" != "$(head -2 "
 	echo "Restarting shell..."
 	echo "------------------"
 	exec bash
-elif [ "$difftime" -gt $maxtime ] || [ ! -f "$HOME/.dotfiles/opt/lastupdate" ]; then
+elif [ $difftime -gt $maxtime ] || [ ! -f "$HOME/.dotfiles/opt/lastupdate" ]; then
 	if [ ! -f "$HOME/.dotfiles/opt/lastupdate" ]; then
 		echo "No update time file found, running update now"
 	else
