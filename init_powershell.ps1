@@ -137,6 +137,7 @@ if (!(Test-Path "$HOMEREPO/opt/bin/diff-so-fancy")) {
 # Install some handy dev tools
 install-jq
 install-shellcheck
+install-shfmt
 
 #Write last update file
 if (!(Test-Path $HOMEREPO\opt\lastupdate -Type Leaf)) {
