@@ -6,7 +6,8 @@ Function install-jq {
     $local:jq="https://api.github.com/repos/stedolan/jq/releases/latest"
     $local:latest=$(Invoke-WebRequest $jq | Select-Object content | Get-URLs | Select-String "win64" | Select-Object -ExpandProperty line)
 
-    Invoke-WebRequest "$latest" -OutFile "$HOME/.dotfiles/opt/bin/jq.exe"
+    "Downloading jq..."
+    Powershell-FileDownload "$latest" -o "$HOME/.dotfiles/opt/bin/jq.exe"
 
     if (Check-Command jq) {
       "GOOD - jq is now available"
