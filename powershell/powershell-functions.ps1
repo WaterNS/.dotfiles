@@ -134,6 +134,12 @@ Function Get-URLs([parameter(ValueFromPipeline)][String]$Content) {
   (Select-String -AllMatches '(http[s]?)(:\/\/)([^\s,]+)(?=")' -Input $Content).Matches.Value
 }
 
+Function Powershell-FileDownload([String]$URL,$output) {
+  $wc = new-object system.net.webclient
+  $wc.DownloadFile($URL,$output)
+  $wc.Dispose()
+}
+
 Function gitRemoveOrphanBranches() {
   if (git rev-parse --git-dir 2> $null) {
     git checkout master;
