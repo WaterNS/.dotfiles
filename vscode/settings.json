@@ -9,5 +9,6 @@
     "workbench.colorTheme": "Monokai",
     "terminal.integrated.rendererType": "dom",
     "diffEditor.ignoreTrimWhitespace": false,
-    "telemetry.enableTelemetry": false
+    "telemetry.enableTelemetry": false,
+    "workbench.startupEditor": "newUntitledFile"
 }
