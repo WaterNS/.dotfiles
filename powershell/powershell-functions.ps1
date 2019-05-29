@@ -1,4 +1,4 @@
-﻿#Function to convert seconds to human friendly time format
+#Function to convert seconds to human friendly time format
 Function seconds2time {
 
 param (
@@ -123,6 +123,15 @@ Function Test-IsNonInteractiveShell {
 Function find-string([String]$regex, $path) {
   if (!$path) {$path = "."}
   Get-ChildItem $path -file -recurse | Select-String -pattern ([Regex]::Escape("$regex")) | group path | select -ExpandProperty name
+}
+
+Function Check-Command($cmdname)
+{
+    return [bool](Get-Command -Name $cmdname -ErrorAction SilentlyContinue)
+}
+
+Function Get-URLs([parameter(ValueFromPipeline)][String]$Content) {
+  (Select-String -AllMatches '(http[s]?)(:\/\/)([^\s,]+)(?=")' -Input $Content).Matches.Value
 }
 
 Function gitRemoveOrphanBranches() {
