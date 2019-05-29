@@ -26,4 +26,6 @@ git config --global core.eol lf
 Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete
 
 # Add dotfiles bin to PATH
-$env:PATH += ";$HOMEREPO/opt/bin"
+If (!($env:PATH -like "*$HOME/.dotfiles/opt/bin*")) {
+  $env:PATH += ";$HOME/.dotfiles/opt/bin"
+}

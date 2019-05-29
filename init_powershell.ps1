@@ -41,6 +41,16 @@ if ($update) {
 # Create dir for installation of packages for dotfiles
 If (!(Test-Path $HOMEREPO/opt)) {New-Item $HOMEREPO/opt/bin -ItemType Directory > $null}
 
+# Add dotfiles bin to user environment variable (permanently)
+$ExistingUserPath = [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User)
+If (!($ExistingUserPath -like "*$HOME/.dotfiles/opt/bin*")) {
+  [Environment]::SetEnvironmentVariable(
+    "Path",
+    $ExistingUserPath + ";$HOME/.dotfiles/opt/bin",
+    [EnvironmentVariableTarget]::User
+  )
+}
+
 # Set .dotfiles repo setting
 $curpath=$PWD
 Set-Location $HOMEREPO
