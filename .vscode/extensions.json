@@ -2,6 +2,7 @@
   "recommendations": [
       "shardulm94.trailing-spaces",
       "dunstontc.viml",
-      "timonwong.shellcheck"
+      "timonwong.shellcheck",
+      "foxundermoon.shell-format"
   ]
 }
