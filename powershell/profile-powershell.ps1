@@ -1,5 +1,4 @@
 ﻿$HOMEREPO="$HOME\.dotfiles"
-$HOMEREPOlit='~\.dotfiles'
 
 # Source my powershell polyfills
 . "$HOMEREPO\powershell\powershell-polyfills.ps1"

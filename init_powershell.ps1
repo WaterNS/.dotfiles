@@ -15,7 +15,6 @@ $SCRIPTDIR=$PSScriptRoot
 $SCRIPTPATH=$PSCommandPath #used in powershell-functions.ps1
 
 $HOMEREPO="$HOME\.dotfiles"
-#$HOMEREPOlit='~\.dotfiles'
 
 #Source our powershell polyfills & functions & installers
 . "$SCRIPTDIR\powershell\powershell-polyfills.ps1"
