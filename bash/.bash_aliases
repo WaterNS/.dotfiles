@@ -12,6 +12,11 @@ if [ -x "$(command -v lsd)" ]; then
   alias ls='lsd --group-dirs first --icon "never" -alh'
 fi
 
+#prettier ping (shell script wrapper for ping output)
+if [ -x "$(command -v prettyping)" ]; then
+  alias ping='prettyping --nolegend'
+fi
+
 # alias common git commands to shorthand
 if [ -x "$(command -v git)" ]; then
   alias status='git status'

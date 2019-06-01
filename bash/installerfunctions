@@ -245,3 +245,23 @@ install_lsd () {
       fi
     fi
 }
+
+install_prettyping () {
+    if [ ! -x "$(command -v prettyping)" ]; then
+      if [[ $OSTYPE == darwin* || $OSTYPE == linux* ]]; then
+        echo "NOTE: prettyping not found, availing into dotfiles bin"
+        echo "------------------------------------------------"
+
+        curl -L https://raw.githubusercontent.com/denilsonsa/prettyping/master/prettyping -o ~/.dotfiles/opt/bin/prettyping
+        chmod +x ~/.dotfiles/opt/bin/prettyping
+
+        if [ -x "$(command -v prettyping)" ]; then
+            echo "GOOD - prettyping is now available"
+        else
+            echo "BAD - prettyping doesn't seem to be available"
+        fi
+      else
+          echo "Unable to install prettyping - OS version doesn't have supported function"
+      fi
+    fi
+}

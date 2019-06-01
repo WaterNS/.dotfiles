@@ -169,6 +169,7 @@ install_jq
 install_shellcheck
 install_shfmt
 install_lsd
+install_prettyping
 
 #Write last update file
 SHAinitupdated=$(git --git-dir "$HOMEREPO/.git" log -n 1 --pretty=format:%H -- init_bash.sh)
