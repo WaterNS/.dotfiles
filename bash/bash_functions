@@ -55,6 +55,7 @@ foldertotal() {
 #         +
 #     "2019-01-01 Bestbuy - Movies - $50.13"
 local location="$1"
+if [ -z "$location" ]; then location="$PWD";fi
 echo "Calculating totals for: $location"
 
 array=()
