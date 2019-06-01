@@ -1,5 +1,10 @@
 #!/bin/bash
 
+#Enable help command, using tldr library
+help () {
+  curl -s cheat.sh/"$1" | less
+}
+
 # Set ls behavior
 if [[ $OSTYPE == darwin* ]]; then
   export LSCOLORS='Affxcxdxbxegedabagacad' # See https://geoff.greer.fm/lscolors/
