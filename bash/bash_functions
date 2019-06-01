@@ -74,3 +74,23 @@ done < <(find "$location" -type f -not -path "*DS_Store*" -print0)
 #Ref: https://stackoverflow.com/questions/13635293/unix-shell-script-adding-the-elements-of-an-array-together
 dc <<< '[+]sa[z2!>az2!>b]sb'"${array[*]//-/_}lbxp"
 }
+
+if [[ $OSTYPE == darwin* ]]; then
+  rootpid() {
+    # Look up the parent of the given PID.
+    PID=${1:-$$}
+    PARENT=$(ps -p "$PID" -o ppid=)
+
+    # /sbin/init always has a PID of 1, so if you reach that, the current PID is
+    # the top-level parent. Otherwise, keep looking.
+    if [[ ${PARENT} -eq 1 ]] ; then
+        echo "${PID}"
+    else
+        rootpid "${PARENT}"
+    fi
+  }
+  whatcalledbash=$(ps -p "$(rootpid)" -o args | awk 'NR>1')
+  if [[ "$whatcalledbash" == *"Terminal.app"* ]]; then
+    export IN_TERMINAL_APP=true
+  fi
+fi

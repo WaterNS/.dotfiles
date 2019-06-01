@@ -110,6 +110,12 @@ bind 'TAB:menu-complete'
 # Fix SSH permissions
 fixsshperms
 
+if [[ $OSTYPE == darwin* ]]; then
+	if [ -d ~/Desktop ] && [ "$IN_TERMINAL_APP" ]; then
+    cd ~/Desktop || exit
+  fi
+fi
+
 # DOTFILES updater
 # Check if last update was longer than set interval, kick off update if so
 if [ -f "$HOME/.dotfiles/opt/lastupdate" ]; then
