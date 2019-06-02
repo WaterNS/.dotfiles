@@ -1,14 +1,13 @@
 ﻿Param (
-  [switch][Alias('u')]$update
+  [switch][Alias('u')]$update,
+  [switch][Alias('r')]$reinit
 )
 
 # ToDo:
-# - Handle changed init file? Rerun with -r
 # - Everything else
 #    - foreach dot file linking?
 #    - install less (for diff-so-fancy?)
 #    - recreate .bashrc?
-#    - Backport gitprompt u/d/a to bash git prompt
 
 
 $SCRIPTDIR=$PSScriptRoot
@@ -32,10 +31,18 @@ catch [System.Management.Automation.CommandNotFoundException]
 # Import dotfiles gitconfig
 git config --global include.path "~/.dotfiles/git/git_tweaks"
 
-if ($update) {
+if ($reinit) {
+  Write-Output "Reinitializing..."
+  $update = $true
+} elseif ($update) {
   Write-Output "UPDATING..."
+}
+
+if ($update) {
   updategitrepo "dotfiles" "profile configs" "$HOMEREPO"
 }
+
+if ($reinit) {Remove-Item "$HOMEREPO/opt" -Recurse}
 
 # Create dir for installation of packages for dotfiles
 If (!(Test-Path $HOMEREPO/opt)) {New-Item $HOMEREPO/opt/bin -ItemType Directory > $null}
@@ -84,8 +91,8 @@ if (!(Get-Content "$ProfileFile" | Where-Object {$_ -like "*$ProfileDotFile*"}))
 }
 
 # Create VS Code Powershell Profile if doesn't exist
-If (Test-Path "~\Documents") { 
-  #Only run if ~\Documents exists, 
+If (Test-Path "~\Documents") {
+  #Only run if ~\Documents exists,
   # places like Azure hosted Shell don't have a ~\Documents folder
 
   $VSCodeProfileFile="~\Documents\WindowsPowerShell\Microsoft.VSCode_profile.ps1"
@@ -139,19 +146,39 @@ install-jq
 install-shellcheck
 install-shfmt
 
-#Write last update file
-if (!(Test-Path $HOMEREPO\opt\lastupdate -Type Leaf)) {
-	[int](Get-Date (Get-Date).ToUniversalTime() -UFormat %s) > $HOMEREPO\opt\lastupdate
-	((Get-Date -UFormat '%A %Y-%m-%d %I:%M:%S %p ')+(Get-TimeZone).ID) >> $HOMEREPO\opt\lastupdate
+#Write update/init file
+$SHAinitupdated=$(git --git-dir "$HOME/.dotfiles/.git" log -n 1 --pretty=format:%H -- init_powershell.ps1)
+if ((!(Test-Path $HOMEREPO\opt\lastupdate -Type Leaf)) -OR (!(Test-Path $HOMEREPO\opt\lastinit -Type Leaf))) {
+  if (!(Test-Path $HOMEREPO\opt\lastupdate -Type Leaf)) {
+    [int](Get-Date (Get-Date).ToUniversalTime() -UFormat %s) > $HOMEREPO\opt\lastupdate
+    ((Get-Date -UFormat '%A %Y-%m-%d %I:%M:%S %p ')+(Get-TimeZone).ID) >> $HOMEREPO\opt\lastupdate
+  }
+
+  if (!(Test-Path $HOMEREPO\opt\lastinit -Type Leaf)) {
+    "Last commit at which init_powershell.ps1 initialization ran:" > $HOMEREPO\opt\lastinit
+    "$SHAinitupdated" >> $HOMEREPO\opt\lastinit
+  }
 }
-elseif ($update) {
-	Write-Output ""
-	Write-Output "Updating last update time file with current date"
-	[int](Get-Date (Get-Date).ToUniversalTime() -UFormat %s) > $HOMEREPO\opt\lastupdate
-	((Get-Date -UFormat '%A %Y-%m-%d %I:%M:%S %p ')+(Get-TimeZone).ID) >> $HOMEREPO\opt\lastupdate
+elseif (($update) -OR ($reinit)) {
+  if ($update) {
+    Write-Output ""
+    Write-Output "Updating last update time file with current date"
+    [int](Get-Date (Get-Date).ToUniversalTime() -UFormat %s) > $HOMEREPO\opt\lastupdate
+    ((Get-Date -UFormat '%A %Y-%m-%d %I:%M:%S %p ')+(Get-TimeZone).ID) >> $HOMEREPO\opt\lastupdate
+  }
+
+  if ($reinit) {
+    Write-Output ""
+    Write-Output "Updating lastinit time with current SHA: $SHAinitupdated"
+    "Last commit at which init_powershell.ps1 initialization ran:" > $HOMEREPO\opt\lastinit
+    "$SHAinitupdated" >> $HOMEREPO\opt\lastinit
+  }
 }
 
-if ($update) {
+if ($reinit) {
+	Write-Output ""
+	Write-Output "ReInitilization Completed!"
+} elseif ($update) {
 	Write-Output ""
 	Write-Output "UPDATING Completed!"
 }
