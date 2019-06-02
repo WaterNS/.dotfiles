@@ -49,41 +49,6 @@ param (
 Write-Output $output
 }
 
-# Function: Update git repo (if needed)
-Function updategitrepo {
-
-param (
-  $reponame=$($args[0]),
-  $description=$($args[1]),
-  $repolocation=$($args[2])
-)
-
-$olddir=$PWD
-
-echo ""
-echo "-Check updates: $reponame ($description)"
-cd "$repolocation"
-git fetch
-
-if ("$(git rev-parse master)" -ne "$(git rev-parse origin/master)") {
-  echo -n "--Updating $reponame $description repo "
-  echo -n "(from $(git rev-parse --short master) to "
-  echo -n "$(git rev-parse --short origin/master))"
-  git pull --quiet
-
-  # Restart the init script if it self updated
-  if ("$reponame" -eq "dotfiles") {
-    cd $olddir
-	  echo ""
-	  echo ""
-	  .\$SCRIPTPATH -u;
-  }
-}
-
-cd $olddir
-
-}
-
 Function Test-InScript {
   if ( ((Get-PSCallStack).Command -like "*.ps1*") ) {
     return $true
