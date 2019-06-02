@@ -95,3 +95,8 @@ if [[ $OSTYPE == darwin* ]]; then
     export IN_TERMINAL_APP=true
   fi
 fi
+
+debug () {
+  #Ref: https://stackoverflow.com/questions/17804007/how-to-show-line-number-when-executing-bash-script
+  export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+}
