@@ -182,6 +182,7 @@ if (!(Test-Path "$HOMEREPO/opt/bin/diff-so-fancy")) {
 install-jq
 install-shellcheck
 install-shfmt
+install-less
 
 #Write update/init file
 $SHAinitupdated=$(git --git-dir "$HOME/.dotfiles/.git" log -n 1 --pretty=format:%H -- init_powershell.ps1)

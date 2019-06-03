@@ -53,3 +53,27 @@ Function install-shfmt {
     }
   }
 }
+
+Function install-less {
+  if (!(Check-Command less)) {
+    "NOTE: less not found, availing into dotfiles bin"
+    "------------------------------------------------"
+    [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
+    $local:latest="https://chocolatey.org/api/v2/package/Less"
+
+    "Downloading less..."
+    mkdir -p "$HOME/.dotfiles/opt/tmp" | Out-Null
+    Powershell-FileDownload "$latest" -o "$HOME/.dotfiles/opt/tmp/less.zip"
+
+    Expand-Archive -LiteralPath "$HOME/.dotfiles/opt/tmp/less.zip" -DestinationPath "$HOME/.dotfiles/opt/tmp/less"
+
+    Move-Item "$HOME/.dotfiles/opt/tmp/less/tools/less.exe" "$HOME/.dotfiles/opt/bin/"
+    Remove-Item -Path "$HOME/.dotfiles/opt/tmp" -Recurse
+
+    if (Check-Command less) {
+      "GOOD - less is now available"
+    } else {
+      "BAD - less doesn't seem to be available"
+    }
+  }
+}
