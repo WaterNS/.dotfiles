@@ -77,3 +77,29 @@ Function install-less {
     }
   }
 }
+
+Function install-cht {
+  if (!(Check-Command cht)) {
+    "NOTE: cht not found, availing into dotfiles bin"
+    "------------------------------------------------"
+    #[Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
+    #$local:cht="https://api.github.com/repos/mvdan/sh/releases/latest"
+    #$local:latest=$(Invoke-WebRequest $cht | Select-Object content | Get-URLs | Select-String "windows_amd64" | Select-Object -ExpandProperty line)
+    $local:latest="https://github.com/tpanj/cht.exe/archive/v0.6.zip"
+
+    "Downloading cht..."
+    mkdir -p "$HOME/.dotfiles/opt/tmp" | Out-Null
+    Powershell-FileDownload "$latest" -o "$HOME/.dotfiles/opt/tmp/cht.zip"
+
+    Expand-Archive -LiteralPath "$HOME/.dotfiles/opt/tmp/cht.zip" -DestinationPath "$HOME/.dotfiles/opt/tmp/cht"
+
+    Move-Item "$HOME/.dotfiles/opt/tmp/cht/**/bin/cht.exe" "$HOME/.dotfiles/opt/bin/"
+    Remove-Item -Path "$HOME/.dotfiles/opt/tmp" -Recurse
+
+    if (Check-Command cht) {
+      "GOOD - cht is now available"
+    } else {
+      "BAD - cht doesn't seem to be available"
+    }
+  }
+}
