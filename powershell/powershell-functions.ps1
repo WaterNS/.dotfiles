@@ -1,3 +1,8 @@
+Function Check-Command($cmdname)
+{
+    return [bool](Get-Command -Name $cmdname -ErrorAction SilentlyContinue)
+}
+
 #Function to convert seconds to human friendly time format
 Function seconds2time {
 
@@ -88,11 +93,6 @@ Function Test-IsNonInteractiveShell {
 Function find-string([String]$regex, $path) {
   if (!$path) {$path = "."}
   Get-ChildItem $path -file -recurse | Select-String -pattern ([Regex]::Escape("$regex")) | group path | select -ExpandProperty name
-}
-
-Function Check-Command($cmdname)
-{
-    return [bool](Get-Command -Name $cmdname -ErrorAction SilentlyContinue)
 }
 
 Function Get-URLs([parameter(ValueFromPipeline)][String]$Content) {
