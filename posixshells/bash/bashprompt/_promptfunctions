@@ -2,8 +2,8 @@
 
 # Source prompt colors/symbols
 # shellcheck disable=SC1090 #see https://github.com/koalaman/shellcheck/issues/769
-if [ -f "$HOME/.dotfiles/bash/_promptcolors" ];then
-	. "$HOME/.dotfiles/bash/_promptcolors"
+if [ -f "$HOME/.dotfiles/posixshells/bash/bashprompt/_promptcolors" ];then
+	. "$HOME/.dotfiles/posixshells/bash/bashprompt/_promptcolors"
 fi
 
 git_prompt() {
