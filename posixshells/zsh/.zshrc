@@ -16,6 +16,6 @@ if [ -f ~/.bash_aliases ]; then
 	. ~/.bash_aliases
 fi
 
-if [ -f ~/.dotfiles/posixshells/bash/installerfunctions ]; then
-	. ~/.dotfiles/posixshells/bash/installerfunctions
+if [ -f ~/.dotfiles/posixshells/posixshells/posix_installers.sh ]; then
+	. ~/.dotfiles/posixshells/posixshells/posix_installers.sh
 fi
