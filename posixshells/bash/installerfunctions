@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 install_youtubedl () {
     if [ ! -x "$(command -v youtube-dl)" ] && [ ! -f "$HOME/.dotfiles/opt/bin/youtube-dl" ]; then
@@ -7,20 +7,14 @@ install_youtubedl () {
         curl -L https://yt-dl.org/downloads/latest/youtube-dl -o "$HOME/.dotfiles/opt/bin/youtube-dl"; echo ""
         chmod a+rx "$HOME/.dotfiles/opt/bin/youtube-dl"
     fi
-    if [ ! -x "$(command -v ffmpeg)" ]; then
-        install_ffmpeg
-    fi
-    if [ ! -x "$(command -v ffprobe)" ]; then
-        install_ffprobe
-    fi
-    if [ ! -x "$(command -v phantomjs)" ]; then
-        install_phantomjs
-    fi
+    install_ffmpeg
+    install_ffprobe
+    install_phantomjs
 }
 
 install_unar () {
     if [ ! -x "$(command -v unar)" ]; then
-        if [[ $OSTYPE == darwin* ]]; then
+        if contains "$(uname)" "Darwin"; then
             echo "NOTE: unar not found, installing into dotfiles bin"
             echo "------------------------------------------------"
             curl -L https://cdn.theunarchiver.com/downloads/unarMac.zip -o /tmp/unarMac.zip; echo ""
@@ -42,12 +36,11 @@ install_unar () {
 
 install_ffmpeg () {
     if [ ! -x "$(command -v ffmpeg)" ]; then
-      if [[ $OSTYPE == darwin* ]]; then
+      if contains "$(uname)" "Darwin"; then
         install_unar
         echo "NOTE: ffmpeg not found, installing into dotfiles bin"
         echo "------------------------------------------------"
-        local ffmpeg="https://evermeet.cx/pub/ffmpeg/snapshots/"
-        local latest
+        ffmpeg="https://evermeet.cx/pub/ffmpeg/snapshots/"
         latest=$(curl $ffmpeg | grep -v ".7z.sig" | grep .7z | head -1 | sed -n 's/.*href="\([^"]*\).*/\1/p')
         curl "$ffmpeg$latest" -o /tmp/ffmpeg.7z; echo ""
 
@@ -67,12 +60,11 @@ install_ffmpeg () {
 
 install_ffprobe () {
     if [ ! -x "$(command -v ffprobe)" ]; then
-      if [[ $OSTYPE == darwin* ]]; then
+      if contains "$(uname)" "Darwin"; then
         install_unar
         echo "NOTE: ffprobe not found, installing into dotfiles bin"
         echo "------------------------------------------------"
-        local ffprobe="https://evermeet.cx/pub/ffprobe/snapshots/"
-        local latest
+        ffprobe="https://evermeet.cx/pub/ffprobe/snapshots/"
         latest=$(curl $ffprobe | grep -v ".7z.sig" | grep .7z | head -1 | sed -n 's/.*href="\([^"]*\).*/\1/p')
         curl "$ffprobe/$latest" -o /tmp/ffprobe.7z; echo ""
 
@@ -92,11 +84,10 @@ install_ffprobe () {
 
 install_phantomjs () {
     if [ ! -x "$(command -v phantomjs)" ]; then
-      if [[ $OSTYPE == darwin* ]]; then
+      if contains "$(uname)" "Darwin"; then
         echo "NOTE: phantomjs not found, installing into dotfiles bin"
         echo "------------------------------------------------"
-        local phantomjs="http://phantomjs.org/download.html"
-        local latest
+        phantomjs="http://phantomjs.org/download.html"
         latest=$(curl $phantomjs | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep osx.zip)
         curl -L "$latest" -o /tmp/phantomjs.zip; echo ""
 
@@ -116,17 +107,16 @@ install_phantomjs () {
 
 install_jq () {
     if [ ! -x "$(command -v jq)" ]; then
-      if [[ $OSTYPE == darwin* ]]; then
+      if contains "$(uname)" "Darwin"; then
         echo "NOTE: jq not found, availing into dotfiles bin"
         echo "------------------------------------------------"
-        local jq="https://api.github.com/repos/stedolan/jq/releases/latest"
-        local latest
+        jq="https://api.github.com/repos/stedolan/jq/releases/latest"
         latest=$(curl $jq -s  | grep url | grep osx | sed 's/.*\(http[s?]:\/\/.*[^"]\).*/\1/')
         curl -L "$latest" -o /tmp/jq; echo ""
 
         chmod +x /tmp/jq
         mv /tmp/jq "$HOME/.dotfiles/opt/bin/"
-        rm -r /tmp/jq &> /dev/null
+        rm -r /tmp/jq >/dev/null 2>&1
 
         if [ -x "$(command -v jq)" ]; then
             echo "GOOD - jq is now available"
@@ -144,13 +134,12 @@ install_shellcheck () {
         install_jq
     fi
     if [ ! -x "$(command -v shellcheck)" ]; then
-      if [[ $OSTYPE == darwin* ]]; then
+      if contains "$(uname)" "Darwin"; then
         echo "NOTE: shellcheck not found, availing into dotfiles bin"
         echo "------------------------------------------------"
-        local shellcheck="https://formulae.brew.sh/api/formula/shellcheck.json"
-        local latest
+        shellcheck="https://formulae.brew.sh/api/formula/shellcheck.json"
         latest=$(curl -S $shellcheck | jq -r "[.bottle.stable.files[]][0]".url)
-        local filename=${latest##*/}
+        filename=${latest##*/}
         curl -L "$latest" -o "/tmp/$filename"; echo ""
 
         mkdir /tmp/shellcheck
@@ -173,11 +162,10 @@ install_shellcheck () {
 
 install_shfmt () {
     if [ ! -x "$(command -v shfmt)" ]; then
-      if [[ $OSTYPE == darwin* ]]; then
+      if contains "$(uname)" "Darwin"; then
         echo "NOTE: shfmt not found, availing into dotfiles bin"
         echo "------------------------------------------------"
-        local shfmt="https://api.github.com/repos/mvdan/sh/releases/latest"
-        local latest
+        shfmt="https://api.github.com/repos/mvdan/sh/releases/latest"
         latest=$(curl $shfmt -s  | grep url | grep darwin_amd64 | sed 's/.*\(http[s?]:\/\/.*[^"]\).*/\1/')
 
         curl -L "$latest" -o "$HOME/.dotfiles/opt/bin/shfmt"; echo ""
@@ -194,10 +182,10 @@ install_shfmt () {
     fi
 }
 
-install_nerd-fonts () {
-    local fontname="Droid Sans Mono for Powerline Nerd Font Complete.otf"
+install_nerdfonts () {
+    fontname="Droid Sans Mono for Powerline Nerd Font Complete.otf"
     if [ ! -f "$HOME/.dotfiles/opt/fonts/$fontname" ] && [ ! -f "$HOME/Library/Fonts/dotfiles/$fontname" ]; then
-      if [[ $OSTYPE == darwin* ]]; then
+      if contains "$(uname)" "Darwin"; then
         echo "NOTE: nerd-fonts not found, availing into $HOME/Library/Fonts/dotfiles/"
         echo "------------------------------------------------------------------------"
 
@@ -219,13 +207,12 @@ install_nerd-fonts () {
 
 install_lsd () {
     if [ ! -x "$(command -v lsd)" ]; then
-      if [[ $OSTYPE == darwin* ]]; then
+      if contains "$(uname)" "Darwin"; then
         echo "NOTE: lsd not found, availing into dotfiles bin"
         echo "------------------------------------------------"
-        local lsd="https://formulae.brew.sh/api/formula/lsd.json"
-        local latest
+        lsd="https://formulae.brew.sh/api/formula/lsd.json"
         latest=$(curl -S $lsd | jq -r "[.bottle.stable.files[]][0]".url)
-        local filename=${latest##*/}
+        filename=${latest##*/}
         curl -L "$latest" -o "/tmp/$filename"; echo ""
 
         mkdir /tmp/lsd
@@ -248,7 +235,7 @@ install_lsd () {
 
 install_prettyping () {
     if [ ! -x "$(command -v prettyping)" ]; then
-      if [[ $OSTYPE == darwin* || $OSTYPE == linux* ]]; then
+      if contains "$(uname)" "Darwin" || contains "$(uname)" "linux"; then
         echo "NOTE: prettyping not found, availing into dotfiles bin"
         echo "------------------------------------------------"
 
