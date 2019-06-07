@@ -1,5 +1,27 @@
 #!/bin/sh
 
+install_diffsofancy () {
+  #Git: diff-so-fancy (better git diff)
+  if [ ! -f "$HOMEREPO/opt/bin/diff-so-fancy" ]; then
+    if [ -x "$(command -v perl)" ]; then
+      echo "NOTE: diff-so-fancy not found, downloading to dotfiles bin location"
+      echo "------------------------------------------------"
+      echo ""; echo "Pulling down: diff-so-fancy (better git diff)"
+      diffsofancy="https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy"
+
+      curl $diffsofancy > "$HOMEREPO/opt/bin/diff-so-fancy" && chmod 0755 "$HOMEREPO/opt/bin/diff-so-fancy";
+
+      if [ -f "$HOMEREPO/opt/bin/diff-so-fancy" ]; then
+          echo "GOOD - diff-so-fancy is now available"
+      else
+          echo "BAD - diff-so-fancy doesn't seem to be available"
+      fi
+    else
+      echo "Not downloading diff-so-fancy: perl is not available"
+    fi
+  fi
+}
+
 install_youtubedl () {
     if [ ! -x "$(command -v youtube-dl)" ] && [ ! -f "$HOME/.dotfiles/opt/bin/youtube-dl" ]; then
         echo "NOTE: youtube-dl not found, downloading to dotfiles bin location"
