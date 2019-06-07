@@ -8,7 +8,12 @@ elif [ -n "$BASH_VERSION" ]; then
   printf "Running bash\n"
   export RUNNINGSHELL='bash'
 else
-  printf "Running unknown shell\n"
+  if contains "$SHELL" "/sh"; then
+    printf "Running sh (bourne shell)\n"
+    export RUNNINGSHELL='sh'
+  else
+    printf "Running unknown shell\n"
+  fi
 fi
 
 ### History Stuffs

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ### INCLUDE: posix base ##
-. ~/.dotfiles/posixshells/posix_rc.sh
+. ~/.dotfiles/posixshells/.profile
 
 ### History Stuffs
 

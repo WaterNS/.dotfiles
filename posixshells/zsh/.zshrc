@@ -3,7 +3,7 @@
 # ZSH: posix/sh->bash->zsh
 
 ### INCLUDE: posix base ##
-. ~/.dotfiles/posixshells/posix_rc.sh
+. ~/.dotfiles/posixshells/.profile
 
 ############################################
 # INCLUDES
