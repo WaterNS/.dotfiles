@@ -81,3 +81,17 @@ contains() {
       return 1    # $substring is not in $string
   fi
 }
+
+# POSIX helper: notcontains(string, substring)
+notcontains() {
+  # Returns 0 if the specified string contains the specified substring,
+  # otherwise returns 1.
+  string="$1"
+  substring="$2"
+  if test "${string#*$substring}" = "$string"
+  then
+      return 0    # $substring is not in $string
+  else
+      return 1    # $substring is in $string
+  fi
+}

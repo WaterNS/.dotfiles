@@ -9,14 +9,14 @@ if [ -f "$HOME/.dotfiles/opt/lastupdate" ]; then
 	maxtime=$((5*24*60*60))
 fi
 
-SHAinitscript=$(git --git-dir "$HOME/.dotfiles/.git" log -n 1 --pretty=format:%H -- init_bash.sh)
+SHAinitscript=$(git --git-dir "$HOME/.dotfiles/.git" log -n 1 --pretty=format:%H -- init_posix.sh)
 if [ ! -f "$HOME/.dotfiles/opt/lastinit" ] || [ "$SHAinitscript" != "$(head -2 "$HOME/.dotfiles/opt/lastinit" | tail -1)" ]; then
 	if [ ! -f "$HOME/.dotfiles/opt/lastinit" ]; then
 		echo "No init time file found, running initialization now"
 	else
-	 echo "Init script has been updated since last run, Executing init_bash.sh with ReInitialization flag"
+	 echo "Init script has been updated since last run, Executing init_posix.sh with ReInitialization flag"
 	fi
-	"$HOME/.dotfiles/init_bash.sh" -r
+	"$HOME/.dotfiles/init_posix.sh" -r
 	echo "Restarting shell..."
 	echo "------------------"
 	exec "$RUNNINGSHELL"
@@ -26,7 +26,7 @@ elif [ $difftime -gt $maxtime ] || [ ! -f "$HOME/.dotfiles/opt/lastupdate" ]; th
 	else
 		echo "Last update happened $(seconds2time "$difftime") ago, updating dotfiles"
 	fi
-	"$HOME/.dotfiles/init_bash.sh" -u
+	"$HOME/.dotfiles/init_posix.sh" -u
 	echo "Restarting shell..."
 	echo "------------------"
   exec "$RUNNINGSHELL"
