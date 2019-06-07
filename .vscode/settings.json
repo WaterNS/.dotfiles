@@ -1,0 +1,3 @@
+{
+  "shellcheck.exclude": [1090]
+}
