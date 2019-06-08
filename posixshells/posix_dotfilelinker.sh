@@ -4,11 +4,28 @@ if [ -f ~/.dotfiles/posixshells/posix_functions.sh ]; then
   . ~/.dotfiles/posixshells/posix_functions.sh
 fi
 
-files=$(find "$HOME/.dotfiles" -type f -name '.*')
-excludedfiles=".editorconfig .gitignore .gitattributes .DS_Store"
+# Clean up any broken symlinks pointing to dotfiles
+# Ref: https://unix.stackexchange.com/a/103011
+# POSIX way to loop through array where objects are not expected to have newlines (so newline is safe IFS)
+brokensymlinks=$(find "$HOME" -maxdepth 1 -type l -exec test ! -e {} \; -print)
+set -f; IFS='
+'                           # turn off variable value expansion except for splitting at newlines
+for file in $brokensymlinks; do
+  set +f; unset IFS
+
+  if contains "$(readlink "$file")" "$HOME/.dotfiles/";then
+    printf "Found broken symlink (%s) to dotfiles, removing...\n" "$file"
+    rm "$file"
+  fi
+done
+set +f; unset IFS           # do it again in case $INPUT was empty
+unset brokensymlinks
+
 
 # Ref: https://unix.stackexchange.com/a/103011
 # POSIX way to loop through array where objects are not expected to have newlines (so newline is safe IFS)
+files=$(find "$HOME/.dotfiles" -type f -name '.*')
+excludedfiles=".editorconfig .gitignore .gitattributes .DS_Store"
 set -f; IFS='
 '                           # turn off variable value expansion except for splitting at newlines
 for dotfile in $files; do
@@ -19,18 +36,18 @@ for dotfile in $files; do
 
     if [ -f "$target" ] && [ ! -L "$target" ]; then
       echo "NOTE: Found existing $(basename "$dotfile") in HOME, renaming..."
-      #rm "$target" # Fix this into a rename
+      mv "$target" "$target.$(date -u +"%Y-%m-%d")"
     elif [ -L "$target" ] && [ ! "$(readlink "$target")" = "$dotfile" ]; then
-      #-ef   tests if both files are hard links to the same file
-      #rm "$target" # Fix this into a rename?
       echo "NOTE: Found SYMBOLIC Link with incorrect path $(basename "$dotfile") in HOME, removing..."
+      rm "$target"
     fi
 
     [ ! -r "$target" ] && ln -s "$dotfile" "$target" && echo "NOTE: Linked ~/$(basename "$dotfile") to custom one in dotfiles repo"
+    unset target
   fi
 done
 set +f; unset IFS           # do it again in case $INPUT was empty
-
+unset files
 
 #Handle linking VSCode in OSX and Linux
 if contains "$(uname)" "Darwin" || contains "$(uname)" "linux"; then
