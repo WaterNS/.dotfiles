@@ -3,26 +3,22 @@
 ### INCLUDE: posix base ##
 . ~/.dotfiles/posixshells/.profile
 
-### History Stuffs
+### History Stuffs - bash specific
+# OSX: Disable bash session saving
+if contains "$(uname)" "Darwin"; then
+	touch ~/.bash_sessions_disable
+fi
 
 exit_session() {
   if [ -f "$HOME/.bash_logout" ]; then
     . "$HOME/.bash_logout"
   fi
+  if [ -f "$HOME/.logout" ]; then
+    . "$HOME/.logout"
+  fi
 }
 trap exit_session SIGHUP
 
-# BASH: Disable history, and clear it
-# set +o history # Enabling will show ZERO history, not even in current session
-unset HISTFILE # On exit, will not write history file
-history -c
-rm -f "$HOME/.bash_history" 2> /dev/null
-rm -rf "$HOME/.bash_sessions" 2> /dev/null
-
-# OSX: Disable session saving
-if [[ $OSTYPE == darwin* ]]; then
-	touch ~/.bash_sessions_disable
-fi
 
 ############################################
 # INCLUDES
