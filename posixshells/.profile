@@ -62,15 +62,18 @@ export EDITOR=vim
       export LESS="-x2 -RFX $LESS"
 
       # Include diff-so-fancy colors
+      #shellcheck disable=2088 # Exception: Want to explictly write the tidle to config
       git config --global include.path '~/.dotfiles/git/git_diffsofancy'
     else # Set to use LESS as fallback and undo gitconfig change
       export GIT_PAGER='less'
       export LESS="-x2 -RFX $LESS"
+      #shellcheck disable=2088 # Exception: Want to explictly write the tidle to config
       git config --global --unset include.path '~/.dotfiles/git/git_diffsofancy'
     fi
 
     # Set GIT Config Settings
     if [ -x "$(command -v git)" ]; then
+      #shellcheck disable=2088 # Exception: Want to explictly write the tidle to config
       git config --global include.path '~/.dotfiles/git/git_tweaks'
     fi
 

@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # Source prompt functions
-# shellcheck disable=SC1090 #see https://github.com/koalaman/shellcheck/issues/769
 if [ -f "$HOME/.dotfiles/posixshells/bash/bashprompt/_promptfunctions" ];then
 	. "$HOME/.dotfiles/posixshells/bash/bashprompt/_promptfunctions"
 fi

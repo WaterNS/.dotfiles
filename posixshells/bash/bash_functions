@@ -64,7 +64,6 @@ else
     install_youtubedl;
     unset -f youtube-dl
 
-    # shellcheck disable=SC1090 #see https://github.com/koalaman/shellcheck/issues/769
     if [ -x "$(command -v youtube-dl)" ]; then
         echo "-- Reloading bash aliases and re-trying your command"
         . "$HOME/.dotfiles/bash/.bash_aliases"; echo ""
