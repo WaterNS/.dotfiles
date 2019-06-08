@@ -1,0 +1,8 @@
+#!/bin/sh
+
+if [ -f "$HOME/.dotfiles/posixshells/posix_history.sh" ]; then
+  . "$HOME/.dotfiles/posixshells/posix_history.sh"
+fi
+
+
+history -c
