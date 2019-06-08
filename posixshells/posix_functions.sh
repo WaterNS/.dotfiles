@@ -70,7 +70,7 @@ fi
 
 # POSIX helper: contains(string, substring)
 contains() {
-  # Returns 0 if the specified string contains the specified substring,
+  # Returns 0 if the string contains the substring,
   # otherwise returns 1.
   string="$1"
   substring="$2"
@@ -84,7 +84,7 @@ contains() {
 
 # POSIX helper: notcontains(string, substring)
 notcontains() {
-  # Returns 0 if the specified string contains the specified substring,
+  # Returns 0 if the specified string does NOT contain the  substring,
   # otherwise returns 1.
   string="$1"
   substring="$2"
@@ -93,5 +93,49 @@ notcontains() {
       return 0    # $substring is not in $string
   else
       return 1    # $substring is in $string
+  fi
+}
+
+
+rootpid() {
+  if [ "$1" ]; then
+    case ${1#[-+]} in
+      *[!0-9]* | '') catchterm=$1 ;;
+      * ) PIDarg=$1 ;;
+    esac
+
+    if [ "$1" ] && [ "$2" ]; then
+      catchterm=$2
+    fi
+  fi
+
+  # Look up the parent of the given PID.
+  PID=${PIDarg:-$$}
+  PARENT=$(ps -p "$PID" -o ppid=)
+  PARENTCMD=$(ps -p "$PID" -o args | awk 'NR>1')
+
+  # /sbin/init always has a PID of 1, so if you reach that, the current PID is
+  # the top-level parent. Otherwise, keep looking.
+  if [ "${PARENT}" -eq 1 ] || contains "$PARENTCMD" "$catchterm"; then
+      echo "${PID}"
+  else
+    if [ "$catchterm" ]; then
+      rootpid "${PARENT}" "$catchterm"
+    else
+      rootpid "${PARENT}"
+    fi
+  fi
+
+  unset PARENT
+  unset PARENTCMD
+  unset PIDarg
+  unset catchterm
+}
+
+DidTerminalCallShell() {
+  if contains "$(ps -p "$(rootpid Code.app)" -o args | awk 'NR>1')" "Terminal.app"; then
+    return 0
+  else
+    return 1
   fi
 }
