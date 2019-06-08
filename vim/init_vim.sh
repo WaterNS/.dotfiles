@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/bin/sh
 
 # shellcheck disable=SC2154 # $ri/$u sourced from upstream script
-if [ "$ri" = true ]; then
+if [ "$r" = true ]; then
   echo "  ReInitializing Vim components:";
   if [ -d "$HOME/.vim/autoload" ]; then rm -rf "$HOME/.vim/autoload"; fi
   if [ -d "$HOME/.vim/bundle" ]; then rm -rf "$HOME/.vim/bundle"; fi
@@ -37,12 +37,12 @@ fi
 
 #VIM Plugin: Super Tab (tab to complete)
 if [ ! -d "$HOME/.vim/bundle/supertab" ]; then
-	echo "- Installing: SuperTab (VIM tab completion plugin)";
+	printf -- "- Installing: SuperTab (VIM tab completion plugin)\n";
 	git clone https://github.com/ervandew/supertab.git ~/.vim/bundle/supertab; echo ""
 elif [ "$u" = true  ]; then updategitrepo "supertab" "VIM tab completion plugin" ~/.vim/bundle/supertab ;
 fi
 
-if [ "$ri" = true ]; then
+if [ "$r" = true ]; then
   echo "  Finished ReInitializing Vim components!";
 elif [ "$u" = true  ]; then
 	echo ""

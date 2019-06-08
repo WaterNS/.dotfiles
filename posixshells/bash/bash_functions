@@ -1,54 +1,5 @@
 #!/bin/bash
 
-#seconds2time function
-seconds2time ()
-{
-   T=$1
-   D=$((T/60/60/24))
-   H=$((T/60/60%24))
-   M=$((T/60%60))
-   S=$((T%60))
-
-#Print the days, if any
-if [ $D -gt 0 ]; then
-  printf '%d day' $D; if [ $D -gt 1 ]; then printf 's'; fi
-fi
-
-#Print the hours, if any
-if [ $H -gt 0 ]; then
-  if [ $D -gt 0 ]; then printf ', '; fi
-  printf '%d hour' $H; if [ $H -gt 1 ]; then printf 's'; fi
-fi
-
-#Print the minutes, if any
-if [ $M -gt 0 ]; then
-  if [ $H -gt 0 ] || [ $D -gt 0 ]; then printf ', '; fi
-  printf '%d minute' $M; if [ $M -gt 1 ]; then printf 's'; fi
-fi
-
-#Print the seconds, if any
-if [ $S -gt 0 ]; then
-  if [ $M -gt 0 ] || [ $H -gt 0 ] || [ $D -gt 0 ]; then printf ', '; fi
-  printf '%d second' $S; if [ $S -gt 1 ]; then printf 's'; fi
-fi
-
-#Print '0 seconds' if no time provided or time is 0
-if [[ -z "${T// }" ]]; then
-	printf '0 seconds'
-elif [[ $T -eq 0 ]]; then
-	printf '0 seconds'
-fi
-}
-
-fixsshperms ()
-{
-  if [ -d ~/.ssh ]; then
-    chmod 700 ~/.ssh
-    chmod 644 ~/.ssh/*.pub
-    find ~/.ssh -type f -iname "id*" -not -path "*.pub" -print0 | xargs -0 chmod 600
-  fi
-}
-
 foldertotal() {
 #Function to calculate total of directory of receipts
 # eg. "2019-01-01 Amazon - Books - $104.51"
@@ -96,7 +47,31 @@ if [[ $OSTYPE == darwin* ]]; then
   fi
 fi
 
-debug () {
-  #Ref: https://stackoverflow.com/questions/17804007/how-to-show-line-number-when-executing-bash-script
-  export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
-}
+# youtube-dl shorthand function that does auto retry
+if [ -x "$(command -v youtube-dl)" ] &&
+   [ -x "$(command -v ffmpeg)" ] &&
+   [ -x "$(command -v ffprobe)" ] &&
+   [ -x "$(command -v phantomjs)" ]; then
+  ytdl () { while ! youtube-dl "$1" -c --socket-timeout 5; do echo DISCONNECTED; sleep 5; done; }
+  ytdl-hq () { while ! youtube-dl -f 'bestvideo+bestaudio[ext=m4a]/bestvideo+bestaudio/best' "$1" -c --socket-timeout 5; do echo DISCONNECTED; sleep 5; done; }
+  ytdl-mp3 () { while ! youtube-dl -f bestaudio --embed-thumbnail --add-metadata --extract-audio --audio-format mp3 -o "%(title)s.%(ext)s" "$1" -c --socket-timeout 5; do echo DISCONNECTED; sleep 5; done; }
+else
+  ytdl () { youtube-dl "$@" ; }
+  ytdl-hq () { youtube-dl "$@" ; }
+  ytdl-mp3 () { youtube-dl "$@" ; }
+
+  youtube-dl () {
+    install_youtubedl;
+    unset -f youtube-dl
+
+    if [ -x "$(command -v youtube-dl)" ]; then
+        echo "-- Reloading bash aliases and re-trying your command"
+        . "$HOME/.dotfiles/bash/.bash_aliases"; echo ""
+        echo "Re-running your original cmd: ${FUNCNAME[${#FUNCNAME[@]}-1]} $*"
+        echo ""
+        ${FUNCNAME[${#FUNCNAME[@]}-1]} "$@"
+    else
+        echo "ERROR - Something went wrong in installing youtube-dl, either try again or fix the installer"; echo ""
+    fi
+  };
+fi
