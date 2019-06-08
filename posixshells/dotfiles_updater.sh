@@ -31,6 +31,6 @@ elif [ $difftime -gt $maxtime ] || [ ! -f "$HOME/.dotfiles/opt/lastupdate" ]; th
 	echo "------------------"
   exec "$RUNNINGSHELL"
 else
-	echo "Last dotfiles update: $(seconds2time "$difftime") ago / Update Interval: $(seconds2time $maxtime)"
+	echo "Last dotfiles update: $(seconds2time "$difftime") ago / Update Interval: $(seconds2time $maxtime) - [$RUNNINGSHELL] "
 	#echo "Update <$maxtime seconds ago, skipping dotfiles update"
 fi

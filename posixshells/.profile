@@ -2,17 +2,13 @@
 
 #Identify running shell
 if [ -n "$ZSH_VERSION" ]; then
-  printf "Running ZSH\n"
   export RUNNINGSHELL='zsh'
 elif [ -n "$BASH_VERSION" ]; then
-  printf "Running bash\n"
   export RUNNINGSHELL='bash'
 else
   if contains "$SHELL" "/sh"; then
-    printf "Running sh (bourne shell)\n"
     export RUNNINGSHELL='sh'
   else
-    printf "Running unknown shell\n"
     export RUNNINGSHELL=$SHELL
   fi
 fi
