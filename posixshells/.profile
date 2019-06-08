@@ -13,6 +13,7 @@ else
     export RUNNINGSHELL='sh'
   else
     printf "Running unknown shell\n"
+    export RUNNINGSHELL=$SHELL
   fi
 fi
 
@@ -27,7 +28,6 @@ if [ ! -d ~/.vim/undo ]; then mkdir -p ~/.vim/undo; fi
 # PATH: Include .dotfiles bin
 PATH=$PATH:~/.dotfiles/opt/bin
 
-
 ############################################
 # INCLUDES
 ############################################
@@ -39,6 +39,10 @@ if [ -f ~/.dotfiles/posixshells/posix_aliases.sh ]; then
   . ~/.dotfiles/posixshells/posix_aliases.sh
 fi
 
+if [ -f ~/.dotfiles/posixshells/posixshells/posix_installers.sh ]; then
+	. ~/.dotfiles/posixshells/posixshells/posix_installers.sh
+fi
+
 #######################################
 # EXPORTING vars that config settings #
 #######################################
@@ -46,6 +50,9 @@ fi
 export GIT_EDITOR=vim
 export VISUAL=vim
 export EDITOR=vim
+
+# Use lesspipe for binaries
+[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
     ############################
     ## Exporting GIT settings ##
@@ -77,8 +84,12 @@ export EDITOR=vim
   # Fix SSH permissions
   fixsshperms
 
-
-
+  # Set path when running on OSX and from Terminal window
+  if contains "$(uname)" "Darwin"; then
+  	if [ -d ~/Desktop ] && [ "$IN_TERMINAL_APP" ]; then
+      cd ~/Desktop || exit
+    fi
+  fi
 
 
 ## Update, if needed
