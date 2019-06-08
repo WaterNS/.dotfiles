@@ -5,6 +5,8 @@ if [ "$SHLVL" = 1 ]; then
     [ -x /usr/bin/clear_console ] && /usr/bin/clear_console -q
 fi
 
+history -c
+
 if [ -f "$HOME/.logout" ]; then
   . "$HOME/.logout"
 fi
