@@ -6,13 +6,19 @@ if [ -f "$HOME/.dotfiles/posixshells/sh_prompt/prompt_git_function" ];then
 fi
 
 ps1() {
-  # DEFINE: Last Exit code: get and set colors
+  # DEFINE: Last Exit code: set color of prompt symbol (based on last exit code)
   PS1_PrevCmdExitCode=$?
   if [ "$PS1_PrevCmdExitCode" -eq 0 ]; then
     SHELL_SYMBOL=$(printf '%s%s%s' "$C_SUCCESS" "$PS_SYMBOL" "$RESET")
   else
     SHELL_SYMBOL=$(printf '%s%s%s' "$C_FAILURE" "$PS_SYMBOL" "$RESET")
   fi
+
+  # DEFINE: Title (if xterm/rxvt/others?)
+  case "$TERM" in
+  	xterm*|rxvt*) PS1_TITLE=$(printf '\[\e]0;\u@\h:\w\a\]');;
+  	*) ;;
+  esac
 
   # DEFINE: User@host:workingdir entry
   PS1_USER=$(printf '%s%s\u%s' "$C_BOLD" "$C_LGREEN" "$RESET")
@@ -22,7 +28,7 @@ ps1() {
 
   PS1_GIT="$RESET$(git_prompt)$RESET"
 
-  PS1="$PS1_USER @ $PS1_HOST:$PS1_WORKDIR $PS1_GIT $SHELL_SYMBOL "
+  PS1="$PS1_TITLE$PS1_USER @ $PS1_HOST:$PS1_WORKDIR $PS1_GIT $SHELL_SYMBOL "
 }
 
 # Wider compatibility with OSX Terminal (vs directly assigning PS1)
