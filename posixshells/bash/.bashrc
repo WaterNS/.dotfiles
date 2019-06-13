@@ -31,8 +31,8 @@ if [ -f ~/.bash_aliases ]; then
 	. ~/.bash_aliases
 fi
 
-if [ -f ~/.dotfiles/posixshells/bash/bashprompt/bash_prompt ]; then
-	. ~/.dotfiles/posixshells/bash/bashprompt/bash_prompt
+if [ -f ~/.dotfiles/posixshells/posix_prompt ]; then
+	. ~/.dotfiles/posixshells/posix_prompt
 fi
 
 #############################################
