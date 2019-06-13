@@ -35,8 +35,8 @@ if [ -f ~/.dotfiles/posixshells/posix_aliases.sh ]; then
   . ~/.dotfiles/posixshells/posix_aliases.sh
 fi
 
-if [ -f ~/.dotfiles/posixshells/posixshells/posix_installers.sh ]; then
-	. ~/.dotfiles/posixshells/posixshells/posix_installers.sh
+if [ -f ~/.dotfiles/posixshells/posix_installers.sh ]; then
+	. ~/.dotfiles/posixshells/posix_installers.sh
 fi
 
 #######################################
