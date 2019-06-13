@@ -1,0 +1,178 @@
+#!/bin/sh
+
+# Source prompt colors/symbols
+if [ -f "$HOME/.dotfiles/posixshells/sh_prompt/prompt_colors" ];then
+  . "$HOME/.dotfiles/posixshells/sh_prompt/prompt_colors"
+fi
+
+git_prompt() {
+
+hash git 2>/dev/null || return # git not found
+
+git_eng="env LANG=C git"   # force git output in English to make our work easier
+
+# get current branch name
+__ref=$($git_eng symbolic-ref --short HEAD 2>/dev/null)
+
+# Check if branch or use tag/SHA
+if [ -n "$__ref" ]; then
+  # prepend branch symbol
+  __ref="$SYMBOL_GIT_BRANCH $__ref"
+else
+  # get tag name or short unique hash
+  __ref=$($git_eng describe --tags --always 2>/dev/null)
+fi
+
+[ -n "$__ref" ] || return  # not a git repo
+
+#Git Fetch sequence:
+# Last Reflog: Last time upstream was updated
+# Last Fetch: Last time fetch/pull was ATTEMPTED
+# Between the two can identify when last updated or attempted a fetch.
+
+#-- Check to see if this branch has an upstream, cause if doesn't, we don't need to fetch
+if [ "$($git_eng config --get branch."$($git_eng rev-parse --abbrev-ref HEAD)".merge)" ]; then
+  __MaxFetchSeconds=600
+  __upstream=$(git rev-parse --abbrev-ref "@{upstream}")
+  __gitdir=$(git rev-parse --git-dir)
+
+  __lastreflog=$($git_eng reflog show --date=unix "$__upstream" -n1 | grep -o "{.*}" | tr -d '{}')
+  if [ -z "$__lastreflog" ]; then
+    if [ "$PS1_DARWIN" ]; then
+      __lastreflog=$(date -j -v-${__MaxFetchSeconds}S +%s)
+    else
+      __lastreflog=$(date --date "-${__MaxFetchSeconds} sec")
+    fi
+  fi
+
+  if [ "$PS1_DARWIN" ]; then
+    __lastfetch=$(stat -f "%m" "$__gitdir/FETCH_HEAD")
+  else
+    __lastfetch=$(date +%s -r "$__gitdir/FETCH_HEAD")
+  fi
+
+  __TimeSinceReflog=$(( $(date +%s) - __lastreflog ))
+  __TimeSinceFetch=$(( $(date +%s) - __lastfetch ))
+  #echo "Time since last reflog: $TimeSinceReflog"
+  #echo "Time since last fetch: $TimeSinceFetch"
+  if [ "$__TimeSinceReflog" -gt "$__MaxFetchSeconds" ] && [ "$__TimeSinceFetch" -gt "$__MaxFetchSeconds" ]; then
+    git fetch --all > /dev/null
+  fi
+fi
+
+#Identify stashes
+__stashes=$($git_eng stash list 2>/dev/null)
+if [ -n "$__stashes" ]; then
+  __git_stashed_count=$(printf "%s" "$__stashes" | grep -c ^)
+fi
+
+#Parse `git status --porcelain --branch` output
+# POSIX way to loop through array Ref: https://unix.stackexchange.com/a/103011
+# where objects are not expected to have newlines (so newline is safe IFS)
+gitstatusoutput=$($git_eng status --porcelain --branch 2>/dev/null)
+set -f; IFS='
+'                           # turn off variable value expansion except for splitting at newlines
+for __line in $gitstatusoutput; do
+  set +f; unset IFS
+
+  if printf '%s' "$__line" | grep -q ^'##'; then # header line
+
+    #Identify number of commits ahead
+    if printf '%s' "$__line" | grep -qo 'ahead\ [0-9]*'; then
+      ahead=$(printf '%s' "$__line" | grep -o 'ahead\ [0-9]*' | grep -o '[0-9]\+')
+      marks=$(printf '%s %s' "$marks" "$SYMBOL_GIT_PUSH")
+      marks=$(printf '%s%s%s%s' "$marks" "$C_GREEN" "$ahead" "$RESET")
+      unset ahead
+    fi
+
+    #Identify number of commits behind
+    if printf '%s' "$__line" | grep -qo 'behind\ [0-9]*'; then
+      behind=$(printf '%s' "$__line" | grep -o 'behind\ [0-9]*' | grep -o '[0-9]\+')
+      marks=$(printf '%s %s' "$marks" "$SYMBOL_GIT_PULL")
+      marks=$(printf '%s%s%s%s' "$marks" "$C_YELLOW" "$behind" "$RESET")
+      unset behind
+    fi
+
+  #Identify Added/Untracked files
+  elif printf '%s' "$__line" | grep -q '^A[[:blank:]][[:blank:]]'; then
+    __git_index_added_count=$((__git_index_added_count + 1))
+  elif printf '%s' "$__line" | grep -q '^??[[:blank:]]'; then
+    __git_untracked_count=$((__git_untracked_count + 1))
+
+  #Identify Added & Modified files
+  elif printf '%s' "$__line" | grep -q '^AM[[:blank:]]'; then
+    __git_index_added_count=$((__git_index_added_count + 1))
+    __git_modified_count=$((__git_modified_count + 1))
+
+  #Identify Renamed files
+  elif printf '%s' "$__line" | grep -q '^R[[:blank:]][[:blank:]]'; then
+    git_index_renamed_count=$((git_index_renamed_count + 1))
+
+  #Identify Modified files
+  elif printf '%s' "$__line" | grep -q '^MM[[:blank:]]'; then
+    __git_index_modified_count=$((__git_index_modified_count + 1))
+    __git_modified_count=$((__git_modified_count + 1))
+  elif printf '%s' "$__line" | grep -q '^M[[:blank:]][[:blank:]]'; then
+    __git_index_modified_count=$((__git_index_modified_count + 1))
+  elif printf '%s' "$__line" | grep -q '^[[:blank:]]M[[:blank:]]'; then
+    __git_modified_count=$((__git_modified_count + 1))
+
+  #Identify Deleted files
+  elif printf '%s' "$__line" | grep -q '^D[[:blank:]][[:blank:]]'; then
+    __git_index_deleted_count=$((__git_index_deleted_count + 1))
+  elif printf '%s' "$__line" | grep -q '^[[:blank:]]D[[:blank:]]'; then
+    __git_deleted_count=$((__git_deleted_count + 1))
+  fi
+
+done
+set +f; unset IFS           # do it again in case $INPUT was empty
+unset gitstatusoutput
+
+if [ "$__git_index_added_count" ]; then
+  marks=$(printf '%s %s%s%s' "$marks" "$C_LWHITE" "Ai:" "$RESET")
+  marks=$(printf '%s%s%s%s' "$marks" "$C_LGREEN" "$__git_index_added_count" "$RESET")
+fi
+if [ "$git_index_renamed_count" ]; then
+  marks=$(printf '%s %s%s%s' "$marks" "$C_LWHITE" "Ri:" "$RESET")
+  marks=$(printf '%s%s%s%s' "$marks" "$C_LBLUE" "$git_index_renamed_count" "$RESET")
+fi
+if [ "$__git_index_modified_count" ]; then
+  marks=$(printf '%s %s%s%s' "$marks" "$C_LWHITE" "Mi:" "$RESET")
+  marks=$(printf '%s%s%s%s' "$marks" "$C_LYELLOW" "$__git_index_modified_count" "$RESET")
+fi
+if [ "$__git_index_deleted_count" ]; then
+  marks=$(printf '%s %s%s%s' "$marks" "$C_LWHITE" "Di:" "$RESET")
+  marks=$(printf '%s%s%s%s' "$marks" "$C_LRED" "$__git_index_deleted_count" "$RESET")
+fi
+
+if [ "$__git_index_added_count" ] || [ "$git_index_renamed_count" ] || [ "$__git_index_modified_count" ] || [ "$__git_index_deleted_count" ]; then
+  if [ "$__git_modified_count" ] || [ "$__git_deleted_count" ]; then
+    marks=$(printf '%s |' "$marks")
+  fi
+fi
+
+if [ "$__git_modified_count" ]; then
+  marks=$(printf '%s %s%s%s' "$marks" "$C_LWHITE" "M:" "$RESET")
+  marks=$(printf '%s%s%s%s' "$marks" "$C_LYELLOW" "$__git_modified_count" "$RESET")
+fi
+if [ "$__git_deleted_count" ]; then
+  marks=$(printf '%s %s%s%s' "$marks" "$C_LWHITE" "D:" "$RESET")
+  marks=$(printf '%s%s%s%s' "$marks" "$C_LRED" "$__git_deleted_count" "$RESET")
+fi
+
+if [ "$__git_untracked_count" ] || [ "$__git_stashed_count" ]; then
+  marks=$(printf '%s |' "$marks")
+fi
+if [ "$__git_untracked_count" ]; then
+  marks=$(printf '%s %s%s%s' "$marks" "$C_LWHITE" "untracked:" "$RESET")
+  marks=$(printf '%s%s%s%s' "$marks" "$C_LRED" "$__git_untracked_count" "$RESET")
+fi
+if [ "$__git_stashed_count" ]; then
+  marks=$(printf '%s %s%s%s' "$marks" "$C_LWHITE" "stashes:" "$RESET")
+  marks=$(printf '%s%s%s%s' "$marks" "$C_LYELLOW" "$__git_stashed_count" "$RESET")
+fi
+
+# print the git branch segment without a trailing newline
+# shellcheck disable=SC2059 #Edge case where printf shouldn't escape marks
+printf "[ $__ref$marks ]"
+}
