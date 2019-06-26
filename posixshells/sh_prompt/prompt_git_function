@@ -45,10 +45,14 @@ if [ "$($git_eng config --get branch."$($git_eng rev-parse --abbrev-ref HEAD)".m
     fi
   fi
 
-  if [ "$PS1_DARWIN" ]; then
-    __lastfetch=$(stat -f "%m" "$__gitdir/FETCH_HEAD")
+  if [ -f "$__gitdir/FETCH_HEAD" ]; then
+    if [ "$PS1_DARWIN" ]; then
+      __lastfetch=$(stat -f "%m" "$__gitdir/FETCH_HEAD")
+    else
+      __lastfetch=$(date +%s -r "$__gitdir/FETCH_HEAD")
+    fi
   else
-    __lastfetch=$(date +%s -r "$__gitdir/FETCH_HEAD")
+    __lastfetch=0
   fi
 
   __TimeSinceReflog=$(( $(date +%s) - __lastreflog ))
