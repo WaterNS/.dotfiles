@@ -10,6 +10,11 @@ if [ -x "$(command -v vim)" ]; then
   alias vim='vim -i NONE'
 fi
 
+# Alias `tldr` to help`
+if fn_exists "help"; then
+  alias tldr='help'
+fi
+
 # alias common git commands to shorthand
 if [ -x "$(command -v git)" ]; then
   alias status='git status'
