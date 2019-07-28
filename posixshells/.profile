@@ -84,8 +84,8 @@ export EDITOR=vim
   fixsshperms
 
   # Set path when running on OSX and from Terminal window
-  if DidTerminalCallShell; then
-    if contains "$(uname)" "Darwin"; then
+  if contains "$(uname)" "Darwin"; then
+    if DidTerminalCallShell; then
       if [ -d "$HOME/Desktop" ]; then
         cd ~/Desktop || exit
       fi

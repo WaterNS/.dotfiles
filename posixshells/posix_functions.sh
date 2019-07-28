@@ -105,7 +105,7 @@ fn_exists() {
   fi
 }
 
-rootpid() {
+rootpid() { #Ref: https://stackoverflow.com/a/34765059/7650275
   if [ "$1" ]; then
     case ${1#[-+]} in
       *[!0-9]* | '') catchterm=$1 ;;
