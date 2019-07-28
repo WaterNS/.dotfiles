@@ -28,7 +28,7 @@ ps1() {
 
   PS1_GIT="$RESET$(git_prompt)$RESET"
 
-  PS1="$PS1_TITLE$PS1_USER @ $PS1_HOST:$PS1_WORKDIR $PS1_GIT $SHELL_SYMBOL "
+  PS1="$PS1_TITLE$PS1_USER @ $PS1_HOST:$PS1_WORKDIR$PS1_GIT $SHELL_SYMBOL "
 }
 
 # Wider compatibility with OSX Terminal (vs directly assigning PS1)

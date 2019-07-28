@@ -178,5 +178,5 @@ fi
 
 # print the git branch segment without a trailing newline
 # shellcheck disable=SC2059 #Edge case where printf shouldn't escape marks
-printf "[ $__ref$marks ]"
+printf " [ $__ref$marks ]"
 }
