@@ -14,14 +14,16 @@ ps1() {
     SHELL_SYMBOL=$(printf '%s%s%s' "$C_FAILURE" "$PS_SYMBOL" "$RESET")
   fi
 
+  user="\u" #Ref: https://unix.stackexchange.com/questions/429433/using-printf-when-string-has-backslash
+
   # DEFINE: Title (if xterm/rxvt/others?)
   case "$TERM" in
-  	xterm*|rxvt*) PS1_TITLE=$(printf '\[\e]0;\u@\h:\w\a\]');;
+  	xterm*|rxvt*) PS1_TITLE=$(printf '\[\e]0;%s@\h:\w\a\]' "$user");;
   	*) ;;
   esac
 
   # DEFINE: User@host:workingdir entry
-  PS1_USER=$(printf '%s%s\u%s' "$C_BOLD" "$C_LGREEN" "$RESET")
+  PS1_USER=$(printf '%s%s%s%s' "$C_BOLD" "$C_LGREEN" "$user" "$RESET")
   PS1_HOST=$(printf '%s%s\h%s' "$C_BOLD" "$C_LGREEN" "$RESET")
   PS1_WORKDIR=$(printf '%s%s\w%s' "$C_BOLD" "$C_LBLUE" "$RESET")
 
