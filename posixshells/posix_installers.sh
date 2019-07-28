@@ -257,7 +257,7 @@ install_lsd () {
 
 install_prettyping () {
     if [ ! -x "$(command -v prettyping)" ]; then
-      if contains "$(uname)" "Darwin" || contains "$(uname)" "linux"; then
+      if contains "$(uname)" "Darwin" || contains "$(uname)" "Linux"; then
         echo "NOTE: prettyping not found, availing into dotfiles bin"
         echo "------------------------------------------------"
 
