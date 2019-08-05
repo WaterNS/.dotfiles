@@ -4,7 +4,7 @@ Function install-jq {
     "------------------------------------------------"
     [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
     $local:jq="https://api.github.com/repos/stedolan/jq/releases/latest"
-    $local:latest=$(Invoke-WebRequest $jq | Select-Object content | Get-URLs | Select-String "win64" | Select-Object -ExpandProperty line)
+    $local:latest=$(Invoke-WebRequest $jq -UseBasicParsing | Select-Object content | Get-URLs | Select-String "win64" | Select-Object -ExpandProperty line)
 
     "Downloading jq..."
     Powershell-FileDownload "$latest" -o "$HOME/.dotfiles/opt/bin/jq.exe"
@@ -41,7 +41,7 @@ Function install-shfmt {
     "------------------------------------------------"
     [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
     $local:shfmt="https://api.github.com/repos/mvdan/sh/releases/latest"
-    $local:latest=$(Invoke-WebRequest $shfmt | Select-Object content | Get-URLs | Select-String "windows_amd64" | Select-Object -ExpandProperty line)
+    $local:latest=$(Invoke-WebRequest $shfmt -UseBasicParsing | Select-Object content | Get-URLs | Select-String "windows_amd64" | Select-Object -ExpandProperty line)
 
     "Downloading shfmt..."
     Powershell-FileDownload "$latest" -o "$HOME/.dotfiles/opt/bin/shfmt.exe"
