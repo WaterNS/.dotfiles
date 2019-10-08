@@ -1,5 +1,10 @@
 #!/bin/sh
 
+
+if notcontains "$PATH" "$HOME/.dotfiles/opt/bin"; then
+  PATH=$PATH:~/.dotfiles/opt/bin #Include dotfiles bin
+fi
+
 install_diffsofancy () {
   #Git: diff-so-fancy (better git diff)
   if [ ! -f "$HOMEREPO/opt/bin/diff-so-fancy" ]; then
