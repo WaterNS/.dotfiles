@@ -5,12 +5,21 @@ help () {
   curl -s cheat.sh/"$1" | less
 }
 
-# pubkey function to spit out pubkey
 pubkey () {
-  cat "$HOME/.ssh/id_rsa.pub";
-  if [ -x "$(command -v pbcopy)" ]; then
-    printf "%s" "$(cat ~/.ssh/id_rsa.pub)" | pbcopy
-    printf '\nCopied to Clipboard!\n'
+  if [ "$1" ]; then
+    file=$1
+  else
+    file=id_rsa
+  fi
+
+  if [ -f "$HOME/.ssh/$file.pub" ]; then
+    cat "$HOME/.ssh/$file.pub";
+    if [ -x "$(command -v pbcopy)" ]; then
+      printf "%s" "$(cat ~/.ssh/$file.pub)" | pbcopy
+      printf '\nCopied to Clipboard!\n'
+    fi
+  else
+    printf "Didn't find ~/.ssh/%s.pub, aborting...\n" "$file"
   fi
 }
 
