@@ -116,6 +116,10 @@ cd "$HOMEREPO" || exit
 git config user.name "User"
 git config user.email waterns@users.noreply.github.com
 git config push.default matching
+if [ ! -f ~/.ssh/id_rsa ] || [ ! -f ~/.ssh/WaterNS ]; then
+  echo "Creating ~/.ssh/WaterNS"
+  ssh-keygen -t rsa -b 4096 -f ~/.ssh/WaterNS -N ""
+fi
 if [ -f ~/.ssh/WaterNS ]; then
 	git config core.sshCommand "ssh -i ~/.ssh/WaterNS"
 fi
