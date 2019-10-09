@@ -28,7 +28,27 @@ fixsshperms ()
   if [ -d ~/.ssh ]; then
     chmod 700 ~/.ssh
     chmod 644 ~/.ssh/*.pub
-    find ~/.ssh -type f -iname "id*" -not -path "*.pub" -print0 | xargs -0 chmod 600
+
+    # More comprehensive version of: find ~/.ssh -type f -iname "id*" -not -path "*.pub" -print0 | xargs -0 chmod 600
+
+    # Ref: https://unix.stackexchange.com/a/103011
+    # POSIX way to loop through array where objects are not expected to have newlines (so newline is safe IFS)
+    files=$(find "$HOME/.ssh" -type f -not -path "*.pub")
+    excludedfiles="authorized_keys known_hosts config"
+    set -f; IFS='
+    '                           # turn off variable value expansion except for splitting at newlines
+    for sshfolderfile in $files; do
+      set +f; unset IFS
+      if notcontains "$excludedfiles" "$(basename "$sshfolderfile")";then
+        if grep -q "PRIVATE KEY" "$sshfolderfile";then
+          chmod 600 "$sshfolderfile"
+        fi
+      fi
+    done
+    set +f; unset IFS           # do it again in case $INPUT was empty
+    unset files
+    unset excludedfiles
+
   fi
 }
 
