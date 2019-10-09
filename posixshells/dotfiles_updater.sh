@@ -31,6 +31,10 @@ elif [ $difftime -gt $maxtime ] || [ ! -f "$HOME/.dotfiles/opt/lastupdate" ]; th
 	echo "------------------"
   exec "$RUNNINGSHELL"
 else
-	echo "Last dotfiles update: $(seconds2time "$difftime") ago / Update Interval: $(seconds2time $maxtime) - [$RUNNINGSHELL] "
+  runningshellversion=$($SHELL --version);
+  if [ "$RUNNINGSHELL" = "zsh" ]; then
+    runningshellversion=$ZSH_VERSION
+  fi
+	echo "Last dotfiles update: $(seconds2time "$difftime") ago / Update Interval: $(seconds2time $maxtime) - [$RUNNINGSHELL $runningshellversion] "
 	#echo "Update <$maxtime seconds ago, skipping dotfiles update"
 fi
