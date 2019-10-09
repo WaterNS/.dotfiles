@@ -109,11 +109,12 @@ if ! grep -q "bashrc" ~/.bash_profile; then
 	echo "source ~/.bashrc" >> ~/.bash_profile
 fi
 
-# Source .zshrc in existing .zprofile (zsh)
-if ! grep -q "zshrc" ~/.zprofile; then
-	echo 'NOTE: .zprofile found, but missing reference to ~/.zshrc, adding!'
-	echo "source ~/.zshrc" >> ~/.zprofile
-fi
+## Below appears to be wrong. Commenting out.
+## Source .zshrc in existing .zprofile (zsh)
+#if ! grep -q "zshrc" ~/.zprofile; then
+#	echo 'NOTE: .zprofile found, but missing reference to ~/.zshrc, adding!'
+#	echo "source ~/.zshrc" >> ~/.zprofile
+#fi
 
 # Set .dotfiles git repo setting
 curpath=$PWD
