@@ -13,6 +13,11 @@ while getopts ":ur" opt ; do
   esac
 done
 
+### Set ZSH to word split IFS
+if [ "$ZSH_VERSION" ]; then
+  setopt sh_word_split
+fi
+
 # Source posix functions
 if [ -f "$HOME/.dotfiles/posixshells/posix_functions.sh" ]; then
   . "$HOME/.dotfiles/posixshells/posix_functions.sh"

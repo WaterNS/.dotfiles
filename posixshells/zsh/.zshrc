@@ -2,6 +2,11 @@
 
 # ZSH: posix/sh->bash->zsh
 
+### Set ZSH to word split IFS
+if [ "$ZSH_VERSION" ]; then
+  setopt sh_word_split
+fi
+
 ### INCLUDE: posix base ##
 . ~/.dotfiles/posixshells/.profile
 
