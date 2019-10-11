@@ -7,6 +7,33 @@ fi
 
 git_prompt() {
 
+  #HACKY FIX: For zsh, add escape char `%` so that "%F{color}" is
+  #not interpeted as printf format. Don't know how to better fix this (yet).
+  if [ "$ZSH_VERSION" ]; then
+    RESET='%%f%%b'
+    C_BOLD='%%B'
+
+    #zsh colors - foreground!
+    C_BLACK='%%F{black}'
+    C_RED='%%F{red}'
+    C_GREEN='%%F{green}'
+    C_YELLOW='%%F{yellow}'
+    C_BLUE='%%F{blue}'
+    C_PURPLE='%%F{purple}'
+    C_CYAN='%%F{cyan}'
+    C_WHITE='%%F{white}'
+
+      #"high intensity" colors
+    C_LBLACK='%%F{8}'
+    C_LRED='%%F{9}'
+    C_LGREEN='%%F{10}'
+    C_LYELLOW='%%F{11}'
+    C_LBLUE='%%F{12}'
+    C_LPURPLE='%%F{13}'
+    C_LCYAN='%%F{14}'
+    C_LWHITE='%%F{15}'
+  fi
+
 hash git 2>/dev/null || return # git not found
 
 git_eng="env LANG=C git"   # force git output in English to make our work easier
