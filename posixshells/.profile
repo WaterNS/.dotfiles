@@ -43,6 +43,10 @@ if [ -f ~/.dotfiles/posixshells/posix_installers.sh ]; then
 	. ~/.dotfiles/posixshells/posix_installers.sh
 fi
 
+if [ -f ~/.dotfiles/posixshells/posix_prompt ]; then
+	. ~/.dotfiles/posixshells/posix_prompt
+fi
+
 #######################################
 # EXPORTING vars that config settings #
 #######################################

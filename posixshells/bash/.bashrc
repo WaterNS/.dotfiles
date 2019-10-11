@@ -31,10 +31,6 @@ if [ -f ~/.bash_aliases ]; then
 	. ~/.bash_aliases
 fi
 
-if [ -f ~/.dotfiles/posixshells/posix_prompt ]; then
-	. ~/.dotfiles/posixshells/posix_prompt
-fi
-
 #############################################
 
 # Bash: Running interactively?
