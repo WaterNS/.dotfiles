@@ -1,48 +1,75 @@
 #!/bin/sh
 
-## On `tput` vs RAW TERMINAL color codes
-# Raw terminal codes are not as widely portable
-# tput will generate approriate code for terminal running
-# Raw terminal codes are madness
+if [ "$ZSH_VERSION" ]; then
+  #Ref: https://jlk.fjfi.cvut.cz/arch/manpages/man/zshmisc.1#Visual_effects
+  RESET='%f%b'
+  C_BOLD='%B'
 
-# tput:
-#  sgr0 #Turn off all attributes
-#  setaf <value> # Set foreground color
-#  setab <value> # Set background color
-#  bold/smul/smso # bold/underline etc, see http://linuxcommand.org/lc3_adv_tput.php
+  #zsh colors - foreground!
+  C_BLACK='%F{black}'
+  C_RED='%F{red}'
+  C_GREEN='%F{green}'
+  C_YELLOW='%F{yellow}'
+  C_BLUE='%F{blue}'
+  C_PURPLE='%F{purple}'
+  C_CYAN='%F{cyan}'
+  C_WHITE='%F{white}'
 
-#tput'ed sequences
-readonly RESET="\[$(tput sgr0)\]"
-readonly C_BOLD="\[$(tput bold)\]"
+    #"high intensity" colors
+  C_LBLACK='%F{8}'
+  C_LRED='%F{9}'
+  C_LGREEN='%F{10}'
+  C_LYELLOW='%F{11}'
+  C_LBLUE='%F{12}'
+  C_LPURPLE='%F{13}'
+  C_LCYAN='%F{14}'
+  C_LWHITE='%F{15}'
 
-#tput'ed colors - foreground!
-readonly C_BLACK="\[$(tput setaf 0)\]"
-readonly C_RED="\[$(tput setaf 1)\]"
-readonly C_GREEN="\[$(tput setaf 2)\]"
-readonly C_YELLOW="\[$(tput setaf 3)\]"
-readonly C_BLUE="\[$(tput setaf 4)\]"
-readonly C_PURPLE="\[$(tput setaf 5)\]"
-readonly C_CYAN="\[$(tput setaf 6)\]"
-readonly C_WHITE="\[$(tput setaf 7)\]"
+else #Other POSIX shells (bash, sh, etc - use tput)
+  ## On `tput` vs RAW TERMINAL color codes
+  # Raw terminal codes are not as widely portable
+  # tput will generate approriate code for terminal running
+  # Raw terminal codes are madness
 
-  #"high intensity" colors
-readonly C_LBLACK="\[$(tput setaf 8)\]"
-readonly C_LRED="\[$(tput setaf 9)\]"
-readonly C_LGREEN="\[$(tput setaf 10)\]"
-readonly C_LYELLOW="\[$(tput setaf 11)\]"
-readonly C_LBLUE="\[$(tput setaf 12)\]"
-readonly C_LPURPLE="\[$(tput setaf 13)\]"
-readonly C_LCYAN="\[$(tput setaf 14)\]"
-readonly C_LWHITE="\[$(tput setaf 15)\]"
+  # tput:
+  #  sgr0 #Turn off all attributes
+  #  setaf <value> # Set foreground color
+  #  setab <value> # Set background color
+  #  bold/smul/smso # bold/underline etc, see http://linuxcommand.org/lc3_adv_tput.php
 
-readonly C_SUCCESS=$C_GREEN
-readonly C_FAILURE=$C_RED
+  #tput'ed sequences
+  RESET="\[$(tput sgr0)\]"
+  C_BOLD="\[$(tput bold)\]"
+
+  #tput'ed colors - foreground!
+  C_BLACK="\[$(tput setaf 0)\]"
+  C_RED="\[$(tput setaf 1)\]"
+  C_GREEN="\[$(tput setaf 2)\]"
+  C_YELLOW="\[$(tput setaf 3)\]"
+  C_BLUE="\[$(tput setaf 4)\]"
+  C_PURPLE="\[$(tput setaf 5)\]"
+  C_CYAN="\[$(tput setaf 6)\]"
+  C_WHITE="\[$(tput setaf 7)\]"
+
+    #"high intensity" colors
+  C_LBLACK="\[$(tput setaf 8)\]"
+  C_LRED="\[$(tput setaf 9)\]"
+  C_LGREEN="\[$(tput setaf 10)\]"
+  C_LYELLOW="\[$(tput setaf 11)\]"
+  C_LBLUE="\[$(tput setaf 12)\]"
+  C_LPURPLE="\[$(tput setaf 13)\]"
+  C_LCYAN="\[$(tput setaf 14)\]"
+  C_LWHITE="\[$(tput setaf 15)\]"
+fi
+
+C_SUCCESS=$C_GREEN
+C_FAILURE=$C_RED
 
 #Prompt Symbols
-readonly SYMBOL_GIT_BRANCH='⑂'
-readonly SYMBOL_GIT_MODIFIED='*'
-readonly SYMBOL_GIT_PUSH='↑'
-readonly SYMBOL_GIT_PULL='↓'
+SYMBOL_GIT_BRANCH='⑂'
+SYMBOL_GIT_MODIFIED='*'
+SYMBOL_GIT_PUSH='↑'
+SYMBOL_GIT_PULL='↓'
 
 # OS specific symbol
 if [ -z "$PS_SYMBOL" ]; then
