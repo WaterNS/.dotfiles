@@ -115,7 +115,7 @@ install_phantomjs () {
         echo "NOTE: phantomjs not found, installing into dotfiles bin"
         echo "------------------------------------------------"
         phantomjs="http://phantomjs.org/download.html"
-        latest=$(curl $phantomjs | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep osx.zip)
+        latest=$(curl -L $phantomjs | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep osx.zip)
         curl -L "$latest" -o /tmp/phantomjs.zip; echo ""
 
         unzip -j "/tmp/phantomjs.zip" "*/bin/phantomjs" -d "$HOME/.dotfiles/opt/bin/"
