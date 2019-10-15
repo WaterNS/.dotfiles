@@ -134,11 +134,20 @@ install_phantomjs () {
 
 install_jq () {
     if [ ! -x "$(command -v jq)" ]; then
-      if contains "$(uname)" "Darwin"; then
+      if contains "$(uname)" "Darwin" || contains "$(uname)" "Linux"; then
         echo "NOTE: jq not found, availing into dotfiles bin"
         echo "------------------------------------------------"
         jq="https://api.github.com/repos/stedolan/jq/releases/latest"
-        latest=$(curl $jq -s  | grep url | grep osx | sed 's/.*\(http[s?]:\/\/.*[^"]\).*/\1/')
+        if contains "$(uname)" "Darwin"; then
+          oskeyword="osx"
+        elif contains "$(uname)" "Linux"; then
+          oskeyword="linux64"
+        else
+          echo "Unable to install jq - OS version doesn't have supported function"
+          return
+        fi
+
+        latest=$(curl $jq -s  | grep url | grep "$oskeyword" | sed 's/.*\(http[s?]:\/\/.*[^"]\).*/\1/')
         curl -L "$latest" -o /tmp/jq; echo ""
 
         chmod +x /tmp/jq
