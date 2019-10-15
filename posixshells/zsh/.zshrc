@@ -13,8 +13,8 @@ fi
 ############################################
 # INCLUDES
 ############################################
-if [ -f ~/.dotfiles/posixshells/bash/bash_functions ]; then
-	. ~/.dotfiles/posixshells/bash/bash_functions
+if [ -f ~/.dotfiles/posixshells/modernshell_functions ]; then
+	. ~/.dotfiles/posixshells/modernshell_functions
 fi
 
 if [ -f ~/.bash_aliases ]; then
