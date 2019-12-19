@@ -9,7 +9,7 @@
   },
   "git.autofetch": true,
   "workbench.colorTheme": "Monokai",
-  "terminal.integrated.rendererType": "dom",
+  "terminal.integrated.rendererType": "experimentalWebgl",
   "diffEditor.ignoreTrimWhitespace": false,
   "telemetry.enableTelemetry": false,
   "workbench.startupEditor": "newUntitledFile",
