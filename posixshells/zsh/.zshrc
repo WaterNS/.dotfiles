@@ -5,6 +5,7 @@
 ### Set ZSH to word split IFS
 if [ "$ZSH_VERSION" ]; then
   setopt sh_word_split
+  setopt +o nomatch # https://unix.stackexchange.com/questions/310540/how-to-get-rid-of-no-match-found-when-running-rm
 fi
 
 ### INCLUDE: posix base ##
