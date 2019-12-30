@@ -15,8 +15,13 @@ while IFS=  read -r -d $'\0'; do
   filenameNoExt="${filename%.*}"
 
   if [[ $filenameNoExt == *'$'* ]];then
-    if [[ $filenameNoExt =~ -?\$[0-9]+([.][0-9]+)?$ ]] ;then
-      array+=("${BASH_REMATCH[0]//$/}")
+    dollaramtregex='-?\$[0-9]+[.]?[0-9]+'
+    if [[ $filenameNoExt =~ $dollaramtregex ]] ;then
+      if contains "$RUNNINGSHELL" "zsh"; then
+        array+=("${MATCH//$/}")
+      else
+        array+=("${BASH_REMATCH[0]//$/}")
+      fi
     else
       echo "Not amount: $filename"
     fi
