@@ -51,3 +51,5 @@ fi
 # Bash: Enable ZSH like tab completion functionality
 bind 'set show-all-if-ambiguous on'
 bind 'TAB:menu-complete'
+
+#MYEOF
