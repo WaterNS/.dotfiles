@@ -19,6 +19,7 @@ Function updategitrepo {
     #HACK FIX for Azure Hosted Shell
     if ($env:ACC_CLOUD) {
       #Azure Shell like to inject crap into .bashrc. Hack fix for now
+      "HACKFIX for AzureShell: Reverting 'posixshells/bash/.bashrc' to HEAD to allow updating..."
       git checkout HEAD -- posixshells/bash/.bashrc
     }
 
