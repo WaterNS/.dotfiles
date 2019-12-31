@@ -1,3 +1,41 @@
+Function updategitrepo {
+  param (
+    $reponame=$($args[0]),
+    $description=$($args[1]),
+    $repolocation=$($args[2])
+  )
+
+  $olddir=$PWD
+  ""
+  "-Check updates: $reponame ($description)"
+  cd "$repolocation"
+  git fetch
+
+  if ((git rev-list --count master..origin/master) -gt 0) {
+    Write-Host "--Updating $reponame $description repo " -NoNewline
+    Write-Host "(from $(git rev-parse --short master) to " -NoNewline
+    Write-Host "$(git rev-parse --short origin/master))" -NoNewline
+
+    #HACK FIX for Azure Hosted Shell
+    if ($env:ACC_CLOUD) {
+      #Azure Shell like to inject crap into .bashrc. Hack fix for now
+      git checkout HEAD -- posixshells/bash/.bashrc
+    }
+
+
+    git pull --quiet
+
+    # Restart the init script if it self updated
+    if ("$reponame" -eq "dotfiles") {
+      cd $olddir
+      ""
+      ""
+      Invoke-Expression -Command ("$SCRIPTPATH $cmdargs")
+    }
+  }
+
+  cd $olddir
+}
 Function Check-Command($cmdname)
 {
     return [bool](Get-Command -Name $cmdname -ErrorAction SilentlyContinue)

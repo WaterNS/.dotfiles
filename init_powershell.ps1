@@ -3,13 +3,6 @@
   [switch][Alias('r')]$reinit
 )
 
-# ToDo:
-# - Everything else
-#    - foreach dot file linking?
-#    - install less (for diff-so-fancy?)
-#    - recreate .bashrc?
-
-
 $SCRIPTDIR=$PSScriptRoot
 $SCRIPTPATH=$PSCommandPath
 $SCRIPTARGS=$PSBoundParameters
@@ -19,37 +12,6 @@ $HOMEREPO="$HOME\.dotfiles"
 $cmdargs=""
 foreach ($arg in $SCRIPTARGS.GetEnumerator()) {
   $cmdargs+="-"+$arg.key
-}
-
-Function updategitrepo {
-  param (
-    $reponame=$($args[0]),
-    $description=$($args[1]),
-    $repolocation=$($args[2])
-  )
-
-  $olddir=$PWD
-  ""
-  "-Check updates: $reponame ($description)"
-  cd "$repolocation"
-  git fetch
-
-  if ((git rev-list --count master..origin/master) -gt 0) {
-    Write-Host "--Updating $reponame $description repo " -NoNewline
-    Write-Host "(from $(git rev-parse --short master) to " -NoNewline
-    Write-Host "$(git rev-parse --short origin/master))" -NoNewline
-    git pull --quiet
-
-    # Restart the init script if it self updated
-    if ("$reponame" -eq "dotfiles") {
-      cd $olddir
-      ""
-      ""
-      Invoke-Expression -Command ("$SCRIPTPATH $cmdargs")
-    }
-  }
-
-  cd $olddir
 }
 
 #Source our powershell polyfills & functions & installers
