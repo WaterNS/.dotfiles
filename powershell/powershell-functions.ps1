@@ -3,6 +3,16 @@ Function Check-Command($cmdname)
     return [bool](Get-Command -Name $cmdname -ErrorAction SilentlyContinue)
 }
 
+Function Check-OS() {
+  $os = [System.Environment]::OSVersion.Platform
+  if ([System.Environment]::Is64bitProcess) {
+    $os += " x64"
+  } else {
+    $os += " x32"
+  }
+  return $os
+}
+
 #Function to convert seconds to human friendly time format
 Function seconds2time {
 
