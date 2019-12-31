@@ -4,7 +4,7 @@ Function Check-Command($cmdname)
 }
 
 Function Check-OS() {
-  $os = [System.Environment]::OSVersion.Platform
+  $os = "$([System.Environment]::OSVersion.Platform)"
   if ([System.Environment]::Is64bitProcess) {
     $os += " x64"
   } else {
