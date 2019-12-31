@@ -1,6 +1,6 @@
 Function install-jq {
   if (!(Check-Command jq)) {
-    if (Check-OS -like "*win*") {
+    if ((Check-OS) -like "*win*") {
       "NOTE: jq not found, availing into dotfiles bin"
       "------------------------------------------------"
       [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
@@ -21,7 +21,7 @@ Function install-jq {
 
 Function install-shellcheck {
   if (!(Check-Command shellcheck)) {
-    if (Check-OS -like "*win*") {
+    if ((Check-OS) -like "*win*") {
       "NOTE: shellcheck not found, availing into dotfiles bin"
       "------------------------------------------------"
       [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
@@ -41,7 +41,7 @@ Function install-shellcheck {
 
 Function install-shfmt {
   if (!(Check-Command shfmt)) {
-    if (Check-OS -like "*win*") {
+    if ((Check-OS) -like "*win*") {
       "NOTE: shfmt not found, availing into dotfiles bin"
       "------------------------------------------------"
       [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
@@ -62,7 +62,7 @@ Function install-shfmt {
 
 Function install-less {
   if (!(Check-Command less)) {
-    if (Check-OS -like "*win*") {
+    if ((Check-OS) -like "*win*") {
       "NOTE: less not found, availing into dotfiles bin"
       "------------------------------------------------"
       [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
@@ -88,7 +88,7 @@ Function install-less {
 
 Function install-cht {
   if (!(Check-Command cht)) {
-    if (Check-OS -like "*win*") {
+    if ((Check-OS) -like "*win*") {
       "NOTE: cht not found, availing into dotfiles bin"
       "------------------------------------------------"
       #[Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"

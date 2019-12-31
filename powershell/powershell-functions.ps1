@@ -10,7 +10,7 @@ Function Check-OS() {
   } else {
     $os += " x32"
   }
-  return $os
+  return "$os"
 }
 
 #Function to convert seconds to human friendly time format
