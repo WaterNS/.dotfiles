@@ -4,6 +4,11 @@
   "editor.insertspaces": true,
   "editor.detectIndentation": false,
   "editor.autoClosingQuotes": "beforeWhitespace",
+  "editor.rulers": [
+    { "column": 80, "color": "#505050" },
+    { "column": 120, "color": "#FFFFFF" },
+    { "column": 160, "color": "#F00" }
+  ],
   "search.exclude": {
     "<node_modules>/**": true
   },
