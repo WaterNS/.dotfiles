@@ -6,7 +6,7 @@
   "editor.autoClosingQuotes": "beforeWhitespace",
   "editor.rulers": [
     { "column": 80, "color": "#505050" },
-    { "column": 120, "color": "#FFFFFF" },
+    { "column": 120, "color": "#808080" },
     { "column": 160, "color": "#F00" }
   ],
   "search.exclude": {
