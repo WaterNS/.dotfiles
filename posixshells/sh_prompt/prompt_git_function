@@ -153,6 +153,15 @@ done
 set +f; unset IFS           # do it again in case $INPUT was empty
 unset gitstatusoutput
 
+# Count commits on new branch (that doesn't have a remote)
+if [ -n "$__git_ahead_count" ] && [ -n "$(git config --get branch."$__ref".remote)" ]; then
+  __commitsOnBranch=$(git rev-list master.. --count) #TODO: replace 'master' with looked up Parent branch
+  if [ "$__commitsOnBranch" ]; then
+    __git_ahead_count=$__commitsOnBranch
+  fi
+fi
+
+
 if [ "$__git_ahead_count" ]; then
   marks=$(printf '%s %s' "$marks" "$SYMBOL_GIT_PUSH")
   marks=$(printf '%s%s%s%s' "$marks" "$C_GREEN" "$__git_ahead_count" "$RESET")

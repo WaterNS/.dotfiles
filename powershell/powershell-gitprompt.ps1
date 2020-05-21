@@ -71,6 +71,7 @@ if ($symbolicref -ne $NULL) {
         If ($_ -match 'ahead\ ([0-9]+)') {$git_ahead_count=[int]$Matches[1]}
         If ($_ -match 'behind\ ([0-9]+)') {$git_behind_count=[int]$Matches[1]}
       }
+
       #Identify Added/UnTracked files
       elseIf ($_ -match '^A\s\s') {
         $git_index_added_count++
@@ -105,6 +106,15 @@ if ($symbolicref -ne $NULL) {
       }
 
   }
+
+  # Count commits on new branch (that doesn't have a remote)
+  If (!$git_ahead_count -and !$(git config --get branch.$branch.remote)) {
+    $commitsOnBranch = $(git rev-list master.. --count) #TODO: replace 'master' with looked up Parent branch
+    if ($commitsOnBranch) {
+      $git_ahead_count=[int]$commitsOnBranch
+    }
+  }
+
   $branchText+="$marks"
 
 }
