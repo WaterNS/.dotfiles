@@ -110,18 +110,12 @@ for __line in $gitstatusoutput; do
 
     #Identify number of commits ahead
     if printf '%s' "$__line" | grep -qo 'ahead\ [0-9]*'; then
-      ahead=$(printf '%s' "$__line" | grep -o 'ahead\ [0-9]*' | grep -o '[0-9]\+')
-      marks=$(printf '%s %s' "$marks" "$SYMBOL_GIT_PUSH")
-      marks=$(printf '%s%s%s%s' "$marks" "$C_GREEN" "$ahead" "$RESET")
-      unset ahead
+      __git_ahead_count=$(printf '%s' "$__line" | grep -o 'ahead\ [0-9]*' | grep -o '[0-9]\+')
     fi
 
     #Identify number of commits behind
     if printf '%s' "$__line" | grep -qo 'behind\ [0-9]*'; then
-      behind=$(printf '%s' "$__line" | grep -o 'behind\ [0-9]*' | grep -o '[0-9]\+')
-      marks=$(printf '%s %s' "$marks" "$SYMBOL_GIT_PULL")
-      marks=$(printf '%s%s%s%s' "$marks" "$C_YELLOW" "$behind" "$RESET")
-      unset behind
+      __git_behind_count=$(printf '%s' "$__line" | grep -o 'behind\ [0-9]*' | grep -o '[0-9]\+')
     fi
 
   #Identify Added/Untracked files
@@ -158,6 +152,15 @@ for __line in $gitstatusoutput; do
 done
 set +f; unset IFS           # do it again in case $INPUT was empty
 unset gitstatusoutput
+
+if [ "$__git_ahead_count" ]; then
+  marks=$(printf '%s %s' "$marks" "$SYMBOL_GIT_PUSH")
+  marks=$(printf '%s%s%s%s' "$marks" "$C_GREEN" "$__git_ahead_count" "$RESET")
+fi
+if [ "$__git_behind_count" ]; then
+  marks=$(printf '%s %s' "$marks" "$SYMBOL_GIT_PULL")
+  marks=$(printf '%s%s%s%s' "$marks" "$C_YELLOW" "$__git_behind_count" "$RESET")
+fi
 
 if [ "$__git_index_added_count" ]; then
   marks=$(printf '%s %s%s%s' "$marks" "$C_LWHITE" "Ai:" "$RESET")
