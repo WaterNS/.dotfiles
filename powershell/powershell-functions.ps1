@@ -158,10 +158,9 @@ Function gitRemoveOrphanBranches() {
   if (git rev-parse --git-dir 2> $null) {
     git checkout master;
     git remote update origin --prune;
-    git branch -vv |
-      Select-String -Pattern ": gone]" |
-      Where-Object { $_.toString().Trim().Split(" ")[0]} |
-      Where-Object {git branch -D $_}
+    git branch -vv | Select-String -Pattern ": gone]" |
+      ForEach-Object{ $_.toString().Trim().Split(" ")[0] } |
+      ForEach-Object {git branch -D $_}
   } else {
     Write-Host "gitRemoveOrphanBranches:" -NoNewline -BackgroundColor Black -ForegroundColor White
     Write-Host " Error - Not a git repo" -ForegroundColor Yellow
