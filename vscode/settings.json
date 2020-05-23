@@ -1,4 +1,6 @@
 {
+  "window.zoomLevel": 0,
+  "workbench.sideBar.location": "right",
   "editor.renderWhitespace": "boundary",
   "editor.tabSize": 2,
   "editor.insertspaces": true,
