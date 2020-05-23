@@ -1,4 +1,5 @@
-//cSpell Settings
+//cSpell GLOBAL Settings (not workspace specific)
+// Workspace specific settings should go into ${workspace}/.vscode/cspell.json
 {
   "languageSettings": [
     // Comment only spell check in JavaScript, Typescript, JSON/C
