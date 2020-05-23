@@ -1,6 +1,14 @@
 {
+
   "window.zoomLevel": 0,
+  "terminal.integrated.rendererType": "experimentalWebgl",
+  "telemetry.enableTelemetry": false,
+
+  "workbench.colorTheme": "Monokai",
   "workbench.sideBar.location": "right",
+  "workbench.tree.renderIndentGuides": "always",
+  "workbench.startupEditor": "newUntitledFile",
+
   "editor.renderWhitespace": "boundary",
   "editor.tabSize": 2,
   "editor.insertspaces": true,
@@ -11,14 +19,12 @@
     { "column": 120, "color": "#808080" },
     { "column": 160, "color": "#F00" }
   ],
+
   "search.exclude": {
     "<node_modules>/**": true
   },
+
   "git.autofetch": true,
-  "workbench.colorTheme": "Monokai",
-  "terminal.integrated.rendererType": "experimentalWebgl",
-  "diffEditor.ignoreTrimWhitespace": false,
-  "telemetry.enableTelemetry": false,
-  "workbench.startupEditor": "newUntitledFile",
-  "workbench.tree.renderIndentGuides": "always"
+  "diffEditor.ignoreTrimWhitespace": false
+
 }
