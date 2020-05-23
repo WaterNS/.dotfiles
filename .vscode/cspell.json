@@ -1,0 +1,31 @@
+//cSpell Settings
+{
+  "languageSettings": [
+    // Comment only spell check in JavaScript, Typescript, JSON/C
+    {
+      "languageId": "javascript,typescript,json,jsonc",
+      "includeRegExpList": [ "CStyleComment", "strings" ]
+    },
+    // Strings only check for Markdown
+    {
+      "languageId": "markdown",
+      "includeRegExpList": [ "strings" ]
+    }
+  ],
+  "userWords": [
+    "datetime", "blob",  "blobstorage",
+    "oauth", "authed", "auth'ed", "connstring",
+    "authtoken",
+    "hacky",
+    "shortname", "hostnames",
+    "linebreaks", "uniquefield",
+    "formname", "formtitle",
+    "docx", "localsettings",
+    "docs"
+  ],
+  "ignoreWords": [
+    "ify", "sify", // Word-'ify' hacks
+    "ified", "sified", // Word-'ified' hacks
+    "sms", "rsms" // Word-'sms' hacks
+  ]
+}

@@ -18,22 +18,5 @@
   "diffEditor.ignoreTrimWhitespace": false,
   "telemetry.enableTelemetry": false,
   "workbench.startupEditor": "newUntitledFile",
-  "workbench.tree.renderIndentGuides": "always",
-  "cSpell.languageSettings": [
-    // Comment only spell check in JavaScript, Typescript, JSON/C
-    {
-      "languageId": "javascript,typescript,json,jsonc",
-      "includeRegExpList": [
-        "CStyleComment",
-        "strings"
-      ]
-    }
-  ],
-  "cSpell.userWords": [
-    "datetime"
-  ],
-  "cSpell.ignoreWords": [
-    "ify", "sify", // Word-'ify' hacks
-    "ified", "sified" //Word-'ified' hacks
-  ]
+  "workbench.tree.renderIndentGuides": "always"
 }
