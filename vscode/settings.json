@@ -25,6 +25,8 @@
   },
 
   "git.autofetch": true,
-  "diffEditor.ignoreTrimWhitespace": false
+  "diffEditor.ignoreTrimWhitespace": false,
+
+  "cSpell.import": [ "~/.dotfiles/vscode/cSpell.json" ] //Import dotfiles cSpell settings
 
 }

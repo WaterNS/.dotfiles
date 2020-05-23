@@ -1,16 +1,11 @@
 //cSpell GLOBAL Settings (not workspace specific)
-// Workspace specific settings should go into ${workspace}/.vscode/cspell.json
+// Workspace specific settings should go into ${workspace}/.vscode/cSpell.json
 {
   "languageSettings": [
     // Comment only spell check in JavaScript, Typescript, JSON/C
     {
       "languageId": "javascript,typescript,json,jsonc",
       "includeRegExpList": [ "CStyleComment", "strings" ]
-    },
-    // Strings only check for Markdown
-    {
-      "languageId": "markdown",
-      "includeRegExpList": [ "strings" ]
     }
   ],
   "userWords": [
@@ -22,7 +17,8 @@
     "linebreaks", "uniquefield",
     "formname", "formtitle",
     "docx", "localsettings",
-    "docs"
+    "docs",
+    "dotfiles"
   ],
   "ignoreWords": [
     "ify", "sify", // Word-'ify' hacks
