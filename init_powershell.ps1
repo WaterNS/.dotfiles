@@ -105,27 +105,29 @@ If (Test-Path "~\Documents") {
     Write-Output ". $ProfileDotFile" >> $VSCodeProfileFile
   }
 
-  # VS Code settings.json
-  $VSCodeSettingsRepoFile="$HOME\.dotfiles\vscode\settings.json"
-  $VScodeSettingsdir="$env:APPDATA\Code\User\"
-  $VSCodeSettingsFile="$env:APPDATA\Code\User\settings.json"
-  If (-NOT (Test-Path "$VScodeSettingsdir")) {
-    Write-Output "No vscode user dir found, creating"
-    mkdir $VScodeSettingsdir > $null
-  }
-  If (Test-Path "$VSCodeSettingsFile") {
+  # VS Code env config files: settings.json, and perhaps others
+  $VScodeEnvFiles = 'settings.json'
+  foreach ($envFile in $VScodeEnvFiles) {
+    $RepoVSCodeEnvFile="$HOME\.dotfiles\vscode\$envFile"
+    $VSCodeEnvDir="$env:APPDATA\Code\User"
+    $VSCodeEnvFile="$VSCodeEnvDir\$envFile"
 
-    If (-NOT (Get-Item "$VSCodeSettingsFile" | Select-Object -ExpandProperty Target) -like "*VSCodeSettingsRepoFile*") {
-      Write-Output "Found existing VScode file, removing"
-      Remove-Item "$VSCodeSettingsFile"
+    If (-NOT (Test-Path "$VSCodeEnvDir")) {
+      Write-Output "No VSCode user environment directory found, creating..."
+      mkdir $VSCodeEnvDir > $null
+    }
+    If (Test-Path "$VSCodeEnvFile") {
+      If (-NOT (Get-Item "$VSCodeEnvFile" | Select-Object -ExpandProperty Target) -like "*$RepoVSCodeEnvFile*") {
+        Write-Output "Found existing VScode $envFile, moving to ~/.dotfiles incase need to review/crib"
+        Move-Item "$VSCodeEnvFile" -Destination "~/.dotfiles/$((get-date).ToString('M-d-y-HH:mm'))-$envFile"
+      }
     }
 
-  }
-
-  If (-NOT (Test-Path "$VSCodeSettingsFile")) {
-    # Requires Admin Permissions
-    Write-Output "Linking $VSCodeSettingsFile to $VSCodeSettingsRepoFile"
-    New-Item -ItemType SymbolicLink -Path "$VSCodeSettingsFile" -Value "$VSCodeSettingsRepoFile" > $null
+    If (-NOT (Test-Path "$VSCodeEnvFile")) {
+      # Requires Admin Permissions
+      Write-Output "Linking $VSCodeEnvFile to $RepoVSCodeEnvFile"
+      New-Item -ItemType SymbolicLink -Path "$VSCodeEnvFile" -Value "$RepoVSCodeEnvFile" > $null
+    }
   }
 
 }
