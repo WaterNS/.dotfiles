@@ -27,6 +27,6 @@
   "git.autofetch": true,
   "diffEditor.ignoreTrimWhitespace": false,
 
+  "cSpell.enableFiletypes": ["vue"],
   "cSpell.import": [ "~/.dotfiles/vscode/cSpell.json" ] //Import dotfiles cSpell settings
-
 }

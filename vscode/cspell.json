@@ -2,9 +2,9 @@
 // Workspace specific settings should go into ${workspace}/.vscode/cSpell.json
 {
   "languageSettings": [
-    // Comment only spell check in JavaScript, Typescript, JSON/C
+    // Comment only spell check in JavaScript, Typescript, JSON/C, Vue
     {
-      "languageId": "javascript,typescript,json,jsonc",
+      "languageId": "javascript,typescript,json,jsonc, vue",
       "includeRegExpList": [ "CStyleComment", "strings" ]
     }
   ],
@@ -17,8 +17,10 @@
     "linebreaks", "uniquefield",
     "formname", "formtitle",
     "docx", "localsettings",
-    "docs",
-    "dotfiles"
+    "docs", "objs",
+    "dotfiles",
+    "noopener", "noreferrer",
+    "readonly", "mixins", "vuex", "axios", "pathify"
   ],
   "ignoreWords": [
     "ify", "sify", // Word-'ify' hacks
