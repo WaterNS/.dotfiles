@@ -20,7 +20,7 @@ if (git rev-parse --git-dir 2> $null) {
 
 } else {$symbolicref = $NULL}
 
-$goneBranch=$(git branch -vv | Select-String "$branch" | Select-String -Pattern ": gone]")
+$goneBranch=$(git branch -vv | Select-String "$branch" | Select-String -Pattern ": gone]") 2>$NULL
 #$remote = $(git config branch.$branch.remote)
 
 if ($symbolicref -ne $NULL) {
