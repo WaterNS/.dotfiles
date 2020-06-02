@@ -43,6 +43,7 @@ __ref=$($git_eng symbolic-ref --short HEAD 2>/dev/null)
 
 # Check if branch or use tag/SHA
 if [ -n "$__ref" ]; then
+  __branch=$__ref
   # prepend branch symbol
   __ref="$SYMBOL_GIT_BRANCH $__ref"
 else
@@ -154,7 +155,7 @@ set +f; unset IFS           # do it again in case $INPUT was empty
 unset gitstatusoutput
 
 # Count commits on new branch (that doesn't have a remote)
-if [ -z "$__git_ahead_count" ] && [ -z "$(git config --get branch."$__ref".remote)" ]; then
+if [ -z "$__git_ahead_count" ] && [ -z "$(git config --get branch."$__branch".remote)" ]; then
   __commitsOnBranch=$(git rev-list master.. --count) #TODO: replace 'master' with looked up Parent branch
   if [ "$__commitsOnBranch" ]; then
     __git_ahead_count=$__commitsOnBranch
