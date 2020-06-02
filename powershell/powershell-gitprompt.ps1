@@ -20,6 +20,8 @@ if (git rev-parse --git-dir 2> $null) {
 
 } else {$symbolicref = $NULL}
 
+$goneBranch=$(git branch -vv | Select-String "$branch" | Select-String -Pattern ": gone]")
+#$remote = $(git config branch.$branch.remote)
 
 if ($symbolicref -ne $NULL) {
   # Tweak:
@@ -110,6 +112,14 @@ if ($symbolicref -ne $NULL) {
   # Count commits on new branch (that doesn't have a remote)
   If (!$git_ahead_count -and !$(git config --get branch.$branch.remote)) {
     $commitsOnBranch = $(git rev-list master.. --count) #TODO: replace 'master' with looked up Parent branch
+    if ($commitsOnBranch) {
+      $git_ahead_count=[int]$commitsOnBranch
+    }
+  }
+
+  # Count commits on branch that has remote, but remote is empty (e.g cloned empty repo and made some commits)
+  if (!$git_ahead_count -and $goneBranch) {
+    $commitsOnBranch = $(git rev-list $branch --count)
     if ($commitsOnBranch) {
       $git_ahead_count=[int]$commitsOnBranch
     }

@@ -53,13 +53,16 @@ fi
 
 [ -n "$__ref" ] || return  # not a git repo
 
+#Check if Gone or not branch
+__goneBranch=$(git branch -vv | grep "$__branch" | grep ': gone]')
+
 #Git Fetch sequence:
 # Last Reflog: Last time upstream was updated
 # Last Fetch: Last time fetch/pull was ATTEMPTED
 # Between the two can identify when last updated or attempted a fetch.
 
 #-- Check to see if this branch has an upstream, cause if doesn't, we don't need to fetch
-if [ "$($git_eng config --get branch."$($git_eng rev-parse --abbrev-ref HEAD)".merge)" ]; then
+if [ "$($git_eng config --get branch."$($git_eng rev-parse --abbrev-ref HEAD)".merge)" ] && [ -z "$__goneBranch" ]; then
   __MaxFetchSeconds=600
   __upstream=$(git rev-parse --abbrev-ref "@{upstream}")
   __gitdir=$(git rev-parse --git-dir)
@@ -157,6 +160,14 @@ unset gitstatusoutput
 # Count commits on new branch (that doesn't have a remote)
 if [ -z "$__git_ahead_count" ] && [ -z "$(git config --get branch."$__branch".remote)" ]; then
   __commitsOnBranch=$(git rev-list master.. --count) #TODO: replace 'master' with looked up Parent branch
+  if [ "$__commitsOnBranch" ]; then
+    __git_ahead_count=$__commitsOnBranch
+  fi
+fi
+
+# Count commits on branch that has remote, but remote is empty (e.g cloned empty repo and made some commits)
+if [ -z "$__git_ahead_count" ] && [ "$__goneBranch" ]; then
+  __commitsOnBranch=$(git rev-list "$__branch" --count)
   if [ "$__commitsOnBranch" ]; then
     __git_ahead_count=$__commitsOnBranch
   fi
