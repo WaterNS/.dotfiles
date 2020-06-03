@@ -24,9 +24,14 @@
     "<node_modules>/**": true
   },
 
-  "git.autofetch": true,
-  "diffEditor.ignoreTrimWhitespace": false,
-
+  "cSpell.import": ["~/.dotfiles/vscode/cSpell.json"], //Import dotfiles cSpell settings
   "cSpell.enableFiletypes": ["vue"],
-  "cSpell.import": [ "~/.dotfiles/vscode/cSpell.json" ] //Import dotfiles cSpell settings
+
+  "peacock.surpriseMeOnStartup": true, // Window Color: Auto adds a colored window theme on startup
+  "peacock.affectStatusBar": false,
+  "peacock.showColorInStatusBar": false,
+  "peacock.surpriseMeFromFavoritesOnly": true,
+
+  "git.autofetch": true,
+  "diffEditor.ignoreTrimWhitespace": false
 }
