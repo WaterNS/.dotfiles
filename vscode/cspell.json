@@ -12,14 +12,14 @@
     "datetime", "blob",  "blobstorage",
     "oauth", "authed", "auth'ed", "connstring",
     "authtoken",
-    "hacky", "smidge", "upto", "hardcoding", "hardcode",
+    "hacky", "hackjob", "smidge", "upto", "hardcoding", "hardcode",
     "shortname", "hostnames", "stackable",
     "linebreaks", "uniquefield",
     "formname", "formtitle",
     "docx", "localsettings",
     "docs", "objs",
     "dotfiles",
-    "noopener", "noreferrer",
+    "noopener", "noreferrer", "noindex",
     "readonly", "mixins", "vuex", "axios", "pathify"
   ],
   "ignoreWords": [
