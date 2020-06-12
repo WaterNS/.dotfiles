@@ -21,7 +21,8 @@
   ],
 
   "search.exclude": {
-    "<node_modules>/**": true
+    "<node_modules>/**": true,
+    "package-lock.json": true
   },
 
   "cSpell.import": ["~/.dotfiles/vscode/cSpell.json"], //Import dotfiles cSpell settings
