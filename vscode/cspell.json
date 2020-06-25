@@ -11,14 +11,14 @@
   "userWords": [
     "datetime", "blob",  "blobstorage",
     "oauth", "authed", "auth'ed", "connstring",
-    "authtoken",
-    "hacky", "hackjob", "smidge", "upto", "hardcoding", "hardcode",
+    "authtoken", "bday",
+    "hacky", "hackjob", "smidge", "upto", "hardcoding", "hardcode", "automagically",
     "shortname", "hostnames", "stackable", "helloworld",
-    "linebreaks", "uniquefield",
+    "linebreaks", "uniquefield", "hotloads",
     "formname", "formtitle",
     "docx", "localsettings",
     "docs", "objs",
-    "dotfiles",
+    "dotfiles", "fatals",
     "noopener", "noreferrer", "noindex",
     "readonly", "mixins", "vuex", "axios", "pathify"
   ],
