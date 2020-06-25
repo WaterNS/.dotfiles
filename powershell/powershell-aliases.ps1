@@ -14,3 +14,24 @@ if (Check-Command cht) {
   Set-Alias help chtpagenated
   Set-Alias tldr help
 }
+
+# alias common git commands to shorthand
+if (Check-Command git) {
+  Function AliasGitStatus {git status}
+  Set-Alias status AliasGitStatus
+
+  Function AliasGitPush {git push}
+  Set-Alias push AliasGitPush
+
+  Function AliasGitReset {
+    git fetch "$(git config branch.$(git name-rev --name-only HEAD).remote)";
+    git reset "$(git config branch.$(git name-rev --name-only HEAD).remote)/$(git rev-parse --abbrev-ref HEAD)";
+  }
+  Set-Alias gitreset AliasGitReset
+
+  Function AliasGitResetHard {
+    git fetch "$(git config branch.$(git name-rev --name-only HEAD).remote)";
+    git reset --hard "$(git config branch.$(git name-rev --name-only HEAD).remote)/$(git rev-parse --abbrev-ref HEAD)";
+  }
+  Set-Alias gitresethard AliasGitResetHard
+}
