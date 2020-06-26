@@ -213,6 +213,8 @@ if ($symbolicref -ne $NULL) {
 
 $(Write-Host $('>' * ($nestedPromptLevel + 1)) -nonewline -foregroundcolor White)
 
-
+if (Test-Path "$PWD\node_modules\.bin") {
+  Add-EnvPath "$PWD\node_modules\.bin"
+}
 
 return " "}#Powershell requires a return, otherwise defaults to factory prompt

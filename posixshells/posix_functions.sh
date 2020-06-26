@@ -176,3 +176,17 @@ DidTerminalCallShell() {
     return 1
   fi
 }
+
+#Ref/Credit: https://unix.stackexchange.com/a/270558
+# example: pathadd "/foo/bar"
+# example: pathadd "/baz/bat" after
+pathadd() {
+  newelement=${1%/}
+  if [ -d "$1" ] && ! echo "$PATH" | grep -E -q "(^|:)$newelement($|:)" ; then
+      if [ "$2" = "after" ] ; then
+          PATH="$PATH:$newelement"
+      else
+          PATH="$newelement:$PATH"
+      fi
+  fi
+}

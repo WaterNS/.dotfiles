@@ -43,6 +43,11 @@ ps1() {
   else
     PS1="$PS1_TITLE$PS1_USER @ $PS1_HOST:$PS1_WORKDIR$PS1_GIT $SHELL_SYMBOL "
   fi
+
+  #Add local folder node_modules to path if exist
+  if [ -d "$PWD/node_modules/.bin" ]; then
+    pathadd "$PWD/node_modules/.bin" after;
+  fi
 }
 
 # Wider compatibility with OSX Terminal (vs directly assigning PS1)
