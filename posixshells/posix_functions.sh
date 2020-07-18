@@ -190,3 +190,10 @@ pathadd() {
       fi
   fi
 }
+
+simpleserver() {
+  if [ -x "$(command -v python)" ]; then
+    # Use subshell to change path to /tmp and launch simple http server
+    (cd /tmp && python -m SimpleHTTPServer 8000);
+  fi
+}
