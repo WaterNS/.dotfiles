@@ -4,7 +4,7 @@
   "languageSettings": [
     // Comment only spell check in JavaScript, Typescript, JSON/C, Vue
     {
-      "languageId": "javascript,typescript,json,jsonc, vue",
+      "languageId": "javascript,typescript,json,jsonc,vue,html",
       "includeRegExpList": [ "CStyleComment", "strings" ]
     }
   ],
