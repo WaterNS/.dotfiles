@@ -141,7 +141,10 @@ install_shellcheck
 install_shfmt
 install_lsd
 install_prettyping
+
+# Install ZSH and its addons
 install_ohmyzsh
+. "$HOMEREPO/posixshells/zsh/init_zsh_addons.sh"
 
 #Write last update file
 SHAinitupdated=$(git --git-dir "$HOMEREPO/.git" log -n 1 --pretty=format:%H -- init_posix.sh)
