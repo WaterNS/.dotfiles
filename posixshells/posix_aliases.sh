@@ -5,6 +5,19 @@ if [ -x "$(command -v prettyping)" ]; then
   alias ping='prettyping --nolegend'
 fi
 
+# Move/Copy: Confirm before overwrite
+if [ -x "$(command -v cp)" ]; then
+  alias cp='cp -i'
+fi
+if [ -x "$(command -v mv)" ]; then
+  alias mv='mv -i'
+fi
+
+# df: Human-readable sizes
+if [ -x "$(command -v df)" ]; then
+  alias df='df -h'
+fi
+
 # add vim alias, run vim with viminfo disabled
 if [ -x "$(command -v vim)" ]; then
   alias vim='vim -i NONE'
