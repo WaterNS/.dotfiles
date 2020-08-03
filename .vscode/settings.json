@@ -1,3 +1,6 @@
 {
-  "shellcheck.exclude": [1090]
+  "shellcheck.exclude": [
+    1090, //Ignore shellcheck messages about relative source(s)
+    1071 //Ignore shellcheck message about unsupported shells/languages.
+  ]
 }
