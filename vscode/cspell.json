@@ -9,7 +9,8 @@
     }
   ],
   "userWords": [
-    "datetime", "blob",  "blobstorage",
+    "posix", "pubkey", "symlink", "symlinks", "dotfiles",
+    "datetime", "blob", "blobstorage",
     "oauth", "authed", "auth'ed", "connstring",
     "authtoken", "bday",
     "hacky", "hackjob", "smidge", "upto", "hardcoding", "hardcode", "automagically",
@@ -18,9 +19,10 @@
     "formname", "formtitle",
     "docx", "localsettings",
     "docs", "objs",
-    "dotfiles", "fatals",
+    "fatals",
     "noopener", "noreferrer", "noindex",
-    "readonly", "mixins", "vuex", "axios", "pathify"
+    "readonly", "mixins", "vuex", "axios", "pathify",
+    "chocolatey"
   ],
   "ignoreWords": [
     "ify", "sify", // Word-'ify' hacks
