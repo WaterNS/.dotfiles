@@ -44,10 +44,13 @@ if [ -f ~/.dotfiles/posixshells/posix_installers.sh ]; then
 fi
 
 if [ -f ~/.dotfiles/posixshells/posix_prompt ]; then
-	if [ "$RUNNINGSHELL" = "zsh" ] && [ -d ~/.dotfiles/opt/ohmyzsh ]; then
-    return # Don't load posix_prompt if OhMyZsh is gonna run.
+	if [ "$RUNNINGSHELL" = "zsh" ]; then
+    if [ ! -d ~/.dotfiles/opt/ohmyzsh ]; then
+      . ~/.dotfiles/posixshells/posix_prompt # load posix_prompt only if OhMyZsh not installed.
+    fi
+  else
+    . ~/.dotfiles/posixshells/posix_prompt
   fi
-  . ~/.dotfiles/posixshells/posix_prompt
 fi
 
 #######################################
