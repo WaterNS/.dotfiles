@@ -1,6 +1,5 @@
 #!/bin/sh
 
-
 if notcontains "$PATH" "$HOME/.dotfiles/opt/bin"; then
   PATH=$PATH:~/.dotfiles/opt/bin #Include dotfiles bin
 fi
@@ -287,4 +286,29 @@ install_prettyping () {
           echo "Unable to install prettyping - OS version doesn't have supported function"
       fi
     fi
+}
+
+install_ohmyzsh () {
+  #Super enhancement framework for ZSH shell
+  if [ ! -d ~/.dotfiles/opt/ohmyzsh ]; then
+    if [ -x "$(command -v zsh)" ]; then
+      echo "NOTE: OhMyZSH not found, installing to dotfiles opt location"
+      echo "------------------------------------------------"
+      echo ""; echo "Calling OhMyZSH installer script (w/ options)..."
+
+      ZSH=~/.dotfiles/opt/ohmyzsh \
+      CHSH="no" \
+      RUNZSH="no" \
+      KEEP_ZSHRC="yes" \
+      sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+      if [ -d ~/.dotfiles/opt/ohmyzsh ]; then
+          echo "GOOD - OhMyZSH is now available"
+      else
+          echo "BAD - OhMyZSH doesn't seem to be available"
+      fi
+    # else
+    #   echo "Not installing OhMyZSH: zsh is not available"
+    fi
+  fi
 }
