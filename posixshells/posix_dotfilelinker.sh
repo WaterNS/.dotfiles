@@ -24,7 +24,7 @@ unset brokensymlinks
 
 # Ref: https://unix.stackexchange.com/a/103011
 # POSIX way to loop through array where objects are not expected to have newlines (so newline is safe IFS)
-files=$(find "$HOME/.dotfiles" -type f -name '.*')
+files=$(find "$HOME/.dotfiles" -type f -name '.*' -not -path "*/opt/*")
 excludedfiles=".editorconfig .gitignore .gitattributes .DS_Store"
 set -f; IFS='
 '                           # turn off variable value expansion except for splitting at newlines
