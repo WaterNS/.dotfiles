@@ -47,6 +47,12 @@ if [ -f ~/.dotfiles/posixshells/posix_prompt ]; then
   . ~/.dotfiles/posixshells/posix_prompt
 fi
 
+# Get color support for 'less', man, etc
+if [ -f ~/.dotfiles/posixshells/less/termcap ]; then
+  . ~/.dotfiles/posixshells/less/termcap
+  export LESS="$LESS --RAW-CONTROL-CHARS"
+fi
+
 #######################################
 # EXPORTING vars that config settings #
 #######################################
