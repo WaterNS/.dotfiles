@@ -141,6 +141,7 @@ install_shellcheck
 install_shfmt
 install_lsd
 install_prettyping
+install_blesh
 
 # Install ZSH and its addons
 install_ohmyzsh

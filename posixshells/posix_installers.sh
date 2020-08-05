@@ -312,3 +312,32 @@ install_ohmyzsh () {
     fi
   fi
 }
+
+install_blesh () {
+  __pkgname="ble.sh"
+  __pkgsafename="blesh"
+  __pkgdesc="Bash Syntax Highlighting"
+  if [ ! -f "$HOME/.dotfiles/opt/bash-extras/$__pkgsafename/$__pkgname" ] && [ -x "$(command -v bash)" ]; then
+    echo "NOTE: $__pkgname ($__pkgdesc) not found, availing into dotfiles bin"
+    echo "------------------------------------------------"
+    __pkgurl="https://api.github.com/repos/akinomyoga/ble.sh/releases/latest"
+    latest=$(curl $__pkgurl -s  | grep url | grep "tar.xz" | sed 's/.*\(http[s?]:\/\/.*[^"]\).*/\1/')
+    filename=${latest##*/}
+
+    curl -L "$latest" -o "/tmp/$filename"; echo ""
+
+    mkdir /tmp/$__pkgsafename
+    tar -xzf "/tmp/$filename" -C /tmp/$__pkgsafename
+    mkdir -p "$HOME/.dotfiles/opt/bash-extras/$__pkgsafename"
+    cp -r /tmp/$__pkgsafename/*/ ~/.dotfiles/opt/bash-extras/$__pkgsafename
+
+    rm "/tmp/$filename"
+    rm -rf "/tmp/$__pkgsafename"
+
+    if [ -f "$HOME/.dotfiles/opt/bash-extras/$__pkgsafename/$__pkgname" ]; then
+        echo "GOOD - $__pkgname ($__pkgdesc) is now available"
+    else
+        echo "BAD - $__pkgname ($__pkgdesc) doesn't seem to be available"
+    fi
+  fi
+}

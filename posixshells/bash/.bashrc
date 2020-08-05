@@ -3,6 +3,11 @@
 ### INCLUDE: posix base ##
 . ~/.dotfiles/posixshells/.profile
 
+# ble.sh - Bash Syntax Highlighting - Top of RC script code:
+if [ -f ~/.dotfiles/opt/bash-extras/blesh/ble.sh ]; then
+  [[ $- == *i* ]] && source ~/.dotfiles/opt/bash-extras/blesh/ble.sh --noattach
+fi
+
 ### History Stuffs - bash specific
 # OSX: Disable bash session saving
 if contains "$(uname)" "Darwin"; then
@@ -51,5 +56,11 @@ fi
 # Bash: Enable ZSH like tab completion functionality
 bind 'set show-all-if-ambiguous on'
 bind 'TAB:menu-complete'
+
+# ble.sh - Bash Syntax Highlighting - End of RC script code:
+#shellcheck disable=SC2154 # Exception: Ignore unassigned reference to _ble_bash
+if [ -f ~/.dotfiles/opt/bash-extras/blesh/ble.sh ]; then
+  ((_ble_bash)) && ble-attach
+fi
 
 #MYEOF
