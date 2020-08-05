@@ -142,6 +142,7 @@ install_shfmt
 install_lsd
 install_prettyping
 install_blesh
+install_ncdu
 
 # Install ZSH and its addons
 install_ohmyzsh

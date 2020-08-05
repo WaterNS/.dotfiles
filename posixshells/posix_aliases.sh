@@ -81,3 +81,10 @@ if contains "$(uname)" "Darwin"; then
     export icloud=~/Library/Mobile\ Documents/com~apple~CloudDocs/
   fi
 fi
+
+# diskspace: Use ncdu or df, if available
+if [ -x "$(command -v ncdu)" ];then
+  alias diskspace="ncdu"
+elif [ -x "$(command -v df)" ]; then
+  alias diskspace="df"
+fi

@@ -335,3 +335,13 @@ install_blesh () {
     fi
   fi
 }
+
+install_ncdu () {
+  if [ ! -x "$(command -v ncdu)" ]; then
+    if contains "$(uname)" "Darwin"; then
+      install_generic_homebrew ncdu
+    else
+        echo "Unable to install ncdu - OS version doesn't have supported function"
+    fi
+  fi
+}
