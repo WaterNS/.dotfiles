@@ -61,6 +61,9 @@ export GIT_EDITOR=vim
 export VISUAL=vim
 export EDITOR=vim
 
+# Enable highlight's integration with LESS (if available)
+[ -x "$(command -v highlight)" ] && export LESSOPEN="| highlight %s --out-format xterm256 --force"
+
 # Use lesspipe for binaries
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
