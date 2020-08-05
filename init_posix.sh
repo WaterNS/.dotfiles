@@ -135,9 +135,10 @@ cd "$curpath" || exit
 . "$HOMEREPO/vim/init_vim.sh"
 
 # Make dev tools available in dotfiles bin
+install_jq
 install_diffsofancy
 install_git_delta
-install_jq
+install_bat
 install_shellcheck
 install_shfmt
 install_lsd

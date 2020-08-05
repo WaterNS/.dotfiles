@@ -88,3 +88,8 @@ if [ -x "$(command -v ncdu)" ];then
 elif [ -x "$(command -v df)" ]; then
   alias diskspace="df"
 fi
+
+# cat: Use bat, if available
+if [ -x "$(command -v bat)" ]; then
+  alias cat='bat --tabs 2'
+fi

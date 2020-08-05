@@ -363,3 +363,13 @@ install_git_delta () {
     fi
   fi
 }
+
+install_bat () {
+  if [ ! -x "$(command -v bat)" ]; then
+    if contains "$(uname)" "Darwin"; then
+      install_generic_homebrew bat
+    else
+        echo "Unable to install bat - OS version doesn't have supported function"
+    fi
+  fi
+}
