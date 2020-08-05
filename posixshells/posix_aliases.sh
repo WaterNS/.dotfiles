@@ -18,6 +18,11 @@ if [ -x "$(command -v df)" ]; then
   alias df='df -h'
 fi
 
+# grep: Auto colorize
+if [ -x "$(command -v grep)" ]; then
+  alias grep='grep --color=auto'
+fi
+
 # add vim alias, run vim with viminfo disabled
 if [ -x "$(command -v vim)" ]; then
   alias vim='vim -i NONE'
