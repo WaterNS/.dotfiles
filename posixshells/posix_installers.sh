@@ -6,24 +6,35 @@ fi
 
 install_generic_homebrew () {
   __pkgname="$1"
-  if [ ! -x "$(command -v "$__pkgname")" ]; then
+  if [ -n "$2" ]; then
+    __executablename=$2
+  else
+    __executablename=$__pkgname
+  fi
+  if [ ! -x "$(command -v jq)" ]; then
+      install_jq
+  fi
+  if [ ! -x "$(command -v "$__executablename")" ]; then
     if contains "$(uname)" "Darwin"; then
       echo "NOTE: $__pkgname not found, availing into dotfiles bin"
       echo "------------------------------------------------"
       __pkgurl="https://formulae.brew.sh/api/formula/$__pkgname.json"
       latest=$(curl -S "$__pkgurl "| jq -r "[.bottle.stable.files[]][0]".url)
-      filename=${latest##*/}
-      curl -L "$latest" -o "/tmp/$filename"; echo ""
 
-      mkdir "/tmp/$__pkgname"
-      tar -xzf "/tmp/$filename" -C "/tmp/$__pkgname/"
+      if [ "$latest" ];then
+        filename=${latest##*/}
+        curl -L "$latest" -o "/tmp/$filename"; echo ""
 
-      mv /tmp/"$__pkgname"/"$__pkgname"/*/bin/"$__pkgname" ~/.dotfiles/opt/bin
+        mkdir "/tmp/$__pkgname"
+        tar -xzf "/tmp/$filename" -C "/tmp/$__pkgname/"
 
-      rm "/tmp/$filename"
-      rm -rf "/tmp/$__pkgname"
+        mv /tmp/"$__pkgname"/"$__pkgname"/*/bin/"$__executablename" ~/.dotfiles/opt/bin
 
-      if [ -x "$(command -v "$__pkgname")" ]; then
+        rm "/tmp/$filename"
+        rm -rf "/tmp/$__pkgname"
+      fi
+
+      if [ -x "$(command -v "$__executablename")" ]; then
           echo "GOOD - $__pkgname is now available"
       else
           echo "BAD - $__pkgname doesn't seem to be available"
@@ -195,9 +206,6 @@ install_jq () {
 }
 
 install_shellcheck () {
-  if [ ! -x "$(command -v jq)" ]; then
-      install_jq
-  fi
   if [ ! -x "$(command -v shellcheck)" ]; then
     if contains "$(uname)" "Darwin"; then
       install_generic_homebrew shellcheck
