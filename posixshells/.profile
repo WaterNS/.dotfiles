@@ -71,9 +71,20 @@ export EDITOR=vim
     ## Exporting GIT settings ##
     ############################
 
+    # Set GIT Config Settings
+    if [ -x "$(command -v git)" ]; then
+      git config --global --unset-all include.path
+      #shellcheck disable=2088 # Exception: Want to explictly write the tidle to config
+      git config --global --add include.path '~/.dotfiles/git/git_tweaks'
+    fi
+
     # GIT PAGER and LESS settings
     # Use diff-so-fancy (if available)
-    if [ -x "$(command -v diff-so-fancy)" ]; then
+    if [ -x "$(command -v delta)" ]; then
+      export GIT_PAGER='delta'
+      #shellcheck disable=2088 # Exception: Want to explictly write the tidle to config
+      git config --global --add include.path '~/.dotfiles/git/git_deltadiff'
+    elif [ -x "$(command -v diff-so-fancy)" ]; then
       # Set Git Pager and LESS settings for session
       export GIT_PAGER='diff-so-fancy | less'
       export LESS="-x2 -RFX $LESS"
@@ -84,14 +95,11 @@ export EDITOR=vim
     else # Set to use LESS as fallback and undo gitconfig change
       export GIT_PAGER='less'
       export LESS="-x2 -RFX $LESS"
-      #shellcheck disable=2088 # Exception: Want to explictly write the tidle to config
-      git config --global --unset include.path '~/.dotfiles/git/git_diffsofancy'
-    fi
 
-    # Set GIT Config Settings
-    if [ -x "$(command -v git)" ]; then
       #shellcheck disable=2088 # Exception: Want to explictly write the tidle to config
-      git config --global include.path '~/.dotfiles/git/git_tweaks'
+      git config --global --unset-all include.path '~/.dotfiles/git/git_diffsofancy'
+      #shellcheck disable=2088 # Exception: Want to explictly write the tidle to config
+      git config --global --unset-all include.path '~/.dotfiles/git/git_deltadiff'
     fi
 
 #########################

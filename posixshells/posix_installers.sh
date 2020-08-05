@@ -353,3 +353,13 @@ install_ncdu () {
     fi
   fi
 }
+
+install_git_delta () {
+  if [ ! -x "$(command -v delta)" ]; then
+    if contains "$(uname)" "Darwin"; then
+      install_generic_homebrew git-delta delta
+    else
+        echo "Unable to install git_delta - OS version doesn't have supported function"
+    fi
+  fi
+}

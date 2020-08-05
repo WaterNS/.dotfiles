@@ -136,6 +136,7 @@ cd "$curpath" || exit
 
 # Make dev tools available in dotfiles bin
 install_diffsofancy
+install_git_delta
 install_jq
 install_shellcheck
 install_shfmt
