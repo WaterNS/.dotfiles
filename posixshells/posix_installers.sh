@@ -4,6 +4,36 @@ if notcontains "$PATH" "$HOME/.dotfiles/opt/bin"; then
   PATH=$PATH:~/.dotfiles/opt/bin #Include dotfiles bin
 fi
 
+install_generic_homebrew () {
+  __pkgname="$1"
+  if [ ! -x "$(command -v "$__pkgname")" ]; then
+    if contains "$(uname)" "Darwin"; then
+      echo "NOTE: $__pkgname not found, availing into dotfiles bin"
+      echo "------------------------------------------------"
+      __pkgurl="https://formulae.brew.sh/api/formula/$__pkgname.json"
+      latest=$(curl -S "$__pkgurl "| jq -r "[.bottle.stable.files[]][0]".url)
+      filename=${latest##*/}
+      curl -L "$latest" -o "/tmp/$filename"; echo ""
+
+      mkdir "/tmp/$__pkgname"
+      tar -xzf "/tmp/$filename" -C "/tmp/$__pkgname/"
+
+      mv /tmp/"$__pkgname"/"$__pkgname"/*/bin/"$__pkgname" ~/.dotfiles/opt/bin
+
+      rm "/tmp/$filename"
+      rm -rf "/tmp/$__pkgname"
+
+      if [ -x "$(command -v "$__pkgname")" ]; then
+          echo "GOOD - $__pkgname is now available"
+      else
+          echo "BAD - $__pkgname doesn't seem to be available"
+      fi
+    else
+        echo "Unable to install $__pkgname - OS version doesn't have supported function"
+    fi
+  fi
+}
+
 install_diffsofancy () {
   #Git: diff-so-fancy (better git diff)
   if [ ! -f "$HOMEREPO/opt/bin/diff-so-fancy" ]; then
@@ -165,34 +195,16 @@ install_jq () {
 }
 
 install_shellcheck () {
-    if [ ! -x "$(command -v jq)" ]; then
-        install_jq
+  if [ ! -x "$(command -v jq)" ]; then
+      install_jq
+  fi
+  if [ ! -x "$(command -v shellcheck)" ]; then
+    if contains "$(uname)" "Darwin"; then
+      install_generic_homebrew shellcheck
+    else
+        echo "Unable to install shellcheck - OS version doesn't have supported function"
     fi
-    if [ ! -x "$(command -v shellcheck)" ]; then
-      if contains "$(uname)" "Darwin"; then
-        echo "NOTE: shellcheck not found, availing into dotfiles bin"
-        echo "------------------------------------------------"
-        shellcheck="https://formulae.brew.sh/api/formula/shellcheck.json"
-        latest=$(curl -S $shellcheck | jq -r "[.bottle.stable.files[]][0]".url)
-        filename=${latest##*/}
-        curl -L "$latest" -o "/tmp/$filename"; echo ""
-
-        mkdir /tmp/shellcheck
-        tar -xzf "/tmp/$filename" -C /tmp/shellcheck/
-        mv /tmp/shellcheck/shellcheck/*/bin/shellcheck ~/.dotfiles/opt/bin
-
-        rm "/tmp/$filename"
-        rm -r /tmp/shellcheck
-
-        if [ -x "$(command -v shellcheck)" ]; then
-            echo "GOOD - shellcheck is now available"
-        else
-            echo "BAD - shellcheck doesn't seem to be available"
-        fi
-      else
-          echo "Unable to install shellcheck - OS version doesn't have supported function"
-      fi
-    fi
+  fi
 }
 
 install_shfmt () {
@@ -241,31 +253,13 @@ install_nerdfonts () {
 }
 
 install_lsd () {
-    if [ ! -x "$(command -v lsd)" ]; then
-      if contains "$(uname)" "Darwin"; then
-        echo "NOTE: lsd not found, availing into dotfiles bin"
-        echo "------------------------------------------------"
-        lsd="https://formulae.brew.sh/api/formula/lsd.json"
-        latest=$(curl -S $lsd | jq -r "[.bottle.stable.files[]][0]".url)
-        filename=${latest##*/}
-        curl -L "$latest" -o "/tmp/$filename"; echo ""
-
-        mkdir /tmp/lsd
-        tar -xzf "/tmp/$filename" -C /tmp/lsd/
-        mv /tmp/lsd/lsd/*/bin/lsd ~/.dotfiles/opt/bin
-
-        rm "/tmp/$filename"
-        rm -r /tmp/lsd
-
-        if [ -x "$(command -v lsd)" ]; then
-            echo "GOOD - lsd is now available"
-        else
-            echo "BAD - lsd doesn't seem to be available"
-        fi
-      else
-          echo "Unable to install lsd - OS version doesn't have supported function"
-      fi
+  if [ ! -x "$(command -v lsd)" ]; then
+    if contains "$(uname)" "Darwin"; then
+      install_generic_homebrew lsd
+    else
+        echo "Unable to install lsd - OS version doesn't have supported function"
     fi
+  fi
 }
 
 install_prettyping () {
