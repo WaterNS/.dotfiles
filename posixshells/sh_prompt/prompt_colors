@@ -1,5 +1,7 @@
 #!/bin/sh
 
+#shellcheck disable=2034 # Exception: Ignore unused variables, file is imported upstream
+
 if [ "$ZSH_VERSION" ]; then
   #Ref: https://jlk.fjfi.cvut.cz/arch/manpages/man/zshmisc.1#Visual_effects
   RESET='%f%b'

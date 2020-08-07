@@ -6,6 +6,7 @@ if [ -f "$HOME/.dotfiles/posixshells/sh_prompt/prompt_colors" ];then
 fi
 
 git_prompt() {
+  #shellcheck disable=2034 # Exception: Ignore unused variables, file is imported upstream
 
   #HACKY FIX: For zsh, add escape char `%` so that "%F{color}" is
   #not interpeted as printf format. Don't know how to better fix this (yet).
