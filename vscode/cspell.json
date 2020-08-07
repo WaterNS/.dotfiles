@@ -9,7 +9,7 @@
     }
   ],
   "userWords": [
-    "posix", "pubkey", "symlink", "symlinks", "dotfiles",
+    "posix", "pubkey", "symlink", "symlinks", "dotfiles", "mnemonicprefix",
     "datetime", "blob", "blobstorage",
     "oauth", "authed", "auth'ed", "connstring",
     "authtoken", "bday",
