@@ -58,7 +58,7 @@ Function install-generic-github {
       $local:ext=$latest.Split("/")[-1].Split(".")[-1]
 
       "Downloading $executablename..."
-      if ($ext = "exe") {
+      if ($ext -eq "exe") {
         Powershell-FileDownload "$latest" -o "$HOME/.dotfiles/opt/bin/$executablename.$ext"
       } else {
         mkdir -p "$HOME/.dotfiles/opt/tmp" | Out-Null
@@ -66,8 +66,8 @@ Function install-generic-github {
 
         Expand-Archive -LiteralPath "$HOME/.dotfiles/opt/tmp/$pkgname.$ext" -DestinationPath "$HOME/.dotfiles/opt/tmp/$pkgname"
 
-        $local:binary = Get-ChildItem "$HOME/.dotfiles/opt/tmp/$pkgname/" -Recurse -Filter "$executablename.exe"
-        Move-Item $binary.FullName "$HOME/.dotfiles/opt/bin/"
+        $local:binary = Get-ChildItem "$HOME/.dotfiles/opt/tmp/$pkgname/" -Recurse -Filter "$executablename*.exe"
+        Move-Item $binary.FullName "$HOME/.dotfiles/opt/bin/$executablename.exe"
         Remove-Item -Path "$HOME/.dotfiles/opt/tmp" -Recurse
       }
 
@@ -91,19 +91,7 @@ Function install-jq {
 Function install-shellcheck {
   if (!(Check-Command shellcheck)) {
     if ((Check-OS) -like "*win*") {
-      "NOTE: shellcheck not found, availing into dotfiles bin"
-      "------------------------------------------------"
-      [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
-      $local:latest="https://shellcheck.storage.googleapis.com/shellcheck-latest.exe"
-
-      "Downloading shellcheck..."
-      Powershell-FileDownload "$latest" -o "$HOME/.dotfiles/opt/bin/shellcheck.exe"
-
-      if (Check-Command shellcheck) {
-        "GOOD - shellcheck is now available"
-      } else {
-        "BAD - shellcheck doesn't seem to be available"
-      }
+      install-generic-github "koalaman/shellcheck" -searchstring 'shellcheck-.*zip'
     }
   }
 }
