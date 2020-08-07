@@ -9,6 +9,11 @@
   "workbench.tree.renderIndentGuides": "always",
   "workbench.startupEditor": "newUntitledFile",
 
+  "files.insertFinalNewline": true, //POSIX-targeted tools want new lines
+  "files.trimFinalNewlines": true,
+  "files.trimTrailingWhitespace": true,
+
+  "diffEditor.ignoreTrimWhitespace": false,
   "editor.renderWhitespace": "boundary",
   "editor.tabSize": 2,
   "editor.insertspaces": true,
@@ -33,6 +38,5 @@
   "peacock.showColorInStatusBar": false,
   "peacock.surpriseMeFromFavoritesOnly": true,
 
-  "git.autofetch": true,
-  "diffEditor.ignoreTrimWhitespace": false
+  "git.autofetch": true
 }
