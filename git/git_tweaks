@@ -5,3 +5,5 @@
   algorithm = patience
 [push]
   default = simple
+[log]
+  date = auto:format:%a %Y-%h-%d %I:%M %p %z %Z
