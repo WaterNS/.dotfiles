@@ -37,23 +37,53 @@ Function install-generic-chocolatey {
   }
 }
 
+Function install-generic-github {
+  param(
+    [Parameter(Mandatory=$true)]
+    [string] $repo,
+
+    [string] $pkgname = $repo.Split("/")[1],
+    [string] $executablename = $pkgname,
+
+    [string] $searchstring = "windows"
+  )
+
+  if (!(Check-Command $executablename)) {
+    if ((Check-OS) -like "*win*") {
+      "NOTE: $executablename not found, availing into dotfiles bin"
+      "------------------------------------------------"
+      [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
+      $local:pkgrepo="https://api.github.com/repos/$repo/releases/latest"
+      $local:latest=$(Invoke-WebRequest $pkgrepo -UseBasicParsing | Select-Object content | Get-URLs | Select-String $searchstring | Select-Object -ExpandProperty line)
+      $local:ext=$latest.Split("/")[-1].Split(".")[-1]
+
+      "Downloading $executablename..."
+      if ($ext = "exe") {
+        Powershell-FileDownload "$latest" -o "$HOME/.dotfiles/opt/bin/$executablename.$ext"
+      } else {
+        mkdir -p "$HOME/.dotfiles/opt/tmp" | Out-Null
+        Powershell-FileDownload "$latest" -o "$HOME/.dotfiles/opt/tmp/$pkgname.$ext"
+
+        Expand-Archive -LiteralPath "$HOME/.dotfiles/opt/tmp/$pkgname.$ext" -DestinationPath "$HOME/.dotfiles/opt/tmp/$pkgname"
+
+        $local:binary = Get-ChildItem "$HOME/.dotfiles/opt/tmp/$pkgname/" -Recurse -Filter "$executablename.exe"
+        Move-Item $binary.FullName "$HOME/.dotfiles/opt/bin/"
+        Remove-Item -Path "$HOME/.dotfiles/opt/tmp" -Recurse
+      }
+
+      if (Check-Command $executablename) {
+        "GOOD - $executablename is now available"
+      } else {
+        "BAD - $executablename doesn't seem to be available"
+      }
+    }
+  }
+}
+
 Function install-jq {
   if (!(Check-Command jq)) {
     if ((Check-OS) -like "*win*") {
-      "NOTE: jq not found, availing into dotfiles bin"
-      "------------------------------------------------"
-      [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
-      $local:jq="https://api.github.com/repos/stedolan/jq/releases/latest"
-      $local:latest=$(Invoke-WebRequest $jq -UseBasicParsing | Select-Object content | Get-URLs | Select-String "win64" | Select-Object -ExpandProperty line)
-
-      "Downloading jq..."
-      Powershell-FileDownload "$latest" -o "$HOME/.dotfiles/opt/bin/jq.exe"
-
-      if (Check-Command jq) {
-        "GOOD - jq is now available"
-      } else {
-        "BAD - jq doesn't seem to be available"
-      }
+      install-generic-github "stedolan/jq" -searchstring "win64"
     }
   }
 }
@@ -81,20 +111,7 @@ Function install-shellcheck {
 Function install-shfmt {
   if (!(Check-Command shfmt)) {
     if ((Check-OS) -like "*win*") {
-      "NOTE: shfmt not found, availing into dotfiles bin"
-      "------------------------------------------------"
-      [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
-      $local:shfmt="https://api.github.com/repos/mvdan/sh/releases/latest"
-      $local:latest=$(Invoke-WebRequest $shfmt -UseBasicParsing | Select-Object content | Get-URLs | Select-String "windows_amd64" | Select-Object -ExpandProperty line)
-
-      "Downloading shfmt..."
-      Powershell-FileDownload "$latest" -o "$HOME/.dotfiles/opt/bin/shfmt.exe"
-
-      if (Check-Command shfmt) {
-        "GOOD - shfmt is now available"
-      } else {
-        "BAD - shfmt doesn't seem to be available"
-      }
+      install-generic-github "mvdan/sh" -executablename "shfmt" -searchstring "windows_amd64"
     }
   }
 }
@@ -138,26 +155,15 @@ Function install-cht {
 Function install-delta {
   if (!(Check-Command delta)) {
     if ((Check-OS) -like "*win*") {
-      "NOTE: delta not found, availing into dotfiles bin"
-      "------------------------------------------------"
-      [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
-      $local:pkgrepo="https://api.github.com/repos/dandavison/delta/releases/latest"
-      $local:latest=$(Invoke-WebRequest $pkgrepo -UseBasicParsing | Select-Object content | Get-URLs | Select-String "windows" | Select-Object -ExpandProperty line)
+      install-generic-github -repo "dandavison/delta"
+    }
+  }
+}
 
-      "Downloading delta..."
-      mkdir -p "$HOME/.dotfiles/opt/tmp" | Out-Null
-      Powershell-FileDownload "$latest" -o "$HOME/.dotfiles/opt/tmp/delta.zip"
-
-      Expand-Archive -LiteralPath "$HOME/.dotfiles/opt/tmp/delta.zip" -DestinationPath "$HOME/.dotfiles/opt/tmp/delta"
-
-      Move-Item "$HOME/.dotfiles/opt/tmp/delta/**/delta.exe" "$HOME/.dotfiles/opt/bin/"
-      Remove-Item -Path "$HOME/.dotfiles/opt/tmp" -Recurse
-
-      if (Check-Command delta) {
-        "GOOD - delta is now available"
-      } else {
-        "BAD - delta doesn't seem to be available"
-      }
+Function install-bat {
+  if (!(Check-Command bat)) {
+    if ((Check-OS) -like "*win*") {
+      install-generic-github -repo "sharkdp/bat"
     }
   }
 }

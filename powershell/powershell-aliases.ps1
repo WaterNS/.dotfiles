@@ -35,3 +35,11 @@ if (Check-Command git) {
   }
   Set-Alias gitresethard AliasGitResetHard
 }
+
+if (Check-Command bat) {
+  if (Test-Path Alias:\cat) {
+    Remove-Item Alias:\cat
+  }
+  Function AliasBat {bat --tabs 2 $args}
+  Set-Alias cat AliasBat
+}

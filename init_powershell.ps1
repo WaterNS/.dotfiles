@@ -149,6 +149,7 @@ install-shfmt
 install-less
 install-cht
 install-delta
+install-bat
 
 #Write update/init file
 $SHAinitupdated=$(git --git-dir "$HOME/.dotfiles/.git" log -n 1 --pretty=format:%H -- init_powershell.ps1)
