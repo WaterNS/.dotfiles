@@ -134,3 +134,30 @@ Function install-cht {
     }
   }
 }
+
+Function install-delta {
+  if (!(Check-Command delta)) {
+    if ((Check-OS) -like "*win*") {
+      "NOTE: delta not found, availing into dotfiles bin"
+      "------------------------------------------------"
+      [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
+      $local:pkgrepo="https://api.github.com/repos/dandavison/delta/releases/latest"
+      $local:latest=$(Invoke-WebRequest $pkgrepo -UseBasicParsing | Select-Object content | Get-URLs | Select-String "windows" | Select-Object -ExpandProperty line)
+
+      "Downloading delta..."
+      mkdir -p "$HOME/.dotfiles/opt/tmp" | Out-Null
+      Powershell-FileDownload "$latest" -o "$HOME/.dotfiles/opt/tmp/delta.zip"
+
+      Expand-Archive -LiteralPath "$HOME/.dotfiles/opt/tmp/delta.zip" -DestinationPath "$HOME/.dotfiles/opt/tmp/delta"
+
+      Move-Item "$HOME/.dotfiles/opt/tmp/delta/**/delta.exe" "$HOME/.dotfiles/opt/bin/"
+      Remove-Item -Path "$HOME/.dotfiles/opt/tmp" -Recurse
+
+      if (Check-Command delta) {
+        "GOOD - delta is now available"
+      } else {
+        "BAD - delta doesn't seem to be available"
+      }
+    }
+  }
+}
