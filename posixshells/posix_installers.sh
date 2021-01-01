@@ -54,6 +54,9 @@ install_generic_homebrew () {
     else
         echo "Unable to install $__pkgname - OS version doesn't have supported function"
     fi
+    unset __pkgname; unset __executablename;
+    unset bottles; unset latest; unset latestARM;
+    unset filename;
   fi
 }
 
@@ -76,6 +79,7 @@ install_diffsofancy () {
     else
       echo "Not downloading diff-so-fancy: perl is not available"
     fi
+    unset diffsofancy;
   fi
 }
 
@@ -134,6 +138,7 @@ install_ffmpeg () {
       else
           echo "Unable to install ffmpeg - OS version doesn't have supported function"
       fi
+      unset ffmpeg; unset latest;
     fi
 }
 
@@ -158,6 +163,7 @@ install_ffprobe () {
       else
           echo "Unable to install ffprobe - OS version doesn't have supported function"
       fi
+      unset ffprobe; unset latest;
     fi
 }
 
@@ -181,6 +187,7 @@ install_phantomjs () {
       else
           echo "Unable to install phantomjs - OS version doesn't have supported function"
       fi
+      unset phantomjs; unset latest;
     fi
 }
 
@@ -215,6 +222,7 @@ install_jq () {
           echo "Unable to install jq - OS version doesn't have supported function"
       fi
     fi
+    unset jq; unset oskeyword; unset latest;
 }
 
 install_shellcheck () {
@@ -246,6 +254,7 @@ install_shfmt () {
       else
           echo "Unable to install shfmt - OS version doesn't have supported function"
       fi
+      unset shfmt; unset latest;
     fi
 }
 
@@ -270,6 +279,7 @@ install_nerdfonts () {
           echo "Unable to install nerd-fonts - OS version doesn't have supported function"
       fi
     fi
+    unset fontname;
 }
 
 install_lsd () {
@@ -353,7 +363,9 @@ install_blesh () {
     else
         echo "BAD - $__pkgname ($__pkgdesc) doesn't seem to be available"
     fi
+    unset __pkgurl; unset latest; unset filename;
   fi
+  unset __pkgname; unset __pkgsafename; unset __pkgdesc;
 }
 
 install_ncdu () {
