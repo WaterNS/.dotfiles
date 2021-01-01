@@ -19,7 +19,19 @@ install_generic_homebrew () {
       echo "NOTE: $__pkgname not found, availing into dotfiles bin"
       echo "------------------------------------------------"
       __pkgurl="https://formulae.brew.sh/api/formula/$__pkgname.json"
-      latest=$(curl -S "$__pkgurl "| jq -r "[.bottle.stable.files[]][0]".url)
+      bottles=$(curl -S "$__pkgurl" | jq -r "[.bottle.stable.files][0]")
+
+      if [ "$bottles" ]; then
+        if contains "$(arch)" "arm64"; then
+          latestARM=$(echo $bottles | jq -r '. | with_entries( select(.key|contains("arm64") ) ) | .[]'.url)
+          if [ "$latestARM" ]; then
+            latest=$latestARM
+          fi
+        fi
+        if [ ! "$latest" ]; then
+          latest=$(echo $bottles | jq -r "[.[]][0]".url)
+        fi
+      fi
 
       if [ "$latest" ];then
         filename=${latest##*/}
