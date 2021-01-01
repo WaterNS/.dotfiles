@@ -34,19 +34,22 @@ install_generic_homebrew () {
       fi
 
       if [ "$latest" ];then
+        if [ ! -d "$HOME/.dotfiles/opt/tmp" ]; then
+          mkdir "$HOME/.dotfiles/opt/tmp" -p
+        fi
+
         filename=${latest##*/}
-        curl -L "$latest" -o "/tmp/$filename"; echo ""
+        curl -L "$latest" -o "$HOME/.dotfiles/opt/tmp/$filename"; echo ""
 
-        mkdir "/tmp/$__pkgname"
-        tar -xzf "/tmp/$filename" -C "/tmp/$__pkgname/"
+        mkdir "$HOME/.dotfiles/opt/tmp/$__pkgname"
+        tar -xzf "$HOME/.dotfiles/opt/tmp/$filename" -C "$HOME/.dotfiles/opt/tmp/$__pkgname/"
 
-        mv /tmp/"$__pkgname"/"$__pkgname"/*/bin/"$__executablename" ~/.dotfiles/opt/bin
-
-        rm "/tmp/$filename"
-        rm -rf "/tmp/$__pkgname"
+        mv $HOME/.dotfiles/opt/tmp/"$__pkgname"/"$__pkgname"/*/bin/"$__executablename" ~/.dotfiles/opt/bin
       fi
 
       if [ -x "$(command -v "$__executablename")" ]; then
+          rm "$HOME/.dotfiles/opt/tmp/$filename"
+          rm -rf "$HOME/.dotfiles/opt/tmp/$__pkgname"
           echo "GOOD - $__pkgname is now available"
       else
           echo "BAD - $__pkgname doesn't seem to be available"
@@ -100,11 +103,16 @@ install_unar () {
         if contains "$(uname)" "Darwin"; then
             echo "NOTE: unar not found, installing into dotfiles bin"
             echo "------------------------------------------------"
-            curl -L https://cdn.theunarchiver.com/downloads/unarMac.zip -o /tmp/unarMac.zip; echo ""
-            unzip -a -qq /tmp/unarMac.zip -d /tmp/unar
 
-            cp /tmp/unar/unar "$HOME/.dotfiles/opt/bin/"
-            rm -r /tmp/unar /tmp/unarMac.zip
+            if [ ! -d "$HOME/.dotfiles/opt/tmp" ]; then
+              mkdir "$HOME/.dotfiles/opt/tmp" -p
+            fi
+
+            curl -L https://cdn.theunarchiver.com/downloads/unarMac.zip -o $HOME/.dotfiles/opt/tmp/unarMac.zip; echo ""
+            unzip -a -qq $HOME/.dotfiles/opt/tmp/unarMac.zip -d $HOME/.dotfiles/opt/tmp/unar
+
+            cp $HOME/.dotfiles/opt/tmp/unar/unar "$HOME/.dotfiles/opt/bin/"
+            rm -r $HOME/.dotfiles/opt/tmp/unar $HOME/.dotfiles/opt/tmp/unarMac.zip
 
             if [ -x "$(command -v unar)" ]; then
                 echo "GOOD - unar is now available"
@@ -123,12 +131,17 @@ install_ffmpeg () {
         install_unar
         echo "NOTE: ffmpeg not found, installing into dotfiles bin"
         echo "------------------------------------------------"
+
+        if [ ! -d "$HOME/.dotfiles/opt/tmp" ]; then
+          mkdir "$HOME/.dotfiles/opt/tmp" -p
+        fi
+
         ffmpeg="https://evermeet.cx/pub/ffmpeg/snapshots/"
         latest=$(curl $ffmpeg | grep -v ".7z.sig" | grep .7z | head -1 | sed -n 's/.*href="\([^"]*\).*/\1/p')
-        curl "$ffmpeg$latest" -o /tmp/ffmpeg.7z; echo ""
+        curl "$ffmpeg$latest" -o $HOME/.dotfiles/opt/tmp/ffmpeg.7z; echo ""
 
-        unar /tmp/ffmpeg.7z -o "$HOME/.dotfiles/opt/bin/"
-        rm -r /tmp/ffmpeg.7z
+        unar $HOME/.dotfiles/opt/tmp/ffmpeg.7z -o "$HOME/.dotfiles/opt/bin/"
+        rm -r $HOME/.dotfiles/opt/tmp/ffmpeg.7z
 
         if [ -x "$(command -v ffmpeg)" ]; then
             echo "GOOD - ffmpeg is now available"
@@ -148,12 +161,17 @@ install_ffprobe () {
         install_unar
         echo "NOTE: ffprobe not found, installing into dotfiles bin"
         echo "------------------------------------------------"
+
+        if [ ! -d "$HOME/.dotfiles/opt/tmp" ]; then
+          mkdir "$HOME/.dotfiles/opt/tmp" -p
+        fi
+
         ffprobe="https://evermeet.cx/pub/ffprobe/snapshots/"
         latest=$(curl $ffprobe | grep -v ".7z.sig" | grep .7z | head -1 | sed -n 's/.*href="\([^"]*\).*/\1/p')
-        curl "$ffprobe/$latest" -o /tmp/ffprobe.7z; echo ""
+        curl "$ffprobe/$latest" -o $HOME/.dotfiles/opt/tmp/ffprobe.7z; echo ""
 
-        unar /tmp/ffprobe.7z -o "$HOME/.dotfiles/opt/bin/"
-        rm -r /tmp/ffprobe.7z
+        unar $HOME/.dotfiles/opt/tmp/ffprobe.7z -o "$HOME/.dotfiles/opt/bin/"
+        rm -r $HOME/.dotfiles/opt/tmp/ffprobe.7z
 
         if [ -x "$(command -v ffprobe)" ]; then
             echo "GOOD - ffprobe is now available"
@@ -172,12 +190,17 @@ install_phantomjs () {
       if contains "$(uname)" "Darwin"; then
         echo "NOTE: phantomjs not found, installing into dotfiles bin"
         echo "------------------------------------------------"
+
+        if [ ! -d "$HOME/.dotfiles/opt/tmp" ]; then
+          mkdir "$HOME/.dotfiles/opt/tmp" -p
+        fi
+
         phantomjs="http://phantomjs.org/download.html"
         latest=$(curl -L $phantomjs | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep osx.zip)
-        curl -L "$latest" -o /tmp/phantomjs.zip; echo ""
+        curl -L "$latest" -o $HOME/.dotfiles/opt/tmp/phantomjs.zip; echo ""
 
-        unzip -j "/tmp/phantomjs.zip" "*/bin/phantomjs" -d "$HOME/.dotfiles/opt/bin/"
-        rm -r /tmp/phantomjs.zip
+        unzip -j "$HOME/.dotfiles/opt/tmp/phantomjs.zip" "*/bin/phantomjs" -d "$HOME/.dotfiles/opt/bin/"
+        rm -r $HOME/.dotfiles/opt/tmp/phantomjs.zip
 
         if [ -x "$(command -v phantomjs)" ]; then
             echo "GOOD - phantomjs is now available"
@@ -206,12 +229,16 @@ install_jq () {
           return
         fi
 
-        latest=$(curl $jq -s  | grep url | grep "$oskeyword" | sed 's/.*\(http[s?]:\/\/.*[^"]\).*/\1/')
-        curl -L "$latest" -o /tmp/jq; echo ""
+        if [ ! -d "$HOME/.dotfiles/opt/tmp" ]; then
+          mkdir "$HOME/.dotfiles/opt/tmp" -p
+        fi
 
-        chmod +x /tmp/jq
-        mv /tmp/jq "$HOME/.dotfiles/opt/bin/"
-        rm -r /tmp/jq >/dev/null 2>&1
+        latest=$(curl $jq -s  | grep url | grep "$oskeyword" | sed 's/.*\(http[s?]:\/\/.*[^"]\).*/\1/')
+        curl -L "$latest" -o $HOME/.dotfiles/opt/tmp/jq; echo ""
+
+        chmod +x $HOME/.dotfiles/opt/tmp/jq
+        mv $HOME/.dotfiles/opt/tmp/jq "$HOME/.dotfiles/opt/bin/"
+        rm -r $HOME/.dotfiles/opt/tmp/jq >/dev/null 2>&1
 
         if [ -x "$(command -v jq)" ]; then
             echo "GOOD - jq is now available"
@@ -344,19 +371,24 @@ install_blesh () {
   if [ ! -f "$HOME/.dotfiles/opt/bash-extras/$__pkgsafename/$__pkgname" ] && [ -x "$(command -v bash)" ]; then
     echo "NOTE: $__pkgname ($__pkgdesc) not found, availing into dotfiles bin"
     echo "------------------------------------------------"
+
+    if [ ! -d "$HOME/.dotfiles/opt/tmp" ]; then
+      mkdir "$HOME/.dotfiles/opt/tmp" -p
+    fi
+
     __pkgurl="https://api.github.com/repos/akinomyoga/ble.sh/releases/latest"
     latest=$(curl $__pkgurl -s  | grep url | grep "tar.xz" | sed 's/.*\(http[s?]:\/\/.*[^"]\).*/\1/')
     filename=${latest##*/}
 
-    curl -L "$latest" -o "/tmp/$filename"; echo ""
+    curl -L "$latest" -o "$HOME/.dotfiles/opt/tmp/$filename"; echo ""
 
-    mkdir /tmp/$__pkgsafename
-    tar -xzf "/tmp/$filename" -C /tmp/$__pkgsafename
+    mkdir $HOME/.dotfiles/opt/tmp/$__pkgsafename
+    tar -xzf "$HOME/.dotfiles/opt/tmp/$filename" -C $HOME/.dotfiles/opt/tmp/$__pkgsafename
     mkdir -p "$HOME/.dotfiles/opt/bash-extras/$__pkgsafename"
-    cp -r /tmp/$__pkgsafename/*/ ~/.dotfiles/opt/bash-extras/$__pkgsafename
+    cp -r $HOME/.dotfiles/opt/tmp/$__pkgsafename/*/ ~/.dotfiles/opt/bash-extras/$__pkgsafename
 
-    rm "/tmp/$filename"
-    rm -rf "/tmp/$__pkgsafename"
+    rm "$HOME/.dotfiles/opt/tmp/$filename"
+    rm -rf "$HOME/.dotfiles/opt/tmp/$__pkgsafename"
 
     if [ -f "$HOME/.dotfiles/opt/bash-extras/$__pkgsafename/$__pkgname" ]; then
         echo "GOOD - $__pkgname ($__pkgdesc) is now available"
