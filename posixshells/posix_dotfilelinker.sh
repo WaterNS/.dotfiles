@@ -51,30 +51,40 @@ unset files
 
 #Handle linking VSCode in OSX and Linux
 if contains "$(uname)" "Darwin" || contains "$(uname)" "linux"; then
+  repoVSCodeFile="$HOME/.dotfiles/vscode/settings.json"
 
-  repovscodefile="$HOME/.dotfiles/vscode/settings.json"
+  vsCodeDirs=""
+  customIFS=":"
 
   if contains "$(uname)" "Darwin"; then
-    vscodedir="$HOME/Library/Application Support/Code/User/"
-    vscodefile="$HOME/Library/Application Support/Code/User/settings.json"
+    vsCodeDirs="$HOME/Library/Application Support/Code/User/"
+    vsCodeDirs="${vsCodeDirs}${customIFS}$HOME/Library/Application Support/Code - Insiders/User/"
   elif contains "$(uname)" "linux"; then
-    vscodedir="$HOME/.config/Code/User/"
-    vscodefile="$HOME/.config/Code/User/settings.json"
+    vsCodeDirs="$HOME/.config/Code/User/"
+    vsCodeDirs="${vsCodeDirs}${customIFS}$HOME/.config/Code - Insiders/User/"
   fi
 
-  # Create VScode profile folder if doesn't exist
-  if [ ! -d "$vscodedir" ]; then
-    mkdir -p "$vscodedir"
-  fi
+  IFS=$customIFS
+  for codeDir in $vsCodeDirs; do
+    settingsFile="${codeDir}settings.json"
 
-  # Remove existing VScode file (if its not a linked one)
-  if [ -f "$vscodefile" ] && [ ! -L "$vscodefile" ]; then
-    echo "Found existing VScode file at $vscodefile, removing..."
-    rm "$vscodefile"
-  elif [ -L "$vscodefile" ] && [ ! "$(readlink "$vscodefile")" = "$repovscodefile" ]; then
-    echo "NOTE: Found existing LINK for VSCode file but with incorrect path, removing..."
-    rm "$vscodefile"
-  fi
+    # Create VScode profile folder if doesn't exist
+    if [ ! -d "$codeDir" ]; then
+      mkdir -p "$codeDir"
+    fi
 
-  [ ! -r "$vscodefile" ] && ln -s "$repovscodefile" "$vscodefile" && echo "NOTE: Linked $vscodefile to custom one at $repovscodefile"
+    # Remove existing VScode file (if its not a linked one)
+    if [ -f "$settingsFile" ] && [ ! -L "$settingsFile" ]; then
+      echo "Found existing VScode file at $settingsFile, removing..."
+      rm "$settingsFile"
+    elif [ -L "$settingsFile" ] && [ ! "$(readlink "$settingsFile")" = "$repoVSCodeFile" ]; then
+      echo "NOTE: Found existing LINK for VSCode file but with incorrect path, removing..."
+      rm "$settingsFile"
+    fi
+
+    [ ! -r "$settingsFile" ] && ln -s "$repoVSCodeFile" "$settingsFile" && echo "NOTE: Linked $settingsFile to custom one at $repoVSCodeFile"
+  done
+  unset IFS;
+  unset customIFS;
+
 fi

@@ -54,6 +54,16 @@ if [ -f "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" ]
   alias vscode=code
 fi
 
+# add Visual Studio Code Insider aliases
+if [ -f "/Applications/Visual Studio Code - Insiders.app/Contents/Resources/app/bin/code" ]; then
+  if [ ! -x "$(command -v code)" ]; then
+    alias code='/Applications/"Visual Studio Code - Insiders.app"/Contents/Resources/app/bin/code'
+    alias vscode=code
+  else
+    alias codeinsiders='/Applications/"Visual Studio Code - Insiders.app"/Contents/Resources/app/bin/code'
+  fi
+fi
+
 # Set ls behavior
 if contains "$(uname)" "Darwin"; then
   export LSCOLORS='Affxcxdxbxegedabagacad' # See https://geoff.greer.fm/lscolors/
