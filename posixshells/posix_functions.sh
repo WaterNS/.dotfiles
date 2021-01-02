@@ -197,3 +197,18 @@ simpleserver() {
     (cd /tmp && python -m SimpleHTTPServer 8000);
   fi
 }
+
+function getFileExt() {
+  #Dictionary lookup, perhaps most easiest to understand
+  # for the use cases of this dotfiles repo
+  case "$1" in
+    *.tar.bz2) return "tar.bz2" ;;
+    *.bz2)     return "bz2" ;;
+    *.tar.gz)  return "tar.gz" ;;
+    *.tgz)     return "tgz" ;;
+    *.gz)      return "gz" ;;
+    *.zip)     return "zip" ;;
+    *.7z)      return "7z" ;;
+    *)         return "" ;;
+  esac
+}
