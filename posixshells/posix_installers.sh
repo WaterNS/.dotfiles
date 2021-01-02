@@ -172,30 +172,13 @@ install_youtubedl () {
 }
 
 install_unar () {
-    if [ ! -x "$(command -v unar)" ]; then
-        if contains "$(uname)" "Darwin"; then
-            echo "NOTE: unar not found, installing into dotfiles bin"
-            echo "------------------------------------------------"
-
-            if [ ! -d "$HOME/.dotfiles/opt/tmp" ]; then
-              mkdir "$HOME/.dotfiles/opt/tmp" -p
-            fi
-
-            curl -L https://cdn.theunarchiver.com/downloads/unarMac.zip -o $HOME/.dotfiles/opt/tmp/unarMac.zip; echo ""
-            unzip -a -qq $HOME/.dotfiles/opt/tmp/unarMac.zip -d $HOME/.dotfiles/opt/tmp/unar
-
-            cp $HOME/.dotfiles/opt/tmp/unar/unar "$HOME/.dotfiles/opt/bin/"
-            rm -r $HOME/.dotfiles/opt/tmp/unar $HOME/.dotfiles/opt/tmp/unarMac.zip
-
-            if [ -x "$(command -v unar)" ]; then
-                echo "GOOD - unar is now available"
-            else
-                echo "BAD - unar doesn't seem to be available"
-            fi
-        else
-            echo "Unable to install unar - OS version doesn't have supported function"
-        fi
+  if [ ! -x "$(command -v unar)" ]; then
+    if contains "$(uname)" "Darwin"; then
+      install_generic_homebrew unar
+    else
+      echo "Unable to install unar - OS version doesn't have supported function"
     fi
+  fi
 }
 
 install_ffmpeg () {
@@ -288,41 +271,15 @@ install_phantomjs () {
 }
 
 install_jq () {
-    if [ ! -x "$(command -v jq)" ]; then
-      if contains "$(uname)" "Darwin" || contains "$(uname)" "Linux"; then
-        echo "NOTE: jq not found, availing into dotfiles bin"
-        echo "------------------------------------------------"
-        jq="https://api.github.com/repos/stedolan/jq/releases/latest"
-        if contains "$(uname)" "Darwin"; then
-          oskeyword="osx"
-        elif contains "$(uname)" "Linux"; then
-          oskeyword="linux64"
-        else
-          echo "Unable to install jq - OS version doesn't have supported function"
-          return
-        fi
-
-        if [ ! -d "$HOME/.dotfiles/opt/tmp" ]; then
-          mkdir "$HOME/.dotfiles/opt/tmp" -p
-        fi
-
-        latest=$(curl $jq -s  | grep url | grep "$oskeyword" | sed 's/.*\(http[s?]:\/\/.*[^"]\).*/\1/')
-        curl -L "$latest" -o $HOME/.dotfiles/opt/tmp/jq; echo ""
-
-        chmod +x $HOME/.dotfiles/opt/tmp/jq
-        mv $HOME/.dotfiles/opt/tmp/jq "$HOME/.dotfiles/opt/bin/"
-        rm -r $HOME/.dotfiles/opt/tmp/jq >/dev/null 2>&1
-
-        if [ -x "$(command -v jq)" ]; then
-            echo "GOOD - jq is now available"
-        else
-            echo "BAD - jq doesn't seem to be available"
-        fi
-      else
-          echo "Unable to install jq - OS version doesn't have supported function"
-      fi
+  if [ ! -x "$(command -v jq)" ]; then
+    if contains "$(uname)" "Darwin"; then
+      install_generic_github "stedolan/jq" "" "osx"
+    elif contains "$(uname)" "Linux"; then
+      install_generic_github "stedolan/jq" "" "linux64"
+    else
+      echo "Unable to install jq - OS version doesn't have supported function"
     fi
-    unset jq; unset oskeyword; unset latest;
+  fi
 }
 
 install_shellcheck () {
@@ -338,23 +295,10 @@ install_shellcheck () {
 install_shfmt () {
     if [ ! -x "$(command -v shfmt)" ]; then
       if contains "$(uname)" "Darwin"; then
-        echo "NOTE: shfmt not found, availing into dotfiles bin"
-        echo "------------------------------------------------"
-        shfmt="https://api.github.com/repos/mvdan/sh/releases/latest"
-        latest=$(curl $shfmt -s  | grep url | grep darwin_amd64 | sed 's/.*\(http[s?]:\/\/.*[^"]\).*/\1/')
-
-        curl -L "$latest" -o "$HOME/.dotfiles/opt/bin/shfmt"; echo ""
-        chmod +x "$HOME/.dotfiles/opt/bin/shfmt"
-
-        if [ -x "$(command -v shfmt)" ]; then
-            echo "GOOD - shfmt is now available"
-        else
-            echo "BAD - shfmt doesn't seem to be available"
-        fi
+        install_generic_github "mvdan/sh" "shfmt" "darwin_amd64"
       else
           echo "Unable to install shfmt - OS version doesn't have supported function"
       fi
-      unset shfmt; unset latest;
     fi
 }
 
