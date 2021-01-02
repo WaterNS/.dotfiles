@@ -63,6 +63,76 @@ install_generic_homebrew () {
   fi
 }
 
+install_generic_github () {
+  __repoName="$1"
+  __repoURL="https://api.github.com/repos/$__repoName/releases/latest"
+  __pkgName="$(echo $__repoName | cut -d'/' -f2)"
+
+  if [ -n "$2" ]; then
+    __executableName="$2"
+  else
+    __executableName=$__pkgName
+  fi
+
+  if [ -n "$3" ]; then
+    __searchString="$3"
+  else
+    __searchString="osx"
+  fi
+
+  if [ ! -x "$(command -v "$__executableName")" ]; then
+    if contains "$(uname)" "Darwin"; then
+      echo "NOTE: $__executableName not found, availing into dotfiles bin"
+      echo "------------------------------------------------"
+      #__pkgRelease=$(curl -S "$__repoURL" | jq -r ".assets[] | .browser_download_url" | grep "$__searchString") #jq dependent
+      __pkgRelease=$(curl -S "$__repoURL" | grep url | grep "$__searchString" | sed 's/.*\(http[s?]:\/\/.*[^"]\).*/\1/')
+
+      if [ "$__pkgRelease" ];then
+        if [ ! -d "$HOME/.dotfiles/opt/tmp" ]; then
+          mkdir "$HOME/.dotfiles/opt/tmp" -p
+        fi
+
+        __fileName=${__pkgRelease##*/}
+        __fileExt=$(getFileExt $__fileName)
+
+        echo "Downloading ${__executableName}..."
+        if [ -z $__fileExt ]; then
+          curl -L "$__pkgRelease" -o "$HOME/.dotfiles/opt/bin/$__executableName"; echo ""
+          chmod +x "$HOME/.dotfiles/opt/bin/$__executableName";
+        else
+          curl -L "$__pkgRelease" -o "$HOME/.dotfiles/opt/tmp/$__fileName"; echo ""
+          mkdir "$HOME/.dotfiles/opt/tmp/$__pkgName"
+
+          echo "Extracting archive..."
+          if [ "$__fileExt" == "7z" ]; then
+            unar "$HOME/.dotfiles/opt/tmp/$__fileName" -o "$HOME/.dotfiles/opt/tmp/$__pkgName/"
+          else
+            #Fallback to using tar
+            tar -xzf "$HOME/.dotfiles/opt/tmp/$__fileName" -C "$HOME/.dotfiles/opt/tmp/$__pkgName/"
+          fi
+
+          mv $HOME/.dotfiles/opt/tmp/"$__pkgName"/"$__pkgName"/*/bin/"$__executableName" ~/.dotfiles/opt/bin
+        fi
+      fi
+
+      if [ -x "$(command -v "$__executableName")" ]; then
+          rm -f "$HOME/.dotfiles/opt/tmp/$__fileName"
+          rm -rf "$HOME/.dotfiles/opt/tmp/$__pkgName"
+          echo "GOOD - $__executableName is now available"
+      else
+          echo "BAD - $__executableName doesn't seem to be available"
+      fi
+    else
+        echo "Unable to install $__executableName - OS version doesn't have supported function"
+    fi
+  fi
+
+  # Cleanup variables - can cause unexpected bugs if not done.
+  # Scoped variables (local) not available in base bourne shell.
+  unset __repoName; unset __repoURL; unset __pkgName; unset __executableName;
+  unset __pkgRelease; unset __fileName; unset __fileExt;
+}
+
 install_diffsofancy () {
   #Git: diff-so-fancy (better git diff)
   if [ ! -f "$HOMEREPO/opt/bin/diff-so-fancy" ]; then
