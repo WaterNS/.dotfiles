@@ -5,20 +5,20 @@ if notcontains "$PATH" "$HOME/.dotfiles/opt/bin"; then
 fi
 
 install_generic_homebrew () {
-  __pkgname="$1"
+  __pkgName="$1"
   if [ -n "$2" ]; then
-    __executablename=$2
+    __executableName=$2
   else
-    __executablename=$__pkgname
+    __executableName=$__pkgName
   fi
   if [ ! -x "$(command -v jq)" ]; then
       install_jq
   fi
-  if [ ! -x "$(command -v "$__executablename")" ]; then
+  if [ ! -x "$(command -v "$__executableName")" ]; then
     if contains "$(uname)" "Darwin"; then
-      echo "NOTE: $__pkgname not found, availing into dotfiles bin"
+      echo "NOTE: $__pkgName not found, availing into dotfiles bin"
       echo "------------------------------------------------"
-      __pkgurl="https://formulae.brew.sh/api/formula/$__pkgname.json"
+      __pkgurl="https://formulae.brew.sh/api/formula/$__pkgName.json"
       bottles=$(curl -S "$__pkgurl" | jq -r "[.bottle.stable.files][0]")
 
       if [ "$bottles" ]; then
@@ -38,29 +38,32 @@ install_generic_homebrew () {
           mkdir "$HOME/.dotfiles/opt/tmp" -p
         fi
 
-        filename=${latest##*/}
-        curl -L "$latest" -o "$HOME/.dotfiles/opt/tmp/$filename"; echo ""
+        __fileName=${latest##*/}
+        curl -L "$latest" -o "$HOME/.dotfiles/opt/tmp/$__fileName"; echo ""
 
-        mkdir "$HOME/.dotfiles/opt/tmp/$__pkgname"
-        tar -xzf "$HOME/.dotfiles/opt/tmp/$filename" -C "$HOME/.dotfiles/opt/tmp/$__pkgname/"
+        mkdir "$HOME/.dotfiles/opt/tmp/$__pkgName"
+        tar -xzf "$HOME/.dotfiles/opt/tmp/$__fileName" -C "$HOME/.dotfiles/opt/tmp/$__pkgName/"
 
-        mv $HOME/.dotfiles/opt/tmp/"$__pkgname"/"$__pkgname"/*/bin/"$__executablename" ~/.dotfiles/opt/bin
+        mv $HOME/.dotfiles/opt/tmp/"$__pkgName"/"$__pkgName"/*/bin/"$__executableName" ~/.dotfiles/opt/bin
       fi
 
-      if [ -x "$(command -v "$__executablename")" ]; then
-          rm "$HOME/.dotfiles/opt/tmp/$filename"
-          rm -rf "$HOME/.dotfiles/opt/tmp/$__pkgname"
-          echo "GOOD - $__pkgname is now available"
+      if [ -x "$(command -v "$__executableName")" ]; then
+          rm "$HOME/.dotfiles/opt/tmp/$__fileName"
+          rm -rf "$HOME/.dotfiles/opt/tmp/$__pkgName"
+          echo "GOOD - $__pkgName is now available"
       else
-          echo "BAD - $__pkgname doesn't seem to be available"
+          echo "BAD - $__pkgName doesn't seem to be available"
       fi
     else
-        echo "Unable to install $__pkgname - OS version doesn't have supported function"
+        echo "Unable to install $__pkgName - OS version doesn't have supported function"
     fi
-    unset __pkgname; unset __executablename;
-    unset bottles; unset latest; unset latestARM;
-    unset filename;
   fi
+
+  # Cleanup variables - can cause unexpected bugs if not done.
+  # Scoped variables (local) not available in base bourne shell.
+  unset __pkgName; unset __executableName;
+  unset bottles; unset latest; unset latestARM;
+  unset __fileName;
 }
 
 install_generic_github () {
@@ -196,33 +199,33 @@ install_unar () {
 }
 
 install_ffmpeg () {
-    if [ ! -x "$(command -v ffmpeg)" ]; then
-      if contains "$(uname)" "Darwin"; then
-        install_unar
-        echo "NOTE: ffmpeg not found, installing into dotfiles bin"
-        echo "------------------------------------------------"
+  if [ ! -x "$(command -v ffmpeg)" ]; then
+    if contains "$(uname)" "Darwin"; then
+      install_unar
+      echo "NOTE: ffmpeg not found, installing into dotfiles bin"
+      echo "------------------------------------------------"
 
-        if [ ! -d "$HOME/.dotfiles/opt/tmp" ]; then
-          mkdir "$HOME/.dotfiles/opt/tmp" -p
-        fi
-
-        ffmpeg="https://evermeet.cx/pub/ffmpeg/snapshots/"
-        latest=$(curl $ffmpeg | grep -v ".7z.sig" | grep .7z | head -1 | sed -n 's/.*href="\([^"]*\).*/\1/p')
-        curl "$ffmpeg$latest" -o $HOME/.dotfiles/opt/tmp/ffmpeg.7z; echo ""
-
-        unar $HOME/.dotfiles/opt/tmp/ffmpeg.7z -o "$HOME/.dotfiles/opt/bin/"
-        rm -r $HOME/.dotfiles/opt/tmp/ffmpeg.7z
-
-        if [ -x "$(command -v ffmpeg)" ]; then
-            echo "GOOD - ffmpeg is now available"
-        else
-            echo "BAD - ffmpeg doesn't seem to be available"
-        fi
-      else
-          echo "Unable to install ffmpeg - OS version doesn't have supported function"
+      if [ ! -d "$HOME/.dotfiles/opt/tmp" ]; then
+        mkdir "$HOME/.dotfiles/opt/tmp" -p
       fi
-      unset ffmpeg; unset latest;
+
+      ffmpeg="https://evermeet.cx/pub/ffmpeg/snapshots/"
+      latest=$(curl $ffmpeg | grep -v ".7z.sig" | grep .7z | head -1 | sed -n 's/.*href="\([^"]*\).*/\1/p')
+      curl "$ffmpeg$latest" -o $HOME/.dotfiles/opt/tmp/ffmpeg.7z; echo ""
+
+      unar $HOME/.dotfiles/opt/tmp/ffmpeg.7z -o "$HOME/.dotfiles/opt/bin/"
+      rm -r $HOME/.dotfiles/opt/tmp/ffmpeg.7z
+
+      if [ -x "$(command -v ffmpeg)" ]; then
+          echo "GOOD - ffmpeg is now available"
+      else
+          echo "BAD - ffmpeg doesn't seem to be available"
+      fi
+    else
+        echo "Unable to install ffmpeg - OS version doesn't have supported function"
     fi
+    unset ffmpeg; unset latest;
+  fi
 }
 
 install_ffprobe () {
@@ -435,11 +438,11 @@ install_ohmyzsh () {
 }
 
 install_blesh () {
-  __pkgname="ble.sh"
+  __pkgName="ble.sh"
   __pkgsafename="blesh"
   __pkgdesc="Bash Syntax Highlighting"
-  if [ ! -f "$HOME/.dotfiles/opt/bash-extras/$__pkgsafename/$__pkgname" ] && [ -x "$(command -v bash)" ]; then
-    echo "NOTE: $__pkgname ($__pkgdesc) not found, availing into dotfiles bin"
+  if [ ! -f "$HOME/.dotfiles/opt/bash-extras/$__pkgsafename/$__pkgName" ] && [ -x "$(command -v bash)" ]; then
+    echo "NOTE: $__pkgName ($__pkgdesc) not found, availing into dotfiles bin"
     echo "------------------------------------------------"
 
     if [ ! -d "$HOME/.dotfiles/opt/tmp" ]; then
@@ -448,26 +451,26 @@ install_blesh () {
 
     __pkgurl="https://api.github.com/repos/akinomyoga/ble.sh/releases/latest"
     latest=$(curl $__pkgurl -s  | grep url | grep "tar.xz" | sed 's/.*\(http[s?]:\/\/.*[^"]\).*/\1/')
-    filename=${latest##*/}
+    __fileName=${latest##*/}
 
-    curl -L "$latest" -o "$HOME/.dotfiles/opt/tmp/$filename"; echo ""
+    curl -L "$latest" -o "$HOME/.dotfiles/opt/tmp/$__fileName"; echo ""
 
     mkdir $HOME/.dotfiles/opt/tmp/$__pkgsafename
-    tar -xzf "$HOME/.dotfiles/opt/tmp/$filename" -C $HOME/.dotfiles/opt/tmp/$__pkgsafename
+    tar -xzf "$HOME/.dotfiles/opt/tmp/$__fileName" -C $HOME/.dotfiles/opt/tmp/$__pkgsafename
     mkdir -p "$HOME/.dotfiles/opt/bash-extras/$__pkgsafename"
     cp -r $HOME/.dotfiles/opt/tmp/$__pkgsafename/*/ ~/.dotfiles/opt/bash-extras/$__pkgsafename
 
-    rm "$HOME/.dotfiles/opt/tmp/$filename"
+    rm "$HOME/.dotfiles/opt/tmp/$__fileName"
     rm -rf "$HOME/.dotfiles/opt/tmp/$__pkgsafename"
 
-    if [ -f "$HOME/.dotfiles/opt/bash-extras/$__pkgsafename/$__pkgname" ]; then
-        echo "GOOD - $__pkgname ($__pkgdesc) is now available"
+    if [ -f "$HOME/.dotfiles/opt/bash-extras/$__pkgsafename/$__pkgName" ]; then
+        echo "GOOD - $__pkgName ($__pkgdesc) is now available"
     else
-        echo "BAD - $__pkgname ($__pkgdesc) doesn't seem to be available"
+        echo "BAD - $__pkgName ($__pkgdesc) doesn't seem to be available"
     fi
-    unset __pkgurl; unset latest; unset filename;
+    unset __pkgurl; unset latest; unset __fileName;
   fi
-  unset __pkgname; unset __pkgsafename; unset __pkgdesc;
+  unset __pkgName; unset __pkgsafename; unset __pkgdesc;
 }
 
 install_ncdu () {
