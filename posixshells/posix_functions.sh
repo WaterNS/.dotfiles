@@ -198,17 +198,17 @@ simpleserver() {
   fi
 }
 
-function getFileExt() {
+getFileExt() {
   #Dictionary lookup, perhaps most easiest to understand
   # for the use cases of this dotfiles repo
   case "$1" in
-    *.tar.bz2) return "tar.bz2" ;;
-    *.bz2)     return "bz2" ;;
-    *.tar.gz)  return "tar.gz" ;;
-    *.tgz)     return "tgz" ;;
-    *.gz)      return "gz" ;;
-    *.zip)     return "zip" ;;
-    *.7z)      return "7z" ;;
-    *)         return "" ;;
+    *.tar.bz2) echo "tar.bz2" ;;
+    *.bz2)     echo "bz2" ;;
+    *.tar.gz)  echo "tar.gz" ;;
+    *.tgz)     echo "tgz" ;;
+    *.gz)      echo "gz" ;;
+    *.zip)     echo "zip" ;;
+    *.7z)      echo "7z" ;;
+    *)         echo "" ;;
   esac
 }

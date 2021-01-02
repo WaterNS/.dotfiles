@@ -23,13 +23,13 @@ install_generic_homebrew () {
 
       if [ "$bottles" ]; then
         if contains "$(arch)" "arm64"; then
-          latestARM=$(echo $bottles | jq -r '. | with_entries( select(.key|contains("arm64") ) ) | .[]'.url)
+          latestARM=$(echo "$bottles" | jq -r '. | with_entries( select(.key|contains("arm64") ) ) | .[]'.url)
           if [ "$latestARM" ]; then
             latest=$latestARM
           fi
         fi
         if [ ! "$latest" ]; then
-          latest=$(echo $bottles | jq -r "[.[]][0]".url)
+          latest=$(echo "$bottles" | jq -r "[.[]][0]".url)
         fi
       fi
 
@@ -44,7 +44,7 @@ install_generic_homebrew () {
         mkdir "$HOME/.dotfiles/opt/tmp/$__pkgName"
         tar -xzf "$HOME/.dotfiles/opt/tmp/$__fileName" -C "$HOME/.dotfiles/opt/tmp/$__pkgName/"
 
-        mv $HOME/.dotfiles/opt/tmp/"$__pkgName"/"$__pkgName"/*/bin/"$__executableName" ~/.dotfiles/opt/bin
+        mv "$HOME"/.dotfiles/opt/tmp/"$__pkgName"/"$__pkgName"/*/bin/"$__executableName" ~/.dotfiles/opt/bin
       fi
 
       if [ -x "$(command -v "$__executableName")" ]; then
@@ -69,7 +69,7 @@ install_generic_homebrew () {
 install_generic_github () {
   __repoName="$1"
   __repoURL="https://api.github.com/repos/$__repoName/releases/latest"
-  __pkgName="$(echo $__repoName | cut -d'/' -f2)"
+  __pkgName="$(echo "$__repoName" | cut -d'/' -f2)"
 
   if [ -n "$2" ]; then
     __executableName="$2"
@@ -96,10 +96,10 @@ install_generic_github () {
         fi
 
         __fileName=${__pkgRelease##*/}
-        __fileExt=$(getFileExt $__fileName)
+        __fileExt=$(getFileExt "$__fileName")
 
         echo "Downloading ${__executableName}..."
-        if [ -z $__fileExt ]; then
+        if [ -z "$__fileExt" ]; then
           curl -L "$__pkgRelease" -o "$HOME/.dotfiles/opt/bin/$__executableName"; echo ""
           chmod +x "$HOME/.dotfiles/opt/bin/$__executableName";
         else
@@ -107,14 +107,14 @@ install_generic_github () {
           mkdir "$HOME/.dotfiles/opt/tmp/$__pkgName"
 
           echo "Extracting archive..."
-          if [ "$__fileExt" == "7z" ]; then
+          if [ "$__fileExt" = "7z" ]; then
             unar "$HOME/.dotfiles/opt/tmp/$__fileName" -o "$HOME/.dotfiles/opt/tmp/$__pkgName/"
           else
             #Fallback to using tar
             tar -xzf "$HOME/.dotfiles/opt/tmp/$__fileName" -C "$HOME/.dotfiles/opt/tmp/$__pkgName/"
           fi
 
-          mv $HOME/.dotfiles/opt/tmp/"$__pkgName"/"$__pkgName"/*/bin/"$__executableName" ~/.dotfiles/opt/bin
+          mv "$HOME"/.dotfiles/opt/tmp/"$__pkgName"/"$__pkgName"/*/bin/"$__executableName" ~/.dotfiles/opt/bin
         fi
       fi
 
@@ -194,10 +194,10 @@ install_ffmpeg () {
 
       ffmpeg="https://evermeet.cx/pub/ffmpeg/snapshots/"
       latest=$(curl $ffmpeg | grep -v ".7z.sig" | grep .7z | head -1 | sed -n 's/.*href="\([^"]*\).*/\1/p')
-      curl "$ffmpeg$latest" -o $HOME/.dotfiles/opt/tmp/ffmpeg.7z; echo ""
+      curl "$ffmpeg$latest" -o "$HOME"/.dotfiles/opt/tmp/ffmpeg.7z; echo ""
 
-      unar $HOME/.dotfiles/opt/tmp/ffmpeg.7z -o "$HOME/.dotfiles/opt/bin/"
-      rm -r $HOME/.dotfiles/opt/tmp/ffmpeg.7z
+      unar "$HOME/.dotfiles/opt/tmp/ffmpeg.7z" -o "$HOME/.dotfiles/opt/bin/"
+      rm -r "$HOME/.dotfiles/opt/tmp/ffmpeg.7z"
 
       if [ -x "$(command -v ffmpeg)" ]; then
           echo "GOOD - ffmpeg is now available"
@@ -224,10 +224,10 @@ install_ffprobe () {
 
         ffprobe="https://evermeet.cx/pub/ffprobe/snapshots/"
         latest=$(curl $ffprobe | grep -v ".7z.sig" | grep .7z | head -1 | sed -n 's/.*href="\([^"]*\).*/\1/p')
-        curl "$ffprobe/$latest" -o $HOME/.dotfiles/opt/tmp/ffprobe.7z; echo ""
+        curl "$ffprobe/$latest" -o "$HOME/.dotfiles/opt/tmp/ffprobe.7z"; echo ""
 
-        unar $HOME/.dotfiles/opt/tmp/ffprobe.7z -o "$HOME/.dotfiles/opt/bin/"
-        rm -r $HOME/.dotfiles/opt/tmp/ffprobe.7z
+        unar "$HOME/.dotfiles/opt/tmp/ffprobe.7z" -o "$HOME/.dotfiles/opt/bin/"
+        rm -r "$HOME/.dotfiles/opt/tmp/ffprobe.7z"
 
         if [ -x "$(command -v ffprobe)" ]; then
             echo "GOOD - ffprobe is now available"
@@ -253,10 +253,10 @@ install_phantomjs () {
 
         phantomjs="http://phantomjs.org/download.html"
         latest=$(curl -L $phantomjs | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep osx.zip)
-        curl -L "$latest" -o $HOME/.dotfiles/opt/tmp/phantomjs.zip; echo ""
+        curl -L "$latest" -o "$HOME/.dotfiles/opt/tmp/phantomjs.zip"; echo ""
 
         unzip -j "$HOME/.dotfiles/opt/tmp/phantomjs.zip" "*/bin/phantomjs" -d "$HOME/.dotfiles/opt/bin/"
-        rm -r $HOME/.dotfiles/opt/tmp/phantomjs.zip
+        rm -r "$HOME/.dotfiles/opt/tmp/phantomjs.zip"
 
         if [ -x "$(command -v phantomjs)" ]; then
             echo "GOOD - phantomjs is now available"
@@ -399,10 +399,10 @@ install_blesh () {
 
     curl -L "$latest" -o "$HOME/.dotfiles/opt/tmp/$__fileName"; echo ""
 
-    mkdir $HOME/.dotfiles/opt/tmp/$__pkgsafename
-    tar -xzf "$HOME/.dotfiles/opt/tmp/$__fileName" -C $HOME/.dotfiles/opt/tmp/$__pkgsafename
+    mkdir "$HOME/.dotfiles/opt/tmp/$__pkgsafename"
+    tar -xzf "$HOME/.dotfiles/opt/tmp/$__fileName" -C "$HOME/.dotfiles/opt/tmp/$__pkgsafename"
     mkdir -p "$HOME/.dotfiles/opt/bash-extras/$__pkgsafename"
-    cp -r $HOME/.dotfiles/opt/tmp/$__pkgsafename/*/ ~/.dotfiles/opt/bash-extras/$__pkgsafename
+    cp -r "$HOME"/.dotfiles/opt/tmp/$__pkgsafename/*/ ~/.dotfiles/opt/bash-extras/$__pkgsafename
 
     rm "$HOME/.dotfiles/opt/tmp/$__fileName"
     rm -rf "$HOME/.dotfiles/opt/tmp/$__pkgsafename"
