@@ -9,6 +9,7 @@
       "ionutvmi.reg",
       "ebicochineal.add-contextmenu-toggle-comment",
       "streetsidesoftware.code-spell-checker",
-      "johnpapa.vscode-peacock"
+      "johnpapa.vscode-peacock",
+      "EthanSK.restore-terminals"
   ]
 }
