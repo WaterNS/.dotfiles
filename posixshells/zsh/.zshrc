@@ -93,6 +93,10 @@ if [ -f ~/.dotfiles/opt/zsh-extras/zsh-autosuggestions/zsh-autosuggestions.zsh ]
 	. ~/.dotfiles/opt/zsh-extras/zsh-autosuggestions/zsh-autosuggestions.zsh
 fi
 
+# load bashcompinit for some old bash completions
+autoload bashcompinit && bashcompinit
+[[ -r ~/Projects/autopkg_complete/autopkg ]] && source ~/Projects/autopkg_complete/autopkg
+
 # ZSH Syntax Highlighting - MUST BE LAST IN .ZSHRC file
 if [ -f ~/.dotfiles/opt/zsh-extras/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
 	. ~/.dotfiles/opt/zsh-extras/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
