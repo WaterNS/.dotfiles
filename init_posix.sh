@@ -150,6 +150,12 @@ install_ncdu
 install_ohmyzsh
 . "$HOMEREPO/posixshells/zsh/init_zsh_addons.sh"
 
+
+# Update youtube-dl, if installed
+if [ $u ] && [ -x "$(command -v youtube-dl)" ]; then
+  youtube-dl -U
+fi
+
 #Write last update file
 SHAinitupdated=$(git --git-dir "$HOMEREPO/.git" log -n 1 --pretty=format:%H -- init_posix.sh)
 if [ ! -f "$HOMEREPO/opt/lastupdate" ] || [ ! -f "$HOMEREPO/opt/lastinit" ]; then
