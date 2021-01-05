@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# BASH: Ignore case while completing
+set completion-ignore-case on
