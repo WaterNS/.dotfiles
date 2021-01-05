@@ -50,8 +50,8 @@ else
     unset -f youtube-dl
 
     if [ -x "$(command -v youtube-dl)" ]; then
-        echo "-- Reloading bash aliases and re-trying your command"
-        . "$HOME/.dotfiles/bash/.bash_aliases"; echo ""
+        echo "-- Reloading functions and re-trying your command"
+        . "$HOME/.dotfiles/posixshells/modernshell_functions"; echo ""
         echo "Re-running your original cmd: ${FUNCNAME[${#FUNCNAME[@]}-1]} $*"
         echo ""
         ${FUNCNAME[${#FUNCNAME[@]}-1]} "$@"
