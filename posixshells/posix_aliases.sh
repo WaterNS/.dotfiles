@@ -5,9 +5,19 @@ if [ -x "$(command -v prettyping)" ]; then
   alias ping='prettyping --nolegend'
 fi
 
+if [ -x "$(command -v rsync)" ]; then
+  rsync_cp() {
+    rsync -pogbr -hhh --backup-dir=/tmp/rsync -e /dev/null --progress "$@"
+  }
+fi
+
 # Move/Copy: Confirm before overwrite
 if [ -x "$(command -v cp)" ]; then
-  alias cp='cp -i'
+  if [ -x "$(command -v rsync)" ]; then
+    alias cp='rsync_cp' # Use rsync for copying when available (nicer)
+  else
+    alias cp='cp -i'
+  fi
 fi
 if [ -x "$(command -v mv)" ]; then
   alias mv='mv -i'
