@@ -14,8 +14,7 @@ Built for:
   - Powershell
   - POSIX-like: sh, bash, zsh (possibly others)
 - Tools: VS Code, git, vim
-- Installers (try to) support x64 Windows / Linux / MacOS
-  - At some point ARM/ARM64 should be added for Apple Silicon and Raspberry Pi type hardware
+- Installers (try to) support x64 Windows / Linux / MacOS (Intel/Apple Silicon)
 
 ## What it does
 
@@ -50,15 +49,15 @@ Cache and downloaded binaries stored in `$HOME/.dotfiles/opt/`.
 2. Init dotfiles
 ```
 git clone https://github.com/WaterNS/.dotfiles.git ~/.dotfiles && \
-  cd .dotfiles && ./init_posix.sh
+  cd ~/.dotfiles && ./init_posix.sh
 ```
 
-3. Add SSH pubkey to github account:
+3. [Optional] Add SSH pubkey to github account:
 ```
 pubkey WaterNS
 ```
 
-4. Update local repo with SSH remote:
+4. [Optional] Update local repo with SSH remote:
 ```
 cd ~/.dotfiles && git remote set-url origin git@github.com:WaterNS/.dotfiles.git
 ```
