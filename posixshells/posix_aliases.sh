@@ -114,3 +114,10 @@ fi
 if [ -x "$(command -v bat)" ]; then
   alias cat='bat --tabs 2'
 fi
+
+# scp: Use rsync, if available
+if [ -x "$(command -v scp)" ]; then
+  if [ -x "$(command -v rsync)" ]; then
+    alias scp='rsync --archive --xattrs --acls --progress --rsh="ssh"'
+  fi
+fi
