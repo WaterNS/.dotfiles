@@ -8,6 +8,7 @@
   "workbench.sideBar.location": "right",
   "workbench.tree.renderIndentGuides": "always",
   "workbench.startupEditor": "newUntitledFile",
+  "workbench.editor.wrapTabs": true,
 
   "files.insertFinalNewline": true, //POSIX-targeted tools want new lines
   "files.trimFinalNewlines": true,
