@@ -197,3 +197,21 @@ Function Add-EnvPath {
       $env:Path = $envPaths -join ';'
   }
 }
+
+Function pubkey {
+  param(
+      [Parameter(Mandatory=$false)]
+      [string] $KeyName = "id_rsa"
+  )
+
+  if (Test-Path "$HOME/.ssh/$KeyName.pub") {
+    Get-Content "$HOME/.ssh/$KeyName.pub";
+    if (Check-Command "clip") {
+      Get-Content "$HOME/.ssh/$KeyName.pub" | clip
+      Write-Host "Copied to Clipboard!"
+    }
+
+  } else {
+    Write-Host "Didn't find ~/.ssh/$KeyName.pub, aborting..."
+  }
+}
