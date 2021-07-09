@@ -10,6 +10,7 @@
       "ebicochineal.add-contextmenu-toggle-comment",
       "streetsidesoftware.code-spell-checker",
       "johnpapa.vscode-peacock",
-      "EthanSK.restore-terminals"
+      "EthanSK.restore-terminals",
+      "ms-vscode.powershell"
   ]
 }
