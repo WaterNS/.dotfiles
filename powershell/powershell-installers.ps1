@@ -151,7 +151,7 @@ Function install-delta {
 Function install-bat {
   if (!(Check-Command bat)) {
     if ((Check-OS) -like "*win*") {
-      install-generic-github -repo "sharkdp/bat"
+      install-generic-github -repo "sharkdp/bat" -searchstring "x86_64-pc-windows-msvc"
     }
   }
 }
