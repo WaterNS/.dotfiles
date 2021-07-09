@@ -28,7 +28,10 @@ catch [System.Management.Automation.CommandNotFoundException]
 }
 
 # Import dotfiles gitconfig
-git config --global include.path "~/.dotfiles/git/git_tweaks"
+if (! ($(git config --global --get-all include.path) -like "*.dotfiles/git/git_tweaks*")) {
+  git config --global --add include.path "~/.dotfiles/git/git_tweaks"
+}
+
 
 if ($reinit) {
   Write-Output "Reinitializing..."
