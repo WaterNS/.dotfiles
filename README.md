@@ -61,3 +61,24 @@ pubkey WaterNS
 ```
 cd ~/.dotfiles && git remote set-url origin git@github.com:WaterNS/.dotfiles.git
 ```
+
+# Windows bootstrap:
+1. Install git (if needed): https://git-scm.com/download/
+
+2. Init dotfiles - Run Powershell window **as Administrator** (needed for symbolic links/Execution Policy)
+```
+git clone https://github.com/WaterNS/.dotfiles.git $HOME/.dotfiles
+cd ~/.dotfiles
+Set-ExecutionPolicy Unrestricted -force
+./init_powershell.ps1
+```
+
+3. [Optional] Add SSH pubkey to github account:
+```
+pubkey WaterNS
+```
+
+4. [Optional] Update local repo with SSH remote:
+```
+cd ~/.dotfiles && git remote set-url origin git@github.com:WaterNS/.dotfiles.git
+```
