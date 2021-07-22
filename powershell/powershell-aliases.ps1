@@ -43,3 +43,8 @@ if (Check-Command bat) {
   Function AliasBat {bat --tabs 2 $args}
   Set-Alias cat AliasBat
 }
+
+if (Check-Command "where.exe") {
+  Function AliasWhereIs {where.exe $args}
+  Set-Alias whereis AliasWhereIs
+}
