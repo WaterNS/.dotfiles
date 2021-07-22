@@ -76,25 +76,28 @@ if (Test-Path ~/.ssh/WaterNS) {
 Set-Location $curpath
 
 
-# Create Powershell Profile if doesn't exist
-$ProfileFile=$PROFILE
-If (!(Test-Path (Split-Path $ProfileFile))) {
-  Write-Output "  Profile folder not found, creating..."
-  New-Item $(Split-Path $ProfileFile) -ItemType Directory > $null
-}
-if (!(Test-Path $ProfileFile)) {
-  Write-Output "NOTE: $ProfileFile not found, creating!"
-  touch $ProfileFile
-  Write-Output ""
-}
+# Create Powershell Profile(s), if they don't exist
+$PowerShellProfileFiles =
+  "$HOME\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1", # Powershell 5.1 and Prior
+  "$HOME\Documents\PowerShell\Microsoft.PowerShell_profile.ps1" # Powershell 7+
 
+foreach ($ProfileFile in $PowerShellProfileFiles) {
+  If (!(Test-Path (Split-Path $ProfileFile))) {
+    Write-Output "  Profile folder not found, creating..."
+    New-Item $(Split-Path $ProfileFile) -ItemType Directory > $null
+  }
+  if (!(Test-Path $ProfileFile)) {
+    Write-Output "NOTE: $ProfileFile not found, creating!"
+    touch $ProfileFile
+    Write-Output ""
+  }
 
-
-#Add Reference to our dotfile profile to each Powershell profile we use
-$ProfileDotFile='$HOME\.dotfiles\powershell\profile-powershell.ps1'
-if (!(Get-Content "$ProfileFile" | Where-Object {$_ -like "*$ProfileDotFile*"})) {
-  Write-Output 'NOTE: Powershell Profile found, but missing reference to our dotfiles repo, adding!'
-  Write-Output ". $ProfileDotFile" >> $ProfileFile
+  #Add Reference to our dotfile profile to each Powershell profile we use
+  $ProfileDotFile='$HOME\.dotfiles\powershell\profile-powershell.ps1'
+  if (!(Get-Content "$ProfileFile" | Where-Object {$_ -like "*$ProfileDotFile*"})) {
+    Write-Output 'NOTE: Powershell Profile found, but missing reference to our dotfiles repo, adding!'
+    Write-Output ". $ProfileDotFile" >> $ProfileFile
+  }
 }
 
 # Create VS Code Powershell Profile if doesn't exist
