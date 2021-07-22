@@ -1,3 +1,21 @@
+Function install-winget {
+param(
+  # Uninstall
+  [Parameter(Mandatory=$false)]
+  [Alias("u")]
+  [Switch]
+  $Uninstall
+)
+
+  if (!(Check-Command winget)) {
+    if ((Check-OS) -like "*win*") {
+      install-generic-github -repo "microsoft/winget-cli" -searchstring ".msixbundle" -executablename "winget"
+    }
+  } elseif ($Uninstall) {
+    Get-AppPackage | Where-Object {$_.PackageFullName -like "*DesktopAppInstaller*"} | Remove-AppPackage
+  }
+}
+
 Function install-generic-chocolatey {
   param(
       [Parameter(Mandatory=$true)]
