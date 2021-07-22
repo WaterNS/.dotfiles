@@ -213,7 +213,7 @@ param (
 
   if ($Uninstall) {
     if ((Get-Package | ? {$_.Name -like "*Powershell*"}) -and $global) {
-      winget uninstall -name PowerShell --exact
+      winget uninstall --name PowerShell --exact
     }
 
     if (Check-Installed -name "Powershell" -type "folder") {
@@ -227,7 +227,7 @@ param (
   if ($global -and !$Uninstall) {
     if (!(Get-Package | ? {$_.Name -like "*Powershell*"})) {
       install-winget
-      winget install -name PowerShell --exact
+      winget install --name "PowerShell" --exact
     }
   } elseif (!$Uninstall) {
     if (!(Check-Installed -name "Powershell" -type "folder")) {
