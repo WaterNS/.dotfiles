@@ -68,7 +68,13 @@ Function install-generic-github {
     [string] $pkgname = $repo.Split("/")[1],
     [string] $executablename = $pkgname,
 
-    [string] $searchstring = "windows"
+    [ValidateSet("binary","folder")]
+    [string] $type = "binary",
+    [string] $path,
+
+    [string] $searchstring = "windows",
+
+    [Switch] $folderInstall
   )
 
   if (!$pkgname -and !$executablename) {
@@ -76,7 +82,7 @@ Function install-generic-github {
     return
   }
 
-  if (!(Check-Command $executablename)) {
+  if (!(Check-Installed -name $executablename -type $type -path $path)) {
     if ((Check-OS) -like "*win*") {
       "NOTE: $executablename not found, availing into dotfiles bin"
       "------------------------------------------------"
@@ -95,8 +101,12 @@ Function install-generic-github {
         if ($ext -like "zip") {
           Expand-Archive -LiteralPath "$HOME/.dotfiles/opt/tmp/$pkgname.$ext" -DestinationPath "$HOME/.dotfiles/opt/tmp/$pkgname"
 
-          $local:binary = Get-ChildItem "$HOME/.dotfiles/opt/tmp/$pkgname/" -Recurse -Filter "$executablename*.exe"
-          Move-Item $binary.FullName "$HOME/.dotfiles/opt/bin/$executablename.exe"
+          if ($type -like "*folder*") {
+            Move-Item "$HOME/.dotfiles/opt/tmp/$pkgname" "$HOME/.dotfiles/opt/bin/$pkgname"
+          } else {
+            $local:binary = Get-ChildItem "$HOME/.dotfiles/opt/tmp/$pkgname/" -Recurse -Filter "$executablename*.exe"
+            Move-Item $binary.FullName "$HOME/.dotfiles/opt/bin/$executablename.exe"
+          }
         } elseif ($ext -like "msixbundle") {
           Add-AppPackage -path "$HOME/.dotfiles/opt/tmp/$pkgname.$ext"
         } else {
@@ -106,7 +116,7 @@ Function install-generic-github {
         Remove-Item -Path "$HOME/.dotfiles/opt/tmp" -Recurse
       }
 
-      if (Check-Command $executablename) {
+      if (Check-Installed -name $executablename -type $type -path $path) {
         "GOOD - $executablename is now available"
       } else {
         "BAD - $executablename doesn't seem to be available"
