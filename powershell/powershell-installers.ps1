@@ -6,6 +6,11 @@ Function install-generic-chocolatey {
       [string] $executablename = $pkgname
   )
 
+  if (!$pkgname -and !$executablename) {
+    Write-Warning "install-generic-chocolatey: No PkgName was provided, doing nothing..."
+    return
+  }
+
   if (!(Check-Command $executablename)) {
     if ((Check-OS) -like "*win*") {
       "NOTE: $pkgname not found, availing into dotfiles bin"
@@ -48,6 +53,11 @@ Function install-generic-github {
     [string] $searchstring = "windows"
   )
 
+  if (!$pkgname -and !$executablename) {
+    Write-Warning "install-generic-github: No PkgName was provided, doing nothing..."
+    return
+  }
+
   if (!(Check-Command $executablename)) {
     if ((Check-OS) -like "*win*") {
       "NOTE: $executablename not found, availing into dotfiles bin"
@@ -64,10 +74,17 @@ Function install-generic-github {
         mkdir -p "$HOME/.dotfiles/opt/tmp" | Out-Null
         Powershell-FileDownload "$latest" -o "$HOME/.dotfiles/opt/tmp/$pkgname.$ext"
 
-        Expand-Archive -LiteralPath "$HOME/.dotfiles/opt/tmp/$pkgname.$ext" -DestinationPath "$HOME/.dotfiles/opt/tmp/$pkgname"
+        if ($ext -like "zip") {
+          Expand-Archive -LiteralPath "$HOME/.dotfiles/opt/tmp/$pkgname.$ext" -DestinationPath "$HOME/.dotfiles/opt/tmp/$pkgname"
 
-        $local:binary = Get-ChildItem "$HOME/.dotfiles/opt/tmp/$pkgname/" -Recurse -Filter "$executablename*.exe"
-        Move-Item $binary.FullName "$HOME/.dotfiles/opt/bin/$executablename.exe"
+          $local:binary = Get-ChildItem "$HOME/.dotfiles/opt/tmp/$pkgname/" -Recurse -Filter "$executablename*.exe"
+          Move-Item $binary.FullName "$HOME/.dotfiles/opt/bin/$executablename.exe"
+        } elseif ($ext -like "msixbundle") {
+          Add-AppPackage -path "$HOME/.dotfiles/opt/tmp/$pkgname.$ext"
+        } else {
+          Write-Warning "Don't know what to do with extension ($ext) from $pkgname.$ext"
+        }
+
         Remove-Item -Path "$HOME/.dotfiles/opt/tmp" -Recurse
       }
 
