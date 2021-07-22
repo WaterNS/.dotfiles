@@ -206,12 +206,34 @@ Function install-cloc {
 }
 
 Function install-Powershell {
-  #install-winget
-  #if (!(Get-Package | ? {$_.Name -like "*Powershell*"})) {
-  if (!(Check-Installed -name "Powershell" -type "folder")) {
-    if ((Check-OS) -like "*win*") {
-      install-generic-github -repo "PowerShell/PowerShell" -searchstring "win-x64.zip" -type "folder"
-      #winget install -name PowerShell --exact
+param (
+  [Switch][Alias("g")]$global,
+  [Alias("u")][Switch]$Uninstall
+)
+
+  if ($Uninstall) {
+    if ((Get-Package | ? {$_.Name -like "*Powershell*"}) -and $global) {
+      winget uninstall -name PowerShell --exact
+    }
+
+    if (Check-Installed -name "Powershell" -type "folder") {
+      if (Test-Path "$HOME/.dotfiles/opt/bin/Powershell") {
+        Remove-Item "$HOME/.dotfiles/opt/bin/Powershell" -Recurse -Force
+      }
+    }
+  }
+
+
+  if ($global -and !$Uninstall) {
+    if (!(Get-Package | ? {$_.Name -like "*Powershell*"})) {
+      install-winget
+      winget install -name PowerShell --exact
+    }
+  } elseif (!$Uninstall) {
+    if (!(Check-Installed -name "Powershell" -type "folder")) {
+      if ((Check-OS) -like "*win*") {
+        install-generic-github -repo "PowerShell/PowerShell" -searchstring "win-x64.zip" -type "folder"
+      }
     }
   }
 }
