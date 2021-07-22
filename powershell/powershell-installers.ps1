@@ -204,3 +204,14 @@ Function install-cloc {
     }
   }
 }
+
+Function install-Powershell {
+  #install-winget
+  #if (!(Get-Package | ? {$_.Name -like "*Powershell*"})) {
+  if (!(Check-Installed -name "Powershell" -type "folder")) {
+    if ((Check-OS) -like "*win*") {
+      install-generic-github -repo "PowerShell/PowerShell" -searchstring "win-x64.zip" -type "folder"
+      #winget install -name PowerShell --exact
+    }
+  }
+}
