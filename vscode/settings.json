@@ -34,6 +34,9 @@
   "cSpell.import": ["~/.dotfiles/vscode/cSpell.json"], //Import dotfiles cSpell settings
   "cSpell.enableFiletypes": ["vue"],
 
+  "powershell.codeFormatting.trimWhitespaceAroundPipe": true,
+  "powershell.codeFormatting.whitespaceBetweenParameters": true,
+
   "peacock.surpriseMeOnStartup": true, // Window Color: Auto adds a colored window theme on startup
   "peacock.affectStatusBar": false,
   "peacock.showColorInStatusBar": false,
