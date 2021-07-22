@@ -25,6 +25,7 @@
     { "column": 120, "color": "#808080" },
     { "column": 160, "color": "#F00" }
   ],
+  "editor.codeLens": false, //Not ideal, but https://github.com/Microsoft/vscode/issues/26204
 
   "search.exclude": {
     "<node_modules>/**": true,
