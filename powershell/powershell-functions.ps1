@@ -42,6 +42,15 @@ Function Check-Command($cmdname)
     return [bool](Get-Command -Name $cmdname -ErrorAction SilentlyContinue)
 }
 
+Function Check-Installed($name, $type = "binary", $path) {
+  switch ($type) {
+    {$_ -like "*binary*"} { return Check-Command($name) }
+    {$_ -like "*folder*" -and $path} { return [bool](Test-Path "$path") }
+    {$_ -like "*folder*"} { return [bool](Test-Path "$HOME/.dotfiles/opt/bin/$name") }
+    Default { Write-Warning "Check-Installed: Unexpected type ($type)"; return $false }
+  }
+}
+
 Function Check-OS() {
   $os = "$([System.Environment]::OSVersion.Platform)"
   if ([System.Environment]::Is64bitProcess) {
