@@ -1,10 +1,6 @@
 Function install-winget {
 param(
-  # Uninstall
-  [Parameter(Mandatory=$false)]
-  [Alias("u")]
-  [Switch]
-  $Uninstall
+  [Alias("u")][Switch]$Uninstall
 )
 
   if (!(Check-Command winget)) {
