@@ -79,6 +79,7 @@ Set-Location $curpath
 # Create Powershell Profile(s), if they don't exist
 $PowerShellProfileFiles =
   "$HOME\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1", # Powershell 5.1 and Prior
+  "$HOME\Documents\PowerShell\Microsoft.VSCode_profile.ps1" # VsCode Powershell Integrated Console
   "$HOME\Documents\PowerShell\Microsoft.PowerShell_profile.ps1" # Powershell 7+
 
 foreach ($ProfileFile in $PowerShellProfileFiles) {
