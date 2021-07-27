@@ -3,6 +3,7 @@
   "window.zoomLevel": 0,
   "terminal.integrated.rendererType": "experimentalWebgl",
   "telemetry.enableTelemetry": false,
+  "restoreTerminals.keepExistingTerminalsOpen": true,
 
   "workbench.colorTheme": "Monokai",
   "workbench.sideBar.location": "right",
