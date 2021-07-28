@@ -48,3 +48,10 @@ if (Check-Command "where.exe") {
   Function AliasWhereIs {where.exe $args}
   Set-Alias whereis AliasWhereIs
 }
+
+if (!(Check-Command tr)) {
+  if (Check-Command wsl) {
+    Function AliasTr {wsl tr $args}
+    Set-Alias tr AliasTr
+  }
+}
