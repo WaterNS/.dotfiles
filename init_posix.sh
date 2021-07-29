@@ -85,6 +85,11 @@ if [ $r ] && [ -d "$HOMEREPO/opt" ]; then
 	fi
 fi
 
+# macOS: Disable .DSStore on network shares
+if contains "$(uname)" "Darwin"; then
+  defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool TRUE
+fi
+
 # Create dir for installation of packages for dotfiles
 mkdir -p "$HOMEREPO/opt"
 mkdir -p "$HOMEREPO/opt/bin"
