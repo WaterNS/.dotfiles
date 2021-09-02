@@ -6,6 +6,9 @@ fi
 
 install_generic_homebrew () {
   __pkgName="$1"
+  echo "HomeBrew installer script doesn't work, cant install: $__pkgName"
+  return 1
+
   if [ -n "$2" ]; then
     __executableName=$2
   else
@@ -386,6 +389,8 @@ install_ohmyzsh () {
 }
 
 install_blesh () {
+  echo "ble.sh installer script doesn't work, cant install, skipping for now"
+  return 1
   __pkgName="ble.sh"
   __pkgsafename="blesh"
   __pkgdesc="Bash Syntax Highlighting"
