@@ -6,9 +6,9 @@ if (Check-Command cht) {
   }
   function chtpagenated ($cmd) {
     if (Check-Command less) {
-      cht $cmd | less -FX
+      cht --query $cmd | less -FX
     } else {
-      cht $cmd
+      cht --query $cmd
     }
   }
   Set-Alias help chtpagenated
