@@ -27,7 +27,8 @@
     { "column": 160, "color": "#F00" }
   ],
   "editor.bracketPairColorization.enabled": true, //Native Bracket Colorizer
-  "editor.codeLens": false, //Not ideal, but https://github.com/Microsoft/vscode/issues/26204
+  "editor.guides.bracketPairs": true, // Bracket guides: false/true/"active"
+  //"editor.codeLens": false, //Not ideal, but https://github.com/Microsoft/vscode/issues/26204
 
   "search.exclude": {
     "<node_modules>/**": true,
