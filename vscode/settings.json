@@ -46,5 +46,6 @@
   "peacock.showColorInStatusBar": false,
   "peacock.surpriseMeFromFavoritesOnly": true,
 
-  "git.autofetch": true
+  "git.autofetch": true,
+  "git.showUnpublishedCommitsButton": "never" // Don't show easy sync button in source control pane (undesirable in most Prod contexts)
 }
