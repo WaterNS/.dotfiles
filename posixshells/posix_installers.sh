@@ -106,6 +106,8 @@ install_generic_homebrew () {
         fi
 
         __fileName=${latest##*/}
+        # shellcheck disable=SC2086
+        # curl has a hard time with the URL when doulbe quoted (probably due to colons)
         curl -H "Authorization: Bearer QQ==" -L $latest > "$HOME/.dotfiles/opt/tmp/$__fileName"; echo ""
 
         mkdir "$HOME/.dotfiles/opt/tmp/$__pkgName"
@@ -134,7 +136,7 @@ install_generic_homebrew () {
 }
 
 install_generic_github () {
-  __originalArgs=$@
+  __originalArgs=$*
 
   for arg do
     shift
@@ -171,7 +173,7 @@ install_generic_github () {
     if contains "$(uname)" "Darwin"; then
       echo "NOTE: $__executableName not found, availing into dotfiles bin"
       echo "------------------------------------------------"
-      __pkgRelease=$(identify_github_pkg $__originalArgs)
+      __pkgRelease=$(identify_github_pkg "$__originalArgs")
 
       if [ "$__pkgRelease" ];then
         if [ ! -d "$HOME/.dotfiles/opt/tmp" ]; then
@@ -269,7 +271,7 @@ install_generic_binary () {
             mv "$HOME"/.dotfiles/opt/tmp/"$__pkgName"/"$__pkgName"/*/bin/"$__executableName" ~/.dotfiles/opt/bin
           fi
 
-          xattr -d com.apple.quarantine ~/.dotfiles/opt/bin/$__executableName #unquarrantine file
+          xattr -d com.apple.quarantine ~/.dotfiles/opt/bin/"$__executableName" #unquarrantine file
         fi
       fi
 
@@ -329,8 +331,8 @@ install_youtubedl () {
 install_unar () {
   if [ ! -x "$(command -v unar)" ]; then
     if contains "$(uname)" "Darwin"; then
-      #install_generic_homebrew unar
-      install_generic_binary "https://cdn.theunarchiver.com/downloads/unarMac.zip" "unar"
+      install_generic_homebrew unar
+      #install_generic_binary "https://cdn.theunarchiver.com/downloads/unarMac.zip" "unar"
     else
       echo "Unable to install unar - OS version doesn't have supported function"
     fi
