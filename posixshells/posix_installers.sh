@@ -4,6 +4,47 @@ if notcontains "$PATH" "$HOME/.dotfiles/opt/bin"; then
   PATH=$PATH:~/.dotfiles/opt/bin #Include dotfiles bin
 fi
 
+identify_github_pkg () {
+  # Expected args: $__repoName $__executableName $__searchString $__searchExcludeString
+  __repoName="$1"
+  __repoURL="https://api.github.com/repos/$__repoName/releases/latest"
+  __pkgName="$(echo "$__repoName" | cut -d'/' -f2)"
+
+  if [ -n "$2" ]; then
+    __executableName="$2"
+  else
+    __executableName=$__pkgName
+  fi
+
+  if [ -n "$3" ]; then
+    __searchString="$3"
+  else
+    __searchString="osx"
+  fi
+
+  if [ -n "$4" ]; then
+    __searchExcludeString="$4"
+  else
+    __searchExcludeString=""
+  fi
+
+  #OLd code, leaving commented for now
+  #__pkgRelease=$(curl -S "$__repoURL" | jq -r ".assets[] | .browser_download_url" | grep "$__searchString") #jq dependent
+
+  #echo "Looking up URLs for $__repoName..."
+  __repoResults=$(curl -S "$__repoURL" | grep url)
+  #echo "$__repoResults"
+  #echo "Excluding results with '$__searchExcludeString'"
+  __searchExcludedResults=$(echo "$__repoResults" | grep -v "$__searchExcludeString")
+  #echo "$__searchExcludedResults"
+  #echo "Searching for '$__searchString'"
+  __searchResults=$(echo "$__searchExcludedResults" | grep "$__searchString")
+  #echo "$__searchResults"
+  # Cleaning up URL...
+  __cleanURL=$(echo "$__searchResults" | sed 's/.*\(http[s?]:\/\/.*[^"]\).*/\1/')
+  echo "$__cleanURL"
+}
+
 install_generic_homebrew () {
   __pkgName="$1"
   echo "HomeBrew installer script doesn't work, cant install: $__pkgName"
@@ -86,12 +127,17 @@ install_generic_github () {
     __searchString="osx"
   fi
 
+  if [ -n "$4" ]; then
+    __searchExcludeString="$4"
+  else
+    __searchExcludeString=""
+  fi
+
   if [ ! -x "$(command -v "$__executableName")" ]; then
     if contains "$(uname)" "Darwin"; then
       echo "NOTE: $__executableName not found, availing into dotfiles bin"
       echo "------------------------------------------------"
-      #__pkgRelease=$(curl -S "$__repoURL" | jq -r ".assets[] | .browser_download_url" | grep "$__searchString") #jq dependent
-      __pkgRelease=$(curl -S "$__repoURL" | grep url | grep "$__searchString" | sed 's/.*\(http[s?]:\/\/.*[^"]\).*/\1/')
+      __pkgRelease=$(identify_github_pkg $__repoName $__executableName $__searchString $__searchExcludeString)
 
       if [ "$__pkgRelease" ];then
         if [ ! -d "$HOME/.dotfiles/opt/tmp" ]; then
