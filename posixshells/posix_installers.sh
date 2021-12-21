@@ -65,8 +65,6 @@ identify_github_pkg () {
     #echo "Cleaning up URL..."
     __cleanURL=$(echo "$__results" | sed 's/.*\(http[s?]:\/\/.*[^"]\).*/\1/')
     echo "$__cleanURL"
-  #else
-    #echo "No results available to trim!"
   fi
 }
 
@@ -136,7 +134,8 @@ install_generic_homebrew () {
 }
 
 install_generic_github () {
-  __originalArgs=$*
+  # shellcheck disable=SC2124
+  __originalArgs=$@
 
   for arg do
     shift
@@ -173,7 +172,9 @@ install_generic_github () {
     if contains "$(uname)" "Darwin"; then
       echo "NOTE: $__executableName not found, availing into dotfiles bin"
       echo "------------------------------------------------"
-      __pkgRelease=$(identify_github_pkg "$__originalArgs")
+      # shellcheck disable=SC2086
+      __pkgRelease=$(identify_github_pkg $__originalArgs)
+      echo "pkg: $__pkgRelease"
 
       if [ "$__pkgRelease" ];then
         if [ ! -d "$HOME/.dotfiles/opt/tmp" ]; then
@@ -202,7 +203,8 @@ install_generic_github () {
           if [ -f "$HOME"/.dotfiles/opt/tmp/"$__pkgName"/"$__pkgName" ]; then
             mv "$HOME"/.dotfiles/opt/tmp/"$__pkgName"/"$__pkgName" ~/.dotfiles/opt/bin
           else
-            mv "$HOME"/.dotfiles/opt/tmp/"$__pkgName"/"$__pkgName"/*/bin/"$__executableName" ~/.dotfiles/opt/bin
+            # shellcheck disable=SC2086
+            mv "$HOME"/.dotfiles/opt/tmp/"$__pkgName"/"$__pkgName"/*/bin/$__executableName ~/.dotfiles/opt/bin
           fi
         fi
       fi
