@@ -72,8 +72,6 @@ identify_github_pkg () {
 
 install_generic_homebrew () {
   __pkgName="$1"
-  echo "HomeBrew installer script doesn't work, cant install: $__pkgName"
-  return 1
 
   if [ -n "$2" ]; then
     __executableName=$2
@@ -108,7 +106,7 @@ install_generic_homebrew () {
         fi
 
         __fileName=${latest##*/}
-        curl -L "$latest" -o "$HOME/.dotfiles/opt/tmp/$__fileName"; echo ""
+        curl -H "Authorization: Bearer QQ==" -L $latest > "$HOME/.dotfiles/opt/tmp/$__fileName"; echo ""
 
         mkdir "$HOME/.dotfiles/opt/tmp/$__pkgName"
         tar -xzf "$HOME/.dotfiles/opt/tmp/$__fileName" -C "$HOME/.dotfiles/opt/tmp/$__pkgName/"
