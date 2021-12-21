@@ -501,3 +501,13 @@ install_bat () {
     fi
   fi
 }
+
+install_ytdlp() {
+    if [ ! -x "$(command -v yt-dlp)" ]; then
+      if contains "$(uname)" "Darwin"; then
+        install_generic_github "yt-dlp/yt-dlp" "yt-dlp" "macos" "zip"
+      else
+          echo "Unable to install yt-dlp - OS version doesn't have supported function"
+      fi
+    fi
+}
