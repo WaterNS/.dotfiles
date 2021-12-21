@@ -69,7 +69,7 @@ if [ -x "$(command -v yt-dlp)" ] &&
    [ -x "$(command -v phantomjs)" ]; then
   __ytdlSponsersExcludeVideo="sponsor,selfpromo,interaction,music_offtopic"
   __ytdlSponsersExcludeMP3="sponsor,intro,outro,selfpromo,preview,interaction,music_offtopic,poi_highlight"
-  ytdl () { while ! yt-dlp "$1" -c --socket-timeout 5; do echo DISCONNECTED; sleep 5; done; }
+  ytdl () { ytdl-hq "$@"; }
   ytdl-hq () { while ! yt-dlp --embed-subs --embed-metadata --embed-chapters --remux-video "mkv" --merge-output-format "mkv" "$1" -c --socket-timeout 5; do echo DISCONNECTED; sleep 5; done; } #--sponsorblock-mark "all" #--sponsorblock-remove "$__ytdlSponsersExcludeVideo"
   ytdl-mp3 () { while ! yt-dlp --embed-metadata --embed-thumbnail --extract-audio --audio-format "mp3" -o "%(title)s.%(ext)s" "$1" -c --socket-timeout 5; do echo DISCONNECTED; sleep 5; done; } #--sponsorblock-remove "$__ytdlSponsersExcludeMP3"
 else
