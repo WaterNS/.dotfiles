@@ -225,6 +225,74 @@ install_generic_github () {
   unset __pkgRelease; unset __fileName; unset __fileExt;
 }
 
+install_generic_binary () {
+  __binaryURL="$1"
+  __pkgName="$(basename "$__binaryURL" | cut -d. -f1)"
+
+  if [ -n "$2" ]; then
+    __executableName="$2"
+  fi
+
+  if [ ! -x "$(command -v "$__executableName")" ]; then
+    if contains "$(uname)" "Darwin"; then
+      echo "NOTE: $__executableName not found, availing into dotfiles bin"
+      echo "------------------------------------------------"
+      __pkgRelease=$__binaryURL
+
+      if [ "$__pkgRelease" ];then
+        if [ ! -d "$HOME/.dotfiles/opt/tmp" ]; then
+          mkdir "$HOME/.dotfiles/opt/tmp" -p
+        fi
+
+        __fileName=${__pkgRelease##*/}
+        __fileExt=$(getFileExt "$__fileName")
+
+        echo "Downloading ${__executableName}..."
+        if [ -z "$__fileExt" ]; then
+          curl -L "$__pkgRelease" -o "$HOME/.dotfiles/opt/bin/$__executableName"; echo ""
+          chmod +x "$HOME/.dotfiles/opt/bin/$__executableName";
+        else
+          curl -L "$__pkgRelease" -o "$HOME/.dotfiles/opt/tmp/$__fileName"; echo ""
+          mkdir "$HOME/.dotfiles/opt/tmp/$__pkgName"
+
+          echo "Extracting archive..."
+          if [ "$__fileExt" = "7z" ]; then
+            unar "$HOME/.dotfiles/opt/tmp/$__fileName" -o "$HOME/.dotfiles/opt/tmp/$__pkgName/"
+          else
+            #Fallback to using tar
+            tar -xzf "$HOME/.dotfiles/opt/tmp/$__fileName" -C "$HOME/.dotfiles/opt/tmp/$__pkgName/"
+          fi
+
+          if [ -f "$HOME"/.dotfiles/opt/tmp/"$__pkgName"/"$__pkgName" ]; then
+            mv "$HOME"/.dotfiles/opt/tmp/"$__pkgName"/"$__pkgName" ~/.dotfiles/opt/bin
+          elif [ -f "$HOME"/.dotfiles/opt/tmp/"$__pkgName"/"$__executableName" ]; then
+            mv "$HOME"/.dotfiles/opt/tmp/"$__pkgName"/"$__executableName" ~/.dotfiles/opt/bin
+          else
+            mv "$HOME"/.dotfiles/opt/tmp/"$__pkgName"/"$__pkgName"/*/bin/"$__executableName" ~/.dotfiles/opt/bin
+          fi
+
+          xattr -d com.apple.quarantine ~/.dotfiles/opt/bin/$__executableName #unquarrantine file
+        fi
+      fi
+
+      if [ -x "$(command -v "$__executableName")" ]; then
+          rm -f "$HOME/.dotfiles/opt/tmp/$__fileName"
+          rm -rf "$HOME/.dotfiles/opt/tmp/$__pkgName"
+          echo "GOOD - $__executableName is now available"
+      else
+          echo "BAD - $__executableName doesn't seem to be available"
+      fi
+    else
+        echo "Unable to install $__executableName - OS version doesn't have supported function"
+    fi
+  fi
+
+  # Cleanup variables - can cause unexpected bugs if not done.
+  # Scoped variables (local) not available in base bourne shell.
+  unset __binaryURL; unset __pkgName; unset __executableName;
+  unset __pkgRelease; unset __fileName; unset __fileExt;
+}
+
 install_diffsofancy () {
   #Git: diff-so-fancy (better git diff)
   if [ ! -f "$HOMEREPO/opt/bin/diff-so-fancy" ]; then
@@ -263,7 +331,8 @@ install_youtubedl () {
 install_unar () {
   if [ ! -x "$(command -v unar)" ]; then
     if contains "$(uname)" "Darwin"; then
-      install_generic_homebrew unar
+      #install_generic_homebrew unar
+      install_generic_binary "https://cdn.theunarchiver.com/downloads/unarMac.zip" "unar"
     else
       echo "Unable to install unar - OS version doesn't have supported function"
     fi
