@@ -102,7 +102,7 @@ install_generic_homebrew () {
 
       if [ "$latest" ];then
         if [ ! -d "$HOME/.dotfiles/opt/tmp" ]; then
-          mkdir "$HOME/.dotfiles/opt/tmp" -p
+          mkdir -p "$HOME/.dotfiles/opt/tmp"
         fi
 
         __fileName=${latest##*/}
@@ -175,7 +175,7 @@ install_generic_github () {
 
       if [ "$__pkgRelease" ];then
         if [ ! -d "$HOME/.dotfiles/opt/tmp" ]; then
-          mkdir "$HOME/.dotfiles/opt/tmp" -p
+          mkdir -p "$HOME/.dotfiles/opt/tmp"
         fi
 
         __fileName=${__pkgRelease##*/}
@@ -239,7 +239,7 @@ install_generic_binary () {
 
       if [ "$__pkgRelease" ];then
         if [ ! -d "$HOME/.dotfiles/opt/tmp" ]; then
-          mkdir "$HOME/.dotfiles/opt/tmp" -p
+          mkdir -p "$HOME/.dotfiles/opt/tmp"
         fi
 
         __fileName=${__pkgRelease##*/}
@@ -349,7 +349,7 @@ install_ffmpeg () {
       fi
 
       if [ ! -d "$HOME/.dotfiles/opt/tmp" ]; then
-        mkdir "$HOME/.dotfiles/opt/tmp" -p
+        mkdir -p "$HOME/.dotfiles/opt/tmp"
       fi
 
       ffmpeg="https://evermeet.cx/pub/ffmpeg/snapshots/"
@@ -383,7 +383,7 @@ install_ffprobe () {
         fi
 
         if [ ! -d "$HOME/.dotfiles/opt/tmp" ]; then
-          mkdir "$HOME/.dotfiles/opt/tmp" -p
+          mkdir -p "$HOME/.dotfiles/opt/tmp"
         fi
 
         ffprobe="https://evermeet.cx/pub/ffprobe/snapshots/"
@@ -412,7 +412,7 @@ install_phantomjs () {
         echo "------------------------------------------------"
 
         if [ ! -d "$HOME/.dotfiles/opt/tmp" ]; then
-          mkdir "$HOME/.dotfiles/opt/tmp" -p
+          mkdir -p "$HOME/.dotfiles/opt/tmp"
         fi
 
         phantomjs="http://phantomjs.org/download.html"
@@ -556,7 +556,7 @@ install_blesh () {
     echo "------------------------------------------------"
 
     if [ ! -d "$HOME/.dotfiles/opt/tmp" ]; then
-      mkdir "$HOME/.dotfiles/opt/tmp" -p
+      mkdir -p "$HOME/.dotfiles/opt/tmp"
     fi
 
     __pkgurl="https://api.github.com/repos/akinomyoga/ble.sh/releases/latest"
