@@ -115,14 +115,14 @@ install_generic_homebrew () {
       fi
 
       if [ -x "$(command -v "$__executableName")" ]; then
-          rm "$HOME/.dotfiles/opt/tmp/$__fileName"
-          rm -rf "$HOME/.dotfiles/opt/tmp/$__pkgName"
-          echo "GOOD - $__pkgName is now available"
+        rm "$HOME/.dotfiles/opt/tmp/$__fileName"
+        rm -rf "$HOME/.dotfiles/opt/tmp/$__pkgName"
+        echo "GOOD - $__pkgName is now available"
       else
-          echo "BAD - $__pkgName doesn't seem to be available"
+        echo "BAD - $__pkgName doesn't seem to be available"
       fi
     else
-        echo "Unable to install $__pkgName - OS version doesn't have supported function"
+      echo "Unable to install $__pkgName - OS version doesn't have supported function"
     fi
   fi
 
@@ -206,14 +206,14 @@ install_generic_github () {
       fi
 
       if [ -x "$(command -v "$__executableName")" ]; then
-          rm -f "$HOME/.dotfiles/opt/tmp/$__fileName"
-          rm -rf "$HOME/.dotfiles/opt/tmp/$__pkgName"
-          echo "GOOD - $__executableName is now available"
+        rm -f "$HOME/.dotfiles/opt/tmp/$__fileName"
+        rm -rf "$HOME/.dotfiles/opt/tmp/$__pkgName"
+        echo "GOOD - $__executableName is now available"
       else
-          echo "BAD - $__executableName doesn't seem to be available"
+        echo "BAD - $__executableName doesn't seem to be available"
       fi
     else
-        echo "Unable to install $__executableName - OS version doesn't have supported function"
+      echo "Unable to install $__executableName - OS version doesn't have supported function"
     fi
   fi
 
@@ -274,14 +274,14 @@ install_generic_binary () {
       fi
 
       if [ -x "$(command -v "$__executableName")" ]; then
-          rm -f "$HOME/.dotfiles/opt/tmp/$__fileName"
-          rm -rf "$HOME/.dotfiles/opt/tmp/$__pkgName"
-          echo "GOOD - $__executableName is now available"
+        rm -f "$HOME/.dotfiles/opt/tmp/$__fileName"
+        rm -rf "$HOME/.dotfiles/opt/tmp/$__pkgName"
+        echo "GOOD - $__executableName is now available"
       else
-          echo "BAD - $__executableName doesn't seem to be available"
+        echo "BAD - $__executableName doesn't seem to be available"
       fi
     else
-        echo "Unable to install $__executableName - OS version doesn't have supported function"
+      echo "Unable to install $__executableName - OS version doesn't have supported function"
     fi
   fi
 
@@ -303,9 +303,9 @@ install_diffsofancy () {
       curl $diffsofancy > "$HOMEREPO/opt/bin/diff-so-fancy" && chmod 0755 "$HOMEREPO/opt/bin/diff-so-fancy";
 
       if [ -f "$HOMEREPO/opt/bin/diff-so-fancy" ]; then
-          echo "GOOD - diff-so-fancy is now available"
+        echo "GOOD - diff-so-fancy is now available"
       else
-          echo "BAD - diff-so-fancy doesn't seem to be available"
+        echo "BAD - diff-so-fancy doesn't seem to be available"
       fi
     else
       echo "Not downloading diff-so-fancy: perl is not available"
@@ -316,10 +316,10 @@ install_diffsofancy () {
 
 install_youtubedl () {
     if [ ! -x "$(command -v youtube-dl)" ] && [ ! -f "$HOME/.dotfiles/opt/bin/youtube-dl" ]; then
-        echo "NOTE: youtube-dl not found, downloading to dotfiles bin location"
-        echo "------------------------------------------------"
-        curl -L https://yt-dl.org/downloads/latest/youtube-dl -o "$HOME/.dotfiles/opt/bin/youtube-dl"; echo ""
-        chmod a+rx "$HOME/.dotfiles/opt/bin/youtube-dl"
+      echo "NOTE: youtube-dl not found, downloading to dotfiles bin location"
+      echo "------------------------------------------------"
+      curl -L https://yt-dl.org/downloads/latest/youtube-dl -o "$HOME/.dotfiles/opt/bin/youtube-dl"; echo ""
+      chmod a+rx "$HOME/.dotfiles/opt/bin/youtube-dl"
     fi
     install_ffmpeg
     install_ffprobe
@@ -360,49 +360,49 @@ install_ffmpeg () {
       rm -r "$HOME/.dotfiles/opt/tmp/ffmpeg.7z"
 
       if [ -x "$(command -v ffmpeg)" ]; then
-          echo "GOOD - ffmpeg is now available"
+        echo "GOOD - ffmpeg is now available"
       else
-          echo "BAD - ffmpeg doesn't seem to be available"
+        echo "BAD - ffmpeg doesn't seem to be available"
       fi
     else
-        echo "Unable to install ffmpeg - OS version doesn't have supported function"
+      echo "Unable to install ffmpeg - OS version doesn't have supported function"
     fi
     unset ffmpeg; unset latest;
   fi
 }
 
 install_ffprobe () {
-    if [ ! -x "$(command -v ffprobe)" ]; then
-      if contains "$(uname)" "Darwin"; then
-        install_unar
-        echo "NOTE: ffprobe not found, installing into dotfiles bin"
-        echo "------------------------------------------------"
-        if [ ! -x "$(command -v unar)" ]; then
-          echo "Unable to install ffprobe - missing unar"; echo ""
-          return 1
-        fi
-
-        if [ ! -d "$HOME/.dotfiles/opt/tmp" ]; then
-          mkdir -p "$HOME/.dotfiles/opt/tmp"
-        fi
-
-        ffprobe="https://evermeet.cx/pub/ffprobe/snapshots/"
-        latest=$(curl $ffprobe | grep -v ".7z.sig" | grep .7z | head -1 | sed -n 's/.*href="\([^"]*\).*/\1/p')
-        curl "$ffprobe/$latest" -o "$HOME/.dotfiles/opt/tmp/ffprobe.7z"; echo ""
-
-        unar "$HOME/.dotfiles/opt/tmp/ffprobe.7z" -o "$HOME/.dotfiles/opt/bin/"
-        rm -r "$HOME/.dotfiles/opt/tmp/ffprobe.7z"
-
-        if [ -x "$(command -v ffprobe)" ]; then
-            echo "GOOD - ffprobe is now available"
-        else
-            echo "BAD - ffprobe doesn't seem to be available"
-        fi
-      else
-          echo "Unable to install ffprobe - OS version doesn't have supported function"
+  if [ ! -x "$(command -v ffprobe)" ]; then
+    if contains "$(uname)" "Darwin"; then
+      install_unar
+      echo "NOTE: ffprobe not found, installing into dotfiles bin"
+      echo "------------------------------------------------"
+      if [ ! -x "$(command -v unar)" ]; then
+        echo "Unable to install ffprobe - missing unar"; echo ""
+        return 1
       fi
-      unset ffprobe; unset latest;
+
+      if [ ! -d "$HOME/.dotfiles/opt/tmp" ]; then
+        mkdir -p "$HOME/.dotfiles/opt/tmp"
+      fi
+
+      ffprobe="https://evermeet.cx/pub/ffprobe/snapshots/"
+      latest=$(curl $ffprobe | grep -v ".7z.sig" | grep .7z | head -1 | sed -n 's/.*href="\([^"]*\).*/\1/p')
+      curl "$ffprobe/$latest" -o "$HOME/.dotfiles/opt/tmp/ffprobe.7z"; echo ""
+
+      unar "$HOME/.dotfiles/opt/tmp/ffprobe.7z" -o "$HOME/.dotfiles/opt/bin/"
+      rm -r "$HOME/.dotfiles/opt/tmp/ffprobe.7z"
+
+      if [ -x "$(command -v ffprobe)" ]; then
+        echo "GOOD - ffprobe is now available"
+      else
+        echo "BAD - ffprobe doesn't seem to be available"
+      fi
+    else
+      echo "Unable to install ffprobe - OS version doesn't have supported function"
     fi
+    unset ffprobe; unset latest;
+  fi
 }
 
 install_phantomjs () {
@@ -423,12 +423,12 @@ install_phantomjs () {
         rm -r "$HOME/.dotfiles/opt/tmp/phantomjs.zip"
 
         if [ -x "$(command -v phantomjs)" ]; then
-            echo "GOOD - phantomjs is now available"
+          echo "GOOD - phantomjs is now available"
         else
-            echo "BAD - phantomjs doesn't seem to be available"
+          echo "BAD - phantomjs doesn't seem to be available"
         fi
       else
-          echo "Unable to install phantomjs - OS version doesn't have supported function"
+        echo "Unable to install phantomjs - OS version doesn't have supported function"
       fi
       unset phantomjs; unset latest;
     fi
@@ -451,19 +451,19 @@ install_shellcheck () {
     if contains "$(uname)" "Darwin"; then
       install_generic_homebrew shellcheck
     else
-        echo "Unable to install shellcheck - OS version doesn't have supported function"
+      echo "Unable to install shellcheck - OS version doesn't have supported function"
     fi
   fi
 }
 
 install_shfmt () {
-    if [ ! -x "$(command -v shfmt)" ]; then
-      if contains "$(uname)" "Darwin"; then
-        install_generic_github "mvdan/sh" "shfmt" "darwin_amd64"
-      else
-          echo "Unable to install shfmt - OS version doesn't have supported function"
-      fi
+  if [ ! -x "$(command -v shfmt)" ]; then
+    if contains "$(uname)" "Darwin"; then
+      install_generic_github "mvdan/sh" "shfmt" "darwin_amd64"
+    else
+      echo "Unable to install shfmt - OS version doesn't have supported function"
     fi
+  fi
 }
 
 install_nerdfonts () {
@@ -479,12 +479,12 @@ install_nerdfonts () {
           https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/DroidSansMono/complete/Droid%20Sans%20Mono%20Nerd%20Font%20Complete.otf
 
         if [ -f "$HOME/Library/Fonts/dotfiles/$fontname" ]; then
-            echo "GOOD - nerd-fonts are now available"
+          echo "GOOD - nerd-fonts are now available"
         else
-            echo "BAD - nerd-fonts don't seem to be available"
+          echo "BAD - nerd-fonts don't seem to be available"
         fi
       else
-          echo "Unable to install nerd-fonts - OS version doesn't have supported function"
+        echo "Unable to install nerd-fonts - OS version doesn't have supported function"
       fi
     fi
     unset fontname;
@@ -495,7 +495,7 @@ install_lsd () {
     if contains "$(uname)" "Darwin"; then
       install_generic_homebrew lsd
     else
-        echo "Unable to install lsd - OS version doesn't have supported function"
+      echo "Unable to install lsd - OS version doesn't have supported function"
     fi
   fi
 }
@@ -510,12 +510,12 @@ install_prettyping () {
         chmod +x ~/.dotfiles/opt/bin/prettyping
 
         if [ -x "$(command -v prettyping)" ]; then
-            echo "GOOD - prettyping is now available"
+          echo "GOOD - prettyping is now available"
         else
-            echo "BAD - prettyping doesn't seem to be available"
+          echo "BAD - prettyping doesn't seem to be available"
         fi
       else
-          echo "Unable to install prettyping - OS version doesn't have supported function"
+        echo "Unable to install prettyping - OS version doesn't have supported function"
       fi
     fi
 }
@@ -535,9 +535,9 @@ install_ohmyzsh () {
       sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
       if [ -d ~/.dotfiles/opt/ohmyzsh ]; then
-          echo "GOOD - OhMyZSH is now available"
+        echo "GOOD - OhMyZSH is now available"
       else
-          echo "BAD - OhMyZSH doesn't seem to be available"
+        echo "BAD - OhMyZSH doesn't seem to be available"
       fi
     # else
     #   echo "Not installing OhMyZSH: zsh is not available"
@@ -574,9 +574,9 @@ install_blesh () {
     rm -rf "$HOME/.dotfiles/opt/tmp/$__pkgsafename"
 
     if [ -f "$HOME/.dotfiles/opt/bash-extras/$__pkgsafename/$__pkgName" ]; then
-        echo "GOOD - $__pkgName ($__pkgdesc) is now available"
+      echo "GOOD - $__pkgName ($__pkgdesc) is now available"
     else
-        echo "BAD - $__pkgName ($__pkgdesc) doesn't seem to be available"
+      echo "BAD - $__pkgName ($__pkgdesc) doesn't seem to be available"
     fi
     unset __pkgurl; unset latest; unset __fileName;
   fi
@@ -588,7 +588,7 @@ install_ncdu () {
     if contains "$(uname)" "Darwin"; then
       install_generic_homebrew ncdu
     else
-        echo "Unable to install ncdu - OS version doesn't have supported function"
+      echo "Unable to install ncdu - OS version doesn't have supported function"
     fi
   fi
 }
@@ -598,7 +598,7 @@ install_git_delta () {
     if contains "$(uname)" "Darwin"; then
       install_generic_homebrew git-delta delta
     else
-        echo "Unable to install git_delta - OS version doesn't have supported function"
+      echo "Unable to install git_delta - OS version doesn't have supported function"
     fi
   fi
 }
@@ -608,7 +608,7 @@ install_bat () {
     if contains "$(uname)" "Darwin"; then
       install_generic_homebrew bat
     else
-        echo "Unable to install bat - OS version doesn't have supported function"
+      echo "Unable to install bat - OS version doesn't have supported function"
     fi
   fi
 }
@@ -618,7 +618,7 @@ install_ytdlp() {
     if contains "$(uname)" "Darwin"; then
       install_generic_github "yt-dlp/yt-dlp" "yt-dlp" "macos" "zip"
     else
-        echo "Unable to install yt-dlp - OS version doesn't have supported function"
+      echo "Unable to install yt-dlp - OS version doesn't have supported function"
     fi
   fi
   install_ffmpeg
