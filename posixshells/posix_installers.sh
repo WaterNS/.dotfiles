@@ -6,6 +6,17 @@ fi
 
 identify_github_pkg () {
   # Expected args: $__repoName $__executableName $__searchString $__searchExcludeString
+
+  __exactName=false
+  for arg do
+    shift
+    if [ "$arg" = "--exact" ]; then
+      __exactName=true
+    else
+      set -- "$@" "$arg"
+    fi
+  done
+
   __repoName="$1"
   __repoURL="https://api.github.com/repos/$__repoName/releases/latest"
   __pkgName="$(echo "$__repoName" | cut -d'/' -f2)"
@@ -19,7 +30,7 @@ identify_github_pkg () {
   if [ -n "$3" ]; then
     __searchString="$3"
   else
-    __searchString="osx"
+    __searchString="$__pkgName"
   fi
 
   if [ -n "$4" ]; then
@@ -29,20 +40,34 @@ identify_github_pkg () {
   fi
 
   #OLd code, leaving commented for now
-  #__pkgRelease=$(curl -S "$__repoURL" | jq -r ".assets[] | .browser_download_url" | grep "$__searchString") #jq dependent
+  # #__pkgRelease=$(curl -S "$__repoURL" | jq -r ".assets[] | .browser_download_url" | grep "$__searchString") #jq dependent
+  # $__results=""
 
   #echo "Looking up URLs for $__repoName..."
-  __repoResults=$(curl -S "$__repoURL" | grep url)
-  #echo "$__repoResults"
-  #echo "Excluding results with '$__searchExcludeString'"
-  __searchExcludedResults=$(echo "$__repoResults" | grep -v "$__searchExcludeString")
-  #echo "$__searchExcludedResults"
-  #echo "Searching for '$__searchString'"
-  __searchResults=$(echo "$__searchExcludedResults" | grep "$__searchString")
-  #echo "$__searchResults"
-  # Cleaning up URL...
-  __cleanURL=$(echo "$__searchResults" | sed 's/.*\(http[s?]:\/\/.*[^"]\).*/\1/')
-  echo "$__cleanURL"
+  __results=$(curl -S "$__repoURL" | grep url | grep download)
+  #echo "$__results"
+  if [ -n "$__searchExcludeString" ]; then
+    #echo "Excluding results with '$__searchExcludeString'"
+    __results=$(echo "$__results" | grep -v "$__searchExcludeString")
+    #echo "$__results"
+  fi
+  if [ -n "$__searchString" ]; then
+    #echo "Searching for '$__searchString'"
+    __results=$(echo "$__results" | grep "$__searchString")
+    #echo "$__results"
+  fi
+  if [ $__exactName = true ]; then
+    #echo "Looking for exact match..."
+    __exactEndString="$__searchString$"
+    __results=$(echo "$__results" | tr -d '"' | grep -E "$__exactEndString")
+  fi
+  if [ -n "$__results" ]; then
+    #echo "Cleaning up URL..."
+    __cleanURL=$(echo "$__results" | sed 's/.*\(http[s?]:\/\/.*[^"]\).*/\1/')
+    echo "$__cleanURL"
+  else
+    #echo "No results available to trim!"
+  fi
 }
 
 install_generic_homebrew () {
@@ -111,6 +136,17 @@ install_generic_homebrew () {
 }
 
 install_generic_github () {
+  __originalArgs=$@
+
+  for arg do
+    shift
+    if [ "$arg" = "--exact" ]; then
+      __exactName=true
+    else
+      set -- "$@" "$arg"
+    fi
+  done
+
   __repoName="$1"
   __repoURL="https://api.github.com/repos/$__repoName/releases/latest"
   __pkgName="$(echo "$__repoName" | cut -d'/' -f2)"
@@ -137,7 +173,7 @@ install_generic_github () {
     if contains "$(uname)" "Darwin"; then
       echo "NOTE: $__executableName not found, availing into dotfiles bin"
       echo "------------------------------------------------"
-      __pkgRelease=$(identify_github_pkg $__repoName $__executableName $__searchString $__searchExcludeString)
+      __pkgRelease=$(identify_github_pkg $__originalArgs)
 
       if [ "$__pkgRelease" ];then
         if [ ! -d "$HOME/.dotfiles/opt/tmp" ]; then
