@@ -65,7 +65,7 @@ identify_github_pkg () {
     #echo "Cleaning up URL..."
     __cleanURL=$(echo "$__results" | sed 's/.*\(http[s?]:\/\/.*[^"]\).*/\1/')
     echo "$__cleanURL"
-  else
+  #else
     #echo "No results available to trim!"
   fi
 }
@@ -439,9 +439,9 @@ install_phantomjs () {
 install_jq () {
   if [ ! -x "$(command -v jq)" ]; then
     if contains "$(uname)" "Darwin"; then
-      install_generic_github "stedolan/jq" "" "osx"
+      install_generic_github "stedolan/jq" "jq" "osx"
     elif contains "$(uname)" "Linux"; then
-      install_generic_github "stedolan/jq" "" "linux64"
+      install_generic_github "stedolan/jq" "jq" "linux64"
     else
       echo "Unable to install jq - OS version doesn't have supported function"
     fi
