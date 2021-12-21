@@ -32,31 +32,64 @@ done < <(find "$location" -type f -not -path "*DS_Store*" -print0)
 dc <<< '[+]sa[z2!>az2!>b]sb'"${array[*]//-/_}lbxp"
 }
 
+# Deprecated in favor of yt-dlp
+# # youtube-dl shorthand function that does auto retry
+# if [ -x "$(command -v youtube-dl)" ] &&
+#    [ -x "$(command -v ffmpeg)" ] &&
+#    [ -x "$(command -v ffprobe)" ] &&
+#    [ -x "$(command -v phantomjs)" ]; then
+#   ytdl () { while ! youtube-dl "$1" -c --socket-timeout 5; do echo DISCONNECTED; sleep 5; done; }
+#   ytdl-hq () { while ! youtube-dl -f 'bestvideo+bestaudio[ext=m4a]/bestvideo+bestaudio/best' "$1" -c --socket-timeout 5; do echo DISCONNECTED; sleep 5; done; }
+#   ytdl-mp3 () { while ! youtube-dl --add-metadata --extract-audio --audio-format mp3 -o "%(title)s.%(ext)s" "$1" -c --socket-timeout 5; do echo DISCONNECTED; sleep 5; done; }
+# else
+#   ytdl () { youtube-dl "$@" ; }
+#   ytdl-hq () { youtube-dl "$@" ; }
+#   ytdl-mp3 () { youtube-dl "$@" ; }
+
+#   youtube-dl () {
+#     install_youtubedl;
+#     unset -f youtube-dl
+
+#     if [ -x "$(command -v youtube-dl)" ]; then
+#         echo "-- Reloading functions and re-trying your command"
+#         . "$HOME/.dotfiles/posixshells/modernshell_functions"; echo ""
+#         echo "Re-running your original cmd: ${FUNCNAME[${#FUNCNAME[@]}-1]} $*"
+#         echo ""
+#         ${FUNCNAME[${#FUNCNAME[@]}-1]} "$@"
+#     else
+#         echo "ERROR - Something went wrong in installing youtube-dl, either try again or fix the installer"; echo ""
+#     fi
+#   };
+# fi
+
 # youtube-dl shorthand function that does auto retry
-if [ -x "$(command -v youtube-dl)" ] &&
+if [ -x "$(command -v yt-dlp)" ] &&
    [ -x "$(command -v ffmpeg)" ] &&
    [ -x "$(command -v ffprobe)" ] &&
    [ -x "$(command -v phantomjs)" ]; then
-  ytdl () { while ! youtube-dl "$1" -c --socket-timeout 5; do echo DISCONNECTED; sleep 5; done; }
-  ytdl-hq () { while ! youtube-dl -f 'bestvideo+bestaudio[ext=m4a]/bestvideo+bestaudio/best' "$1" -c --socket-timeout 5; do echo DISCONNECTED; sleep 5; done; }
-  ytdl-mp3 () { while ! youtube-dl --add-metadata --extract-audio --audio-format mp3 -o "%(title)s.%(ext)s" "$1" -c --socket-timeout 5; do echo DISCONNECTED; sleep 5; done; }
+  __ytdlSponsersExcludeVideo="sponsor,selfpromo,interaction,music_offtopic"
+  __ytdlSponsersExcludeMP3="sponsor,intro,outro,selfpromo,preview,interaction,music_offtopic,poi_highlight"
+  ytdl () { while ! yt-dlp "$1" -c --socket-timeout 5; do echo DISCONNECTED; sleep 5; done; }
+  ytdl-hq () { while ! yt-dlp --embed-subs --embed-metadata --embed-chapters --remux-video "mkv" --merge-output-format "mkv" "$1" -c --socket-timeout 5; do echo DISCONNECTED; sleep 5; done; } #--sponsorblock-mark "all" #--sponsorblock-remove "$__ytdlSponsersExcludeVideo"
+  ytdl-mp3 () { while ! yt-dlp --embed-metadata --embed-thumbnail --extract-audio --audio-format "mp3" -o "%(title)s.%(ext)s" "$1" -c --socket-timeout 5; do echo DISCONNECTED; sleep 5; done; } #--sponsorblock-remove "$__ytdlSponsersExcludeMP3"
 else
-  ytdl () { youtube-dl "$@" ; }
-  ytdl-hq () { youtube-dl "$@" ; }
-  ytdl-mp3 () { youtube-dl "$@" ; }
+  ytdl () { youtube-dlp "$@" ; }
+  ytdl-hq () { youtube-dlp "$@" ; }
+  ytdl-mp3 () { youtube-dlp "$@" ; }
 
-  youtube-dl () {
-    install_youtubedl;
-    unset -f youtube-dl
+  youtube-dlp () {
+    __originalCMD=$(caller_func_name 2)
+    install_ytdlp;
+    unset -f youtube-dlp
 
-    if [ -x "$(command -v youtube-dl)" ]; then
-        echo "-- Reloading functions and re-trying your command"
+    if [ -x "$(command -v yt-dlp)" ]; then
+        echo "-- Reloading functions..."
         . "$HOME/.dotfiles/posixshells/modernshell_functions"; echo ""
-        echo "Re-running your original cmd: ${FUNCNAME[${#FUNCNAME[@]}-1]} $*"
+        echo "Retrying your original command: $__originalCMD $*"
         echo ""
-        ${FUNCNAME[${#FUNCNAME[@]}-1]} "$@"
+        $__originalCMD "$@"
     else
-        echo "ERROR - Something went wrong in installing youtube-dl, either try again or fix the installer"; echo ""
+        echo "ERROR - Something went wrong in installing yt-dlp, either try again or fix the installer"; echo ""
     fi
   };
 fi
