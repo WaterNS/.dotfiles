@@ -276,6 +276,10 @@ install_ffmpeg () {
       install_unar
       echo "NOTE: ffmpeg not found, installing into dotfiles bin"
       echo "------------------------------------------------"
+      if [ ! -x "$(command -v unar)" ]; then
+        echo "Unable to install ffmpeg - missing unar"; echo ""
+        return 1
+      fi
 
       if [ ! -d "$HOME/.dotfiles/opt/tmp" ]; then
         mkdir "$HOME/.dotfiles/opt/tmp" -p
@@ -306,6 +310,10 @@ install_ffprobe () {
         install_unar
         echo "NOTE: ffprobe not found, installing into dotfiles bin"
         echo "------------------------------------------------"
+        if [ ! -x "$(command -v unar)" ]; then
+          echo "Unable to install ffprobe - missing unar"; echo ""
+          return 1
+        fi
 
         if [ ! -d "$HOME/.dotfiles/opt/tmp" ]; then
           mkdir "$HOME/.dotfiles/opt/tmp" -p
@@ -539,11 +547,14 @@ install_bat () {
 }
 
 install_ytdlp() {
-    if [ ! -x "$(command -v yt-dlp)" ]; then
-      if contains "$(uname)" "Darwin"; then
-        install_generic_github "yt-dlp/yt-dlp" "yt-dlp" "macos" "zip"
-      else
-          echo "Unable to install yt-dlp - OS version doesn't have supported function"
-      fi
+  if [ ! -x "$(command -v yt-dlp)" ]; then
+    if contains "$(uname)" "Darwin"; then
+      install_generic_github "yt-dlp/yt-dlp" "yt-dlp" "macos" "zip"
+    else
+        echo "Unable to install yt-dlp - OS version doesn't have supported function"
     fi
+  fi
+  install_ffmpeg
+  install_ffprobe
+  install_phantomjs
 }
