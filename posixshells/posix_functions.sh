@@ -212,3 +212,18 @@ getFileExt() {
     *)         echo "" ;;
   esac
 }
+
+caller_func_name() {
+  if [ -n "$1" ]; then
+    __stackDepth="$1"
+  else
+    __stackDepth=1
+  fi
+
+  if [ -n "$ZSH_VERSION" ]; then
+    # Use offset:length as array indexing may start at 1 or 0
+    printf "%s\n" "${funcstack[@]:$__stackDepth:$__stackDepth}"
+  else # Bash, Bourne shells
+    printf "%s\n" "${FUNCNAME[$__stackDepth]}"
+  fi
+}
