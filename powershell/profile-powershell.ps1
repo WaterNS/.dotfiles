@@ -49,3 +49,8 @@ Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete
 If (!($env:PATH -like "*$HOME/.dotfiles/opt/bin*")) {
   $env:PATH += ";$HOME/.dotfiles/opt/bin"
 }
+
+# Python2 helper for Windows
+if ((Test-Path "C:\Python27\python2.exe") -and !($env:PATH -like "*C:\Python27\*")) {
+  $env:PATH += ";C:\Python27\"
+}
