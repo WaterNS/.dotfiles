@@ -4,6 +4,9 @@
   "terminal.integrated.rendererType": "experimentalWebgl",
   "telemetry.enableTelemetry": false,
   "restoreTerminals.keepExistingTerminalsOpen": true,
+  "terminal.integrated.autoReplies": {
+    "Terminate batch job (Y/N)?": "Y\r"
+  },
 
   "workbench.colorTheme": "Monokai",
   "workbench.sideBar.location": "right",
