@@ -9,3 +9,5 @@
   date = auto:format:%a %Y-%h-%d %I:%M %p %z %Z
 [color "status"]
   branch = cyan black bold ul
+[alias]
+	customLog = log --stat --find-renames --stat-count=5

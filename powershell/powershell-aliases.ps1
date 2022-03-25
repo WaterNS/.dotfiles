@@ -20,6 +20,9 @@ if (Check-Command git) {
   Function AliasGitStatus {git status}
   Set-Alias status AliasGitStatus
 
+  Function AliasGitLog {git customLog}
+  Set-Alias log AliasGitLog
+
   Function AliasGitPush {git push}
   Set-Alias push AliasGitPush
 

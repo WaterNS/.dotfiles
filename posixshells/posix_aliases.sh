@@ -46,6 +46,7 @@ fi
 # alias common git commands to shorthand
 if [ -x "$(command -v git)" ]; then
   alias status='git status'
+  alias log='git customLog'
   alias push='git push'
   alias gitreset='git fetch $(git config branch.`git name-rev --name-only HEAD`.remote) && git reset $(git config branch.`git name-rev --name-only HEAD`.remote)/$(git rev-parse --abbrev-ref HEAD)'
   alias gitresethard='git fetch $(git config branch.`git name-rev --name-only HEAD`.remote) && git reset --hard $(git config branch.`git name-rev --name-only HEAD`.remote)/$(git rev-parse --abbrev-ref HEAD)'
