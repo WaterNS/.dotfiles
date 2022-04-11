@@ -5,7 +5,7 @@
 whichShellRunning=$(exec 2>/dev/null; readlink "/proc/$$/exe")
 case "$whichShellRunning" in
   */busybox) BUSYBOX_VERSION="$(busybox | head -1 | sed 's/.*\(v[0-9\.]*\).*/\1/')"; export BUSYBOX_VERSION;;
-  *) RUNNINGSHELLVERSION=$($SHELL --version);;
+  #*) RUNNINGSHELLVERSION=$($SHELL --version);; #PROBLEMATIC/Not needed currently: Doesn't work with ASH
 esac
 
 if [ -n "$ZSH_VERSION" ]; then
