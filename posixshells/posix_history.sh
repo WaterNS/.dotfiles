@@ -7,6 +7,11 @@ rm "$HISTFILE" >/dev/null 2>&1
 unset HISTFILE # On exit, will not write history file
 rm "$HOME/.sh_history" >/dev/null 2>&1
 
+# ASH: delete history files
+# rm "$HISTFILE" >/dev/null 2>&1
+# unset HISTFILE # On exit, will not write history file
+rm "$HOME/.ash_history" >/dev/null 2>&1
+
 # BASH: delete history files/sessions
 rm -f "$HOME/.bash_history" >/dev/null 2>&1
 rm -rf "$HOME/.bash_sessions" >/dev/null 2>&1
