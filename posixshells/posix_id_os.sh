@@ -24,10 +24,10 @@ export OS_ARCH;
 OS_NAME="unknown name"
 OS_VERSION="unknown version"
 if [ -f "/etc/os-release" ]; then
-  testOSnameLookup=$(awk -F= '$1=="NAME" { print $2 ;}' /etc/os-release)
+  testOSnameLookup=$(awk -F= '$1=="NAME" { print $2 ;}' /etc/os-release | sed -e 's/^"//' -e 's/"$//')
   OS_NAME=$testOSnameLookup
 
-  testOSversionLookup=$(awk -F= '$1=="VERSION_ID" { print $2 ;}' /etc/os-release)
+  testOSversionLookup=$(awk -F= '$1=="VERSION_ID" { print $2 ;}' /etc/os-release | sed -e 's/^"//' -e 's/"$//')
   OS_VERSION=$testOSversionLookup
 elif [ "$OS_FAMILY" = "Darwin" ]; then
   OSX_Version_File="/System/Library/CoreServices/SystemVersion.plist"
