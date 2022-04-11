@@ -22,7 +22,7 @@ elif [ -n "$BUSYBOX_VERSION" ]; then
   else
     export RUNNINGSHELL="$SHELL"
   fi
-  RUNNINGSHELLVERSION="$RUNNINGSHELL via BusyBox $BUSYBOX_VERSION"
+  RUNNINGSHELLVERSION="via BusyBox $BUSYBOX_VERSION"
 else
   if contains "$SHELL" "/sh"; then
     export RUNNINGSHELL='sh'
