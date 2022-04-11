@@ -1,5 +1,9 @@
 #!/bin/sh
 
+# Ignore git config and force git output in English to make our work easier
+git_eng="env LANG=C GIT_CONFIG_NOSYSTEM=1 GIT_CONFIG=/dev/null HOME=/dev/null git"
+HOME2=$HOME
+
 # DOTFILES updater
 # Check if last update was longer than set interval, kick off update if so
 if [ -f "$HOME/.dotfiles/opt/lastupdate" ]; then
@@ -9,7 +13,7 @@ if [ -f "$HOME/.dotfiles/opt/lastupdate" ]; then
 	maxtime=$((5*24*60*60))
 fi
 
-SHAinitscript=$(git --git-dir "$HOME/.dotfiles/.git" log -n 1 --pretty=format:%H -- init_posix.sh)
+SHAinitscript=$($git_eng --git-dir "$HOME2/.dotfiles/.git" log -n 1 --pretty=format:%H -- init_posix.sh)
 if [ ! -f "$HOME/.dotfiles/opt/lastinit" ] || [ "$SHAinitscript" != "$(head -2 "$HOME/.dotfiles/opt/lastinit" | tail -1)" ]; then
 	if [ ! -f "$HOME/.dotfiles/opt/lastinit" ]; then
 		echo "No init time file found, running initialization now"

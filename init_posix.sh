@@ -13,6 +13,9 @@ while getopts ":ur" opt ; do
   esac
 done
 
+# Ignore git config and force git output in English to make our work easier
+git_eng="env LANG=C GIT_CONFIG_NOSYSTEM=1 GIT_CONFIG=/dev/null HOME=/dev/null git"
+
 ### Set ZSH to word split IFS
 if [ "$ZSH_VERSION" ]; then
   setopt sh_word_split
@@ -38,13 +41,13 @@ updategitrepo () {
   #echo ""
   #echo "-Check updates: $reponame ($description)"
   cd "$repolocation" || return
-  git fetch
+  $git_eng fetch
 
-  if [ "$(git rev-list --count master..origin/master)" -gt 0 ]; then
+  if [ "$($git_eng rev-list --count master..origin/master)" -gt 0 ]; then
     printf -- "--Updating %s %s repo " "$reponame" "$description"
-    printf "(from %s to " "$(git rev-parse --short master)"
-    printf "%s)" "$(git rev-parse --short origin/master)"
-    git pull origin master --quiet
+    printf "(from %s to " "$($git_eng rev-parse --short master)"
+    printf "%s)" "$($git_eng rev-parse --short origin/master)"
+    $git_eng pull origin master --quiet
 
     # Restart the init script if it self updated
     if [ "$reponame" = "dotfiles" ]; then
@@ -164,7 +167,7 @@ if [ $u ] && [ -x "$(command -v youtube-dl)" ]; then
 fi
 
 #Write last update file
-SHAinitupdated=$(git --git-dir "$HOMEREPO/.git" log -n 1 --pretty=format:%H -- init_posix.sh)
+SHAinitupdated=$($git_eng --git-dir "$HOMEREPO/.git" log -n 1 --pretty=format:%H -- init_posix.sh)
 if [ ! -f "$HOMEREPO/opt/lastupdate" ] || [ ! -f "$HOMEREPO/opt/lastinit" ]; then
 	if [ ! -f "$HOMEREPO/opt/lastupdate" ]; then
 		date +%s > "$HOMEREPO/opt/lastupdate"

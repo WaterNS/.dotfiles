@@ -37,7 +37,8 @@ git_prompt() {
 
 hash git 2>/dev/null || return # git not found
 
-git_eng="env LANG=C git"   # force git output in English to make our work easier
+# Ignore git config and force git output in English to make our work easier
+git_eng="env LANG=C GIT_CONFIG_NOSYSTEM=1 GIT_CONFIG=/dev/null HOME=/dev/null git"
 
 # get current branch name
 __ref=$($git_eng symbolic-ref --short HEAD 2>/dev/null)
@@ -55,7 +56,7 @@ fi
 [ -n "$__ref" ] || return  # not a git repo
 
 #Check if Gone or not branch
-__goneBranch=$(git branch -vv | grep "$__branch" | grep ': gone]')
+__goneBranch=$($git_eng branch -vv | grep "$__branch" | grep ': gone]')
 
 #Git Fetch sequence:
 # Last Reflog: Last time upstream was updated
@@ -65,8 +66,8 @@ __goneBranch=$(git branch -vv | grep "$__branch" | grep ': gone]')
 #-- Check to see if this branch has an upstream, cause if doesn't, we don't need to fetch
 if [ "$($git_eng config --get branch."$($git_eng rev-parse --abbrev-ref HEAD)".merge)" ] && [ -z "$__goneBranch" ]; then
   __MaxFetchSeconds=600
-  __upstream=$(git rev-parse --abbrev-ref "@{upstream}")
-  __gitdir=$(git rev-parse --git-dir)
+  __upstream=$($git_eng rev-parse --abbrev-ref "@{upstream}")
+  __gitdir=$($git_eng rev-parse --git-dir)
 
   __lastreflog=$($git_eng reflog show --date=unix "$__upstream" -n1 | grep -o "{.*}" | tr -d '{}')
   if [ -z "$__lastreflog" ]; then
@@ -92,7 +93,7 @@ if [ "$($git_eng config --get branch."$($git_eng rev-parse --abbrev-ref HEAD)".m
   #echo "Time since last reflog: $TimeSinceReflog"
   #echo "Time since last fetch: $TimeSinceFetch"
   if [ "$__TimeSinceReflog" -gt "$__MaxFetchSeconds" ] && [ "$__TimeSinceFetch" -gt "$__MaxFetchSeconds" ]; then
-    git fetch --all > /dev/null
+    $git_eng fetch --all > /dev/null
   fi
 fi
 
@@ -159,8 +160,8 @@ set +f; unset IFS           # do it again in case $INPUT was empty
 unset gitstatusoutput
 
 # Count commits on new branch (that doesn't have a remote)
-if [ -z "$__git_ahead_count" ] && [ -z "$(git config --get branch."$__branch".remote)" ]; then
-  __commitsOnBranch=$(git rev-list master.. --count) #TODO: replace 'master' with looked up Parent branch
+if [ -z "$__git_ahead_count" ] && [ -z "$($git_eng config --get branch."$__branch".remote)" ]; then
+  __commitsOnBranch=$($git_eng rev-list master.. --count) #TODO: replace 'master' with looked up Parent branch
   if [ "$__commitsOnBranch" ]; then
     __git_ahead_count=$__commitsOnBranch
   fi
@@ -168,7 +169,7 @@ fi
 
 # Count commits on branch that has remote, but remote is empty (e.g cloned empty repo and made some commits)
 if [ -z "$__git_ahead_count" ] && [ "$__goneBranch" ]; then
-  __commitsOnBranch=$(git rev-list "$__branch" --count)
+  __commitsOnBranch=$($git_eng rev-list "$__branch" --count)
   if [ "$__commitsOnBranch" ]; then
     __git_ahead_count=$__commitsOnBranch
   fi
