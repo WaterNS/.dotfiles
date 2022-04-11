@@ -11,6 +11,9 @@ rm "$HOME/.sh_history" >/dev/null 2>&1
 # rm "$HISTFILE" >/dev/null 2>&1
 # unset HISTFILE # On exit, will not write history file
 rm "$HOME/.ash_history" >/dev/null 2>&1
+if [ -f "$HOME/.ash_history" ]; then
+  echo "" > "$HOME/.ash_history"
+fi
 
 # BASH: delete history files/sessions
 rm -f "$HOME/.bash_history" >/dev/null 2>&1
