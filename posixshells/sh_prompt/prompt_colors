@@ -64,7 +64,7 @@ else
     C_LCYAN="\[$(tput setaf 14)\]"
     C_LWHITE="\[$(tput setaf 15)\]"
   else
-    "tput command not found"
+    echo "tput command not found"
   fi
 fi
 
