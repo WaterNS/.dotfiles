@@ -24,7 +24,7 @@ export OS_ARCH;
 OS_NAME="unknown name"
 OS_VERSION="unknown version"
 if [ -f "/etc/os-release" ]; then
-  testOSnameLookup=$(awk -F= '$1=="Name" { print $2 ;}' /etc/os-release)
+  testOSnameLookup=$(awk -F= '$1=="NAME" { print $2 ;}' /etc/os-release)
   OS_NAME=$testOSnameLookup
 
   testOSversionLookup=$(awk -F= '$1=="VERSION_ID" { print $2 ;}' /etc/os-release)
