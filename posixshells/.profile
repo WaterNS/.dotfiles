@@ -2,8 +2,8 @@
 
 #Identify running shell
 ## busybox hacky solution:
-busyboxtest=$(exec 2>/dev/null; readlink "/proc/$$/exe")
-case "$busyboxtest" in
+whichShellRunning=$(exec 2>/dev/null; readlink "/proc/$$/exe")
+case "$whichShellRunning" in
   */busybox) BUSYBOX_VERSION="$(busybox | head -1 | sed 's/.*\(v[0-9\.]*\).*/\1/')"; export BUSYBOX_VERSION;;
   *) RUNNINGSHELLVERSION=$($SHELL --version);
 esac
@@ -15,13 +15,16 @@ elif [ -n "$BASH_VERSION" ]; then
   export RUNNINGSHELL='bash'
   RUNNINGSHELLVERSION=$BASH_VERSION
 elif [ -n "$BUSYBOX_VERSION" ]; then
-  export RUNNINGSHELL='BusyBox'
-  RUNNINGSHELLVERSION=$BUSYBOX_VERSION
+  # Calling BusyBox in itself is sometimes destructive
+  # so its often aliased to ash/sh and that can be run without exiting busybox
+  busyboxShellReported="$(printf '%s' "$0")";
+  export RUNNINGSHELL="$busyboxShellReported"
+  RUNNINGSHELLVERSION="$RUNNINGSHELL via BusyBox $BUSYBOX_VERSION"
 else
   if contains "$SHELL" "/sh"; then
     export RUNNINGSHELL='sh'
   else
-    export RUNNINGSHELL=$SHELL
+    export RUNNINGSHELL="$SHELL"
   fi
 fi
 export RUNNINGSHELLVERSION;
