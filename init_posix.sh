@@ -147,7 +147,6 @@ install_bat
 install_shellcheck
 install_shfmt
 install_lsd
-install_prettyping
 install_blesh
 install_ncdu
 

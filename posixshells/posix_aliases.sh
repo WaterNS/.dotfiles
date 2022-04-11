@@ -1,9 +1,9 @@
 #!/bin/sh
 
-#prettier ping (shell script wrapper for ping output)
-if [ -x "$(command -v prettyping)" ]; then
-  alias ping='prettyping --nolegend'
-fi
+# #prettier ping (shell script wrapper for ping output)
+# if [ -x "$(command -v prettyping)" ]; then
+#   alias ping='prettyping --nolegend'
+# fi
 
 if [ -x "$(command -v rsync)" ]; then
   rsync_cp() {
