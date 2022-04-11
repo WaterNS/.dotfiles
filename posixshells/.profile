@@ -1,13 +1,22 @@
 #!/bin/sh
 
 #Identify running shell
-RUNNINGSHELLVERSION=$($SHELL --version);
+## busybox hacky solution:
+busyboxtest=$(exec 2>/dev/null; readlink "/proc/$$/exe")
+case "$busyboxtest" in
+  */busybox) BUSYBOX_VERSION="$(busybox | head -1 | sed 's/.*\(v[0-9\.]*\).*/\1/')"; export BUSYBOX_VERSION;;
+  *) RUNNINGSHELLVERSION=$($SHELL --version);
+esac
+
 if [ -n "$ZSH_VERSION" ]; then
   export RUNNINGSHELL='zsh'
   RUNNINGSHELLVERSION=$ZSH_VERSION
 elif [ -n "$BASH_VERSION" ]; then
   export RUNNINGSHELL='bash'
   RUNNINGSHELLVERSION=$BASH_VERSION
+elif [ -n "$BUSYBOX_VERSION" ]; then
+  export RUNNINGSHELL='BusyBox'
+  RUNNINGSHELLVERSION=$BUSYBOX_VERSION
 else
   if contains "$SHELL" "/sh"; then
     export RUNNINGSHELL='sh'
