@@ -152,8 +152,11 @@ install_blesh
 install_ncdu
 
 # Install ZSH and its addons
-install_ohmyzsh
-. "$HOMEREPO/posixshells/zsh/init_zsh_addons.sh"
+#install_zsh
+if [ -x "$(command -v zsh)" ]; then
+  install_ohmyzsh
+  . "$HOMEREPO/posixshells/zsh/init_zsh_addons.sh"
+fi
 
 
 # Update youtube-dl, if installed
