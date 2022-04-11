@@ -15,7 +15,8 @@ esac
 export OS_FAMILY;
 
 case "$unameDetails" in
-  *i686*) OS_ARCH='32bit';;
+  *i686*) OS_ARCH='x86';;
+  *x86_64*) OS_ARCH='x64';;
   *ARM64*) OS_ARCH='ARM64';;
   *) OS_ARCH='unknown arch' && echo "Dotfiles OS_ARCH: Wasn't able to id OS arch";;
 esac
