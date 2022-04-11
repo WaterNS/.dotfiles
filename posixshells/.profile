@@ -17,7 +17,7 @@ elif [ -n "$BASH_VERSION" ]; then
 elif [ -n "$BUSYBOX_VERSION" ]; then
   # Calling BusyBox in itself is sometimes destructive
   # so its often aliased to ash/sh and that can be run without exiting busybox
-  if contains "$SHELL" "/ash"; then
+  if [ "$SHELL" = "/bin/ash" ]; then
     export RUNNINGSHELL='ash'
   else
     export RUNNINGSHELL="$SHELL"
