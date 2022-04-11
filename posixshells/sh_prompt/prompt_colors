@@ -27,41 +27,45 @@ if [ "$ZSH_VERSION" ]; then
   C_LCYAN='%F{14}'
   C_LWHITE='%F{15}'
 
-else #Other POSIX shells (bash, sh, etc - use tput)
-  ## On `tput` vs RAW TERMINAL color codes
-  # Raw terminal codes are not as widely portable
-  # tput will generate approriate code for terminal running
-  # Raw terminal codes are madness
+else
+  if [ -x "$(command -v tput)" ]; then #Other POSIX shells (bash, sh, etc - use tput)
+    ## On `tput` vs RAW TERMINAL color codes
+    # Raw terminal codes are not as widely portable
+    # tput will generate approriate code for terminal running
+    # Raw terminal codes are madness
 
-  # tput:
-  #  sgr0 #Turn off all attributes
-  #  setaf <value> # Set foreground color
-  #  setab <value> # Set background color
-  #  bold/smul/smso # bold/underline etc, see http://linuxcommand.org/lc3_adv_tput.php
+    # tput:
+    #  sgr0 #Turn off all attributes
+    #  setaf <value> # Set foreground color
+    #  setab <value> # Set background color
+    #  bold/smul/smso # bold/underline etc, see http://linuxcommand.org/lc3_adv_tput.php
 
-  #tput'ed sequences
-  RESET="\[$(tput sgr0)\]"
-  C_BOLD="\[$(tput bold)\]"
+    #tput'ed sequences
+    RESET="\[$(tput sgr0)\]"
+    C_BOLD="\[$(tput bold)\]"
 
-  #tput'ed colors - foreground!
-  C_BLACK="\[$(tput setaf 0)\]"
-  C_RED="\[$(tput setaf 1)\]"
-  C_GREEN="\[$(tput setaf 2)\]"
-  C_YELLOW="\[$(tput setaf 3)\]"
-  C_BLUE="\[$(tput setaf 4)\]"
-  C_PURPLE="\[$(tput setaf 5)\]"
-  C_CYAN="\[$(tput setaf 6)\]"
-  C_WHITE="\[$(tput setaf 7)\]"
+    #tput'ed colors - foreground!
+    C_BLACK="\[$(tput setaf 0)\]"
+    C_RED="\[$(tput setaf 1)\]"
+    C_GREEN="\[$(tput setaf 2)\]"
+    C_YELLOW="\[$(tput setaf 3)\]"
+    C_BLUE="\[$(tput setaf 4)\]"
+    C_PURPLE="\[$(tput setaf 5)\]"
+    C_CYAN="\[$(tput setaf 6)\]"
+    C_WHITE="\[$(tput setaf 7)\]"
 
-    #"high intensity" colors
-  C_LBLACK="\[$(tput setaf 8)\]"
-  C_LRED="\[$(tput setaf 9)\]"
-  C_LGREEN="\[$(tput setaf 10)\]"
-  C_LYELLOW="\[$(tput setaf 11)\]"
-  C_LBLUE="\[$(tput setaf 12)\]"
-  C_LPURPLE="\[$(tput setaf 13)\]"
-  C_LCYAN="\[$(tput setaf 14)\]"
-  C_LWHITE="\[$(tput setaf 15)\]"
+      #"high intensity" colors
+    C_LBLACK="\[$(tput setaf 8)\]"
+    C_LRED="\[$(tput setaf 9)\]"
+    C_LGREEN="\[$(tput setaf 10)\]"
+    C_LYELLOW="\[$(tput setaf 11)\]"
+    C_LBLUE="\[$(tput setaf 12)\]"
+    C_LPURPLE="\[$(tput setaf 13)\]"
+    C_LCYAN="\[$(tput setaf 14)\]"
+    C_LWHITE="\[$(tput setaf 15)\]"
+  else
+    "tput command not found"
+  fi
 fi
 
 C_SUCCESS=$C_GREEN
