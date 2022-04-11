@@ -17,8 +17,11 @@ elif [ -n "$BASH_VERSION" ]; then
 elif [ -n "$BUSYBOX_VERSION" ]; then
   # Calling BusyBox in itself is sometimes destructive
   # so its often aliased to ash/sh and that can be run without exiting busybox
-  busyboxShellReported="$(printf '%s' "$0")";
-  export RUNNINGSHELL="$busyboxShellReported"
+  if contains "$SHELL" "/ash"; then
+    export RUNNINGSHELL='ash'
+  else
+    export RUNNINGSHELL="$SHELL"
+  fi
   RUNNINGSHELLVERSION="$RUNNINGSHELL via BusyBox $BUSYBOX_VERSION"
 else
   if contains "$SHELL" "/sh"; then
