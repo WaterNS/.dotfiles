@@ -8,6 +8,9 @@
 # Path to your oh-my-zsh installation.
 export ZSH=~/.dotfiles/opt/ohmyzsh
 
+# Set path for ZSH completion mechanism cache
+export ZSH_COMPDUMP=$ZSH/cache/.zcompdump-$HOST
+
 # Path to ohmyzsh customizations (default = $ZSH/custom)
 ZSH_CUSTOM=~/.dotfiles/opt/ohmyzsh-custom
 

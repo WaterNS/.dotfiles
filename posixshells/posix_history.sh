@@ -21,6 +21,10 @@ rm -rf "$HOME/.bash_sessions" >/dev/null 2>&1
 
 # ZSH: delete history files
 rm "$HOME/.zsh_history" >/dev/null 2>&1
+find "$HOME" -maxdepth 1 -type f -name '.*zcompdump*' -delete # cache is relocated to ZSH cache folder
+SAVEHIST=0
+HISTSIZE=0
+rm -rf "$HOME/.zsh_sessions" >/dev/null 2>&1
 
 # LESS: history delete
 export LESSHISTFILE=/dev/null
