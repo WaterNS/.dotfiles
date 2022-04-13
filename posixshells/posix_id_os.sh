@@ -52,4 +52,3 @@ export OS_VERSION;
 
 OS_STRING="$OS_FAMILY - $OS_NAME $OS_VERSION - $OS_ARCH";
 export OS_STRING;
-echo "$OS_STRING";

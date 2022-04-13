@@ -2,6 +2,7 @@
 
 # Identify Operating System (better uname)
 . ~/.dotfiles/posixshells/posix_id_os.sh
+echo "$OS_STRING";
 
 #Identify running shell
 . ~/.dotfiles/posixshells/posix_id_shell.sh
