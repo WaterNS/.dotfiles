@@ -447,7 +447,7 @@ install_jq () {
       install_generic_github "stedolan/jq" "jq" "osx"
     elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
       install_generic_github "stedolan/jq" "jq" "linux64"
-    elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
+    elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x32" ]; then
       install_generic_github "stedolan/jq" "jq" "linux32"
     else
       echo "install_jq: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
