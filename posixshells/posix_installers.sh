@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Identify Operating System (better uname)
+. ~/.dotfiles/posixshells/posix_id_os.sh
+
 if notcontains "$PATH" "$HOME/.dotfiles/opt/bin"; then
   PATH=$PATH:~/.dotfiles/opt/bin #Include dotfiles bin
 fi
@@ -122,7 +125,7 @@ install_generic_homebrew () {
         echo "BAD - $__pkgName doesn't seem to be available"
       fi
     else
-      echo "Unable to install $__pkgName - OS version doesn't have supported function"
+      echo "Unable to install $__pkgName - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
 
@@ -217,7 +220,7 @@ install_generic_github () {
         echo "BAD - $__executableName doesn't seem to be available"
       fi
     else
-      echo "Unable to install $__executableName - OS version doesn't have supported function"
+      echo "Unable to install $__executableName - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
 
@@ -285,7 +288,7 @@ install_generic_binary () {
         echo "BAD - $__executableName doesn't seem to be available"
       fi
     else
-      echo "Unable to install $__executableName - OS version doesn't have supported function"
+      echo "Unable to install $__executableName - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
 
@@ -336,7 +339,7 @@ install_unar () {
       install_generic_homebrew unar
       #install_generic_binary "https://cdn.theunarchiver.com/downloads/unarMac.zip" "unar"
     else
-      echo "Unable to install unar - OS version doesn't have supported function"
+      echo "Unable to install unar - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
 }
@@ -369,7 +372,7 @@ install_ffmpeg () {
         echo "BAD - ffmpeg doesn't seem to be available"
       fi
     else
-      echo "Unable to install ffmpeg - OS version doesn't have supported function"
+      echo "Unable to install ffmpeg - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
     unset ffmpeg; unset latest;
   fi
@@ -403,7 +406,7 @@ install_ffprobe () {
         echo "BAD - ffprobe doesn't seem to be available"
       fi
     else
-      echo "Unable to install ffprobe - OS version doesn't have supported function"
+      echo "Unable to install ffprobe - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
     unset ffprobe; unset latest;
   fi
@@ -432,7 +435,7 @@ install_phantomjs () {
           echo "BAD - phantomjs doesn't seem to be available"
         fi
       else
-        echo "Unable to install phantomjs - OS version doesn't have supported function"
+        echo "Unable to install phantomjs - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
       fi
       unset phantomjs; unset latest;
     fi
@@ -447,7 +450,7 @@ install_jq () {
     elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x32" ]; then
       install_generic_github "stedolan/jq" "jq" "linux32"
     else
-      echo "Unable to install jq - OS version doesn't have supported function"
+      echo "Unable to install jq - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
 }
@@ -457,7 +460,7 @@ install_shellcheck () {
     if [ "$OS_FAMILY" = "Darwin" ]; then
       install_generic_homebrew "shellcheck"
     else
-      echo "Unable to install shellcheck - OS version doesn't have supported function"
+      echo "Unable to install shellcheck - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
 }
@@ -467,7 +470,7 @@ install_shfmt () {
     if [ "$OS_FAMILY" = "Darwin" ]; then
       install_generic_github "mvdan/sh" "shfmt" "darwin_amd64"
     else
-      echo "Unable to install shfmt - OS version doesn't have supported function"
+      echo "Unable to install shfmt - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
 }
@@ -490,7 +493,7 @@ install_nerdfonts () {
           echo "BAD - nerd-fonts don't seem to be available"
         fi
       else
-        echo "Unable to install nerd-fonts - OS version doesn't have supported function"
+        echo "Unable to install nerd-fonts - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
       fi
     fi
     unset fontname;
@@ -501,7 +504,7 @@ install_lsd () {
     if [ "$OS_FAMILY" = "Darwin" ]; then
       install_generic_homebrew "lsd"
     else
-      echo "Unable to install lsd - OS version doesn't have supported function"
+      echo "Unable to install lsd - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
 }
@@ -521,7 +524,7 @@ install_prettyping () {
           echo "BAD - prettyping doesn't seem to be available"
         fi
       else
-        echo "Unable to install prettyping - OS version doesn't have supported function"
+        echo "Unable to install prettyping - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
       fi
     fi
 }
@@ -594,7 +597,7 @@ install_ncdu () {
     if [ "$OS_FAMILY" = "Darwin" ]; then
       install_generic_homebrew "ncdu"
     else
-      echo "Unable to install ncdu - OS version doesn't have supported function"
+      echo "Unable to install ncdu - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
 }
@@ -604,7 +607,7 @@ install_git_delta () {
     if [ "$OS_FAMILY" = "Darwin" ]; then
       install_generic_homebrew "git-delta" "delta"
     else
-      echo "Unable to install git_delta - OS version doesn't have supported function"
+      echo "Unable to install git_delta - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
 }
@@ -614,7 +617,7 @@ install_bat () {
     if [ "$OS_FAMILY" = "Darwin" ]; then
       install_generic_homebrew "bat"
     else
-      echo "Unable to install bat - OS version doesn't have supported function"
+      echo "Unable to install bat - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
 }
@@ -624,7 +627,7 @@ install_ytdlp() {
     if [ "$OS_FAMILY" = "Darwin" ]; then
       install_generic_github "yt-dlp/yt-dlp" "yt-dlp" "macos" "zip"
     else
-      echo "Unable to install yt-dlp - OS version doesn't have supported function"
+      echo "Unable to install yt-dlp - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
   install_ffmpeg
