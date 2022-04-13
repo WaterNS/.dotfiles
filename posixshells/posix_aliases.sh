@@ -76,7 +76,7 @@ if [ -f "/Applications/Visual Studio Code - Insiders.app/Contents/Resources/app/
 fi
 
 # Set ls behavior
-if contains "$(uname)" "Darwin"; then
+if [ "$OS_FAMILY" = "Darwin" ]; then
   export LSCOLORS='Affxcxdxbxegedabagacad' # See https://geoff.greer.fm/lscolors/
   alias ls='LC_COLLATE=C /bin/ls -alhGpF'
 else # Most likely GNU Linux ls
@@ -90,7 +90,7 @@ if [ -x "$(command -v lsd)" ]; then
 fi
 
 # add icloud shortcut alias
-if contains "$(uname)" "Darwin"; then
+if [ "$OS_FAMILY" = "Darwin" ]; then
   if [ -d ~/Library/Mobile\ Documents/com~apple~CloudDocs/ ]; then
     if contains "$RUNNINGSHELL" "bash"; then
       #shellcheck disable=2039 # Exception: shopt will be available if running under bash.

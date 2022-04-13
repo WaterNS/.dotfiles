@@ -50,16 +50,16 @@ set +f; unset IFS           # do it again in case $INPUT was empty
 unset files
 
 #Handle linking VSCode in OSX and Linux
-if contains "$(uname)" "Darwin" || contains "$(uname)" "linux"; then
+if [ "$OS_FAMILY" = "Darwin" ] || [ "$OS_FAMILY" = "Linux" ]; then
   repoVSCodeFile="$HOME/.dotfiles/vscode/settings.json"
 
   vsCodeDirs=""
   customIFS=":"
 
-  if contains "$(uname)" "Darwin"; then
+  if [ "$OS_FAMILY" = "Darwin" ]; then
     vsCodeDirs="$HOME/Library/Application Support/Code/User/"
     vsCodeDirs="${vsCodeDirs}${customIFS}$HOME/Library/Application Support/Code - Insiders/User/"
-  elif contains "$(uname)" "linux"; then
+  elif [ "$OS_FAMILY" = "Linux" ]; then
     vsCodeDirs="$HOME/.config/Code/User/"
     vsCodeDirs="${vsCodeDirs}${customIFS}$HOME/.config/Code - Insiders/User/"
   fi

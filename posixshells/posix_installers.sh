@@ -80,7 +80,7 @@ install_generic_homebrew () {
       install_jq
   fi
   if [ ! -x "$(command -v "$__executableName")" ]; then
-    if contains "$(uname)" "Darwin"; then
+    if [ "$OS_FAMILY" = "Darwin" ]; then
       echo "NOTE: $__pkgName not found, availing into dotfiles bin"
       echo "------------------------------------------------"
       __pkgurl="https://formulae.brew.sh/api/formula/$__pkgName.json"
@@ -169,7 +169,7 @@ install_generic_github () {
   fi
 
   if [ ! -x "$(command -v "$__executableName")" ]; then
-    if contains "$(uname)" "Darwin"; then
+    if [ "$OS_FAMILY" = "Darwin" ]; then
       echo "NOTE: $__executableName not found, availing into dotfiles bin"
       echo "------------------------------------------------"
       # shellcheck disable=SC2086
@@ -236,7 +236,7 @@ install_generic_binary () {
   fi
 
   if [ ! -x "$(command -v "$__executableName")" ]; then
-    if contains "$(uname)" "Darwin"; then
+    if [ "$OS_FAMILY" = "Darwin" ]; then
       echo "NOTE: $__executableName not found, availing into dotfiles bin"
       echo "------------------------------------------------"
       __pkgRelease=$__binaryURL
@@ -332,7 +332,7 @@ install_youtubedl () {
 
 install_unar () {
   if [ ! -x "$(command -v unar)" ]; then
-    if contains "$(uname)" "Darwin"; then
+    if [ "$OS_FAMILY" = "Darwin" ]; then
       install_generic_homebrew unar
       #install_generic_binary "https://cdn.theunarchiver.com/downloads/unarMac.zip" "unar"
     else
@@ -343,7 +343,7 @@ install_unar () {
 
 install_ffmpeg () {
   if [ ! -x "$(command -v ffmpeg)" ]; then
-    if contains "$(uname)" "Darwin"; then
+    if [ "$OS_FAMILY" = "Darwin" ]; then
       install_unar
       echo "NOTE: ffmpeg not found, installing into dotfiles bin"
       echo "------------------------------------------------"
@@ -377,7 +377,7 @@ install_ffmpeg () {
 
 install_ffprobe () {
   if [ ! -x "$(command -v ffprobe)" ]; then
-    if contains "$(uname)" "Darwin"; then
+    if [ "$OS_FAMILY" = "Darwin" ]; then
       install_unar
       echo "NOTE: ffprobe not found, installing into dotfiles bin"
       echo "------------------------------------------------"
@@ -411,7 +411,7 @@ install_ffprobe () {
 
 install_phantomjs () {
     if [ ! -x "$(command -v phantomjs)" ]; then
-      if contains "$(uname)" "Darwin"; then
+      if [ "$OS_FAMILY" = "Darwin" ]; then
         echo "NOTE: phantomjs not found, installing into dotfiles bin"
         echo "------------------------------------------------"
 
@@ -440,10 +440,12 @@ install_phantomjs () {
 
 install_jq () {
   if [ ! -x "$(command -v jq)" ]; then
-    if contains "$(uname)" "Darwin"; then
+    if [ "$OS_FAMILY" = "Darwin" ]; then
       install_generic_github "stedolan/jq" "jq" "osx"
-    elif contains "$(uname)" "Linux"; then
+    elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
       install_generic_github "stedolan/jq" "jq" "linux64"
+    elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x32" ]; then
+      install_generic_github "stedolan/jq" "jq" "linux32"
     else
       echo "Unable to install jq - OS version doesn't have supported function"
     fi
@@ -452,8 +454,8 @@ install_jq () {
 
 install_shellcheck () {
   if [ ! -x "$(command -v shellcheck)" ]; then
-    if contains "$(uname)" "Darwin"; then
-      install_generic_homebrew shellcheck
+    if [ "$OS_FAMILY" = "Darwin" ]; then
+      install_generic_homebrew "shellcheck"
     else
       echo "Unable to install shellcheck - OS version doesn't have supported function"
     fi
@@ -462,7 +464,7 @@ install_shellcheck () {
 
 install_shfmt () {
   if [ ! -x "$(command -v shfmt)" ]; then
-    if contains "$(uname)" "Darwin"; then
+    if [ "$OS_FAMILY" = "Darwin" ]; then
       install_generic_github "mvdan/sh" "shfmt" "darwin_amd64"
     else
       echo "Unable to install shfmt - OS version doesn't have supported function"
@@ -473,7 +475,7 @@ install_shfmt () {
 install_nerdfonts () {
     fontname="Droid Sans Mono for Powerline Nerd Font Complete.otf"
     if [ ! -f "$HOME/.dotfiles/opt/fonts/$fontname" ] && [ ! -f "$HOME/Library/Fonts/dotfiles/$fontname" ]; then
-      if contains "$(uname)" "Darwin"; then
+      if [ "$OS_FAMILY" = "Darwin" ]; then
         echo "NOTE: nerd-fonts not found, availing into $HOME/Library/Fonts/dotfiles/"
         echo "------------------------------------------------------------------------"
 
@@ -496,8 +498,8 @@ install_nerdfonts () {
 
 install_lsd () {
   if [ ! -x "$(command -v lsd)" ]; then
-    if contains "$(uname)" "Darwin"; then
-      install_generic_homebrew lsd
+    if [ "$OS_FAMILY" = "Darwin" ]; then
+      install_generic_homebrew "lsd"
     else
       echo "Unable to install lsd - OS version doesn't have supported function"
     fi
@@ -506,7 +508,7 @@ install_lsd () {
 
 install_prettyping () {
     if [ ! -x "$(command -v prettyping)" ]; then
-      if contains "$(uname)" "Darwin" || contains "$(uname)" "Linux"; then
+      if [ "$OS_FAMILY" = "Darwin" ] || [ "$OS_FAMILY" = "Linux" ]; then
         echo "NOTE: prettyping not found, availing into dotfiles bin"
         echo "------------------------------------------------"
 
@@ -589,8 +591,8 @@ install_blesh () {
 
 install_ncdu () {
   if [ ! -x "$(command -v ncdu)" ]; then
-    if contains "$(uname)" "Darwin"; then
-      install_generic_homebrew ncdu
+    if [ "$OS_FAMILY" = "Darwin" ]; then
+      install_generic_homebrew "ncdu"
     else
       echo "Unable to install ncdu - OS version doesn't have supported function"
     fi
@@ -599,8 +601,8 @@ install_ncdu () {
 
 install_git_delta () {
   if [ ! -x "$(command -v delta)" ]; then
-    if contains "$(uname)" "Darwin"; then
-      install_generic_homebrew git-delta delta
+    if [ "$OS_FAMILY" = "Darwin" ]; then
+      install_generic_homebrew "git-delta" "delta"
     else
       echo "Unable to install git_delta - OS version doesn't have supported function"
     fi
@@ -609,8 +611,8 @@ install_git_delta () {
 
 install_bat () {
   if [ ! -x "$(command -v bat)" ]; then
-    if contains "$(uname)" "Darwin"; then
-      install_generic_homebrew bat
+    if [ "$OS_FAMILY" = "Darwin" ]; then
+      install_generic_homebrew "bat"
     else
       echo "Unable to install bat - OS version doesn't have supported function"
     fi
@@ -619,7 +621,7 @@ install_bat () {
 
 install_ytdlp() {
   if [ ! -x "$(command -v yt-dlp)" ]; then
-    if contains "$(uname)" "Darwin"; then
+    if [ "$OS_FAMILY" = "Darwin" ]; then
       install_generic_github "yt-dlp/yt-dlp" "yt-dlp" "macos" "zip"
     else
       echo "Unable to install yt-dlp - OS version doesn't have supported function"

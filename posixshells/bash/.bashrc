@@ -10,7 +10,7 @@ fi
 
 ### History Stuffs - bash specific
 # OSX: Disable bash session saving
-if contains "$(uname)" "Darwin"; then
+if [ "$OS_FAMILY" = "Darwin" ]; then
 	touch ~/.bash_sessions_disable
 fi
 

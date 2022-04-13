@@ -81,7 +81,7 @@ fi
 # If ReInitializing, remove existing bin folders
 if [ $r ] && [ -d "$HOMEREPO/opt" ]; then
 	if [ -d "$HOMEREPO/opt" ]; then rm -rf "$HOMEREPO/opt"; fi
-	if contains "$(uname)" "Darwin"; then
+	if [ "$OS_FAMILY" = "Darwin" ]; then
 		if [ -d "$HOME/Library/Fonts/dotfiles" ]; then
 			rm -rf "$HOME/Library/Fonts/dotfiles";
 		fi
@@ -89,7 +89,7 @@ if [ $r ] && [ -d "$HOMEREPO/opt" ]; then
 fi
 
 # macOS: Disable .DSStore on network shares
-if contains "$(uname)" "Darwin"; then
+if [ "$OS_FAMILY" = "Darwin" ]; then
   defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool TRUE
 fi
 
