@@ -445,10 +445,14 @@ install_jq () {
   if [ ! -x "$(command -v jq)" ]; then
     if [ "$OS_FAMILY" = "Darwin" ]; then
       install_generic_github "stedolan/jq" "jq" "osx"
-    elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
-      install_generic_github "stedolan/jq" "jq" "linux64"
-    elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x32" ]; then
-      install_generic_github "stedolan/jq" "jq" "linux32"
+    elif [ "$OS_FAMILY" = "Linux" ]; then
+      if [ "$OS_ARCH" = "x64" ]; then
+        install_generic_github "stedolan/jq" "jq" "linux64"
+      elif [ "$OS_ARCH" = "x32" ]; then
+        install_generic_github "stedolan/jq" "jq" "linux32"
+      else
+        echo "Unable to install jq - OS arch ($OS_ARCH) doesn't have supported function"
+      fi
     else
       echo "Unable to install jq - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
