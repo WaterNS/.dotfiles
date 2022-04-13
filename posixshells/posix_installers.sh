@@ -172,7 +172,7 @@ install_generic_github () {
   fi
 
   if [ ! -x "$(command -v "$__executableName")" ]; then
-    if [ "$OS_FAMILY" = "Darwin" ]; then
+    if [ "$OS_FAMILY" = "Darwin" ] || [ "$OS_FAMILY" = "Linux" ]; then
       echo "NOTE: $__executableName not found, availing into dotfiles bin"
       echo "------------------------------------------------"
       # shellcheck disable=SC2086
@@ -220,7 +220,7 @@ install_generic_github () {
         echo "BAD - $__executableName doesn't seem to be available"
       fi
     else
-      echo "Unable to install $__executableName - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+      echo "install_generic_github (while attempting install $__executableName): OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
 
@@ -445,16 +445,12 @@ install_jq () {
   if [ ! -x "$(command -v jq)" ]; then
     if [ "$OS_FAMILY" = "Darwin" ]; then
       install_generic_github "stedolan/jq" "jq" "osx"
-    elif [ "$OS_FAMILY" = "Linux" ]; then
-      if [ "$OS_ARCH" = "x64" ]; then
-        install_generic_github "stedolan/jq" "jq" "linux64"
-      elif [ "$OS_ARCH" = "x32" ]; then
-        install_generic_github "stedolan/jq" "jq" "linux32"
-      else
-        echo "Unable to install jq - OS arch ($OS_ARCH) doesn't have supported function"
-      fi
+    elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
+      install_generic_github "stedolan/jq" "jq" "linux64"
+    elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
+      install_generic_github "stedolan/jq" "jq" "linux32"
     else
-      echo "Unable to install jq - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+      echo "install_jq: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
 }
