@@ -553,10 +553,10 @@ install_lsd () {
   if [ ! -x "$(command -v lsd)" ]; then
     if [ "$OS_FAMILY" = "Darwin" ]; then
       install_generic_homebrew "lsd"
-    elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
-      install_generic_github "Peltoche/lsd" "lsd" "x86_64-unknown-linux-musl"
-    elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x32" ]; then
-      install_generic_github "Peltoche/lsd" "lsd" "i686-unknown-linux-musl"
+    # elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
+    #   install_generic_github "Peltoche/lsd" "lsd" "x86_64-unknown-linux-musl"
+    # elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x32" ]; then
+    #   install_generic_github "Peltoche/lsd" "lsd" "i686-unknown-linux-musl"
     else
       echo "install_lsd: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
@@ -663,10 +663,10 @@ install_git_delta () {
   if [ ! -x "$(command -v delta)" ]; then
     if [ "$OS_FAMILY" = "Darwin" ]; then
       install_generic_homebrew "git-delta" "delta"
-    elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
-      install_generic_github "dandavison/delta" "delta" "x86_64-unknown-linux-musl"
-    elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x32" ]; then
-      install_generic_github "dandavison/delta" "delta" "i686-unknown-linux"
+    # elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
+    #   install_generic_github "dandavison/delta" "delta" "x86_64-unknown-linux-musl"
+    # elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x32" ]; then
+    #   install_generic_github "dandavison/delta" "delta" "i686-unknown-linux"
     else
       echo "install_git_delta: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
@@ -677,10 +677,12 @@ install_bat () {
   if [ ! -x "$(command -v bat)" ]; then
     if [ "$OS_FAMILY" = "Darwin" ]; then
       install_generic_homebrew "bat"
-    elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
-      install_generic_github "sharkdp/bat" "bat" "x86_64-unknown-linux-musl"
-    elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x32" ]; then
-      install_generic_github "sharkdp/bat" "bat" "i686-unknown-linux-musl"
+    elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
+      install_generic_apk "bat"
+    # elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
+    #   install_generic_github "sharkdp/bat" "bat" "x86_64-unknown-linux-musl"
+    # elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x32" ]; then
+    #   install_generic_github "sharkdp/bat" "bat" "i686-unknown-linux-musl"
     else
       echo "install_bat: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
@@ -692,6 +694,7 @@ install_ytdlp() {
     if [ "$OS_FAMILY" = "Darwin" ]; then
       install_generic_github "yt-dlp/yt-dlp" "yt-dlp" "macos" "zip"
     elif [ "$OS_FAMILY" = "Linux" ]; then
+      install_python3
       install_generic_github "yt-dlp/yt-dlp" "yt-dlp" --exact
     else
       echo "Unable to install yt-dlp - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
@@ -748,6 +751,16 @@ install_opensshkeygen () {
       install_generic_apk "openssh-keygen"
     else
       echo "install_opensshkeygen: Unable to install - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+    fi
+  fi
+}
+
+install_python3 () {
+  if [ ! -x "$(command -v python3)" ]; then
+    if [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
+      install_generic_apk "python3"
+    else
+      echo "install_python3: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
 }
