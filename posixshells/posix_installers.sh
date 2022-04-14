@@ -262,7 +262,7 @@ install_generic_github () {
   # Cleanup variables - can cause unexpected bugs if not done.
   # Scoped variables (local) not available in base bourne shell.
   unset __repoName; unset __repoURL; unset __pkgName; unset __executableName;
-  unset __pkgRelease; unset __fileName; unset __fileExt;
+  unset __pkgRelease; unset __fileName; unset __fileExt; unset __exactName;
 }
 
 install_generic_binary () {
@@ -672,6 +672,8 @@ install_ytdlp() {
   if [ ! -x "$(command -v yt-dlp)" ]; then
     if [ "$OS_FAMILY" = "Darwin" ]; then
       install_generic_github "yt-dlp/yt-dlp" "yt-dlp" "macos" "zip"
+    elif [ "$OS_FAMILY" = "Linux" ]; then
+      install_generic_github "yt-dlp/yt-dlp" "yt-dlp" --exact
     else
       echo "Unable to install yt-dlp - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
