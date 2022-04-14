@@ -255,8 +255,10 @@ install_generic_github () {
         rm -f "$HOME/.dotfiles/opt/tmp/$__fileName"
         rm -rf "$HOME/.dotfiles/opt/tmp/$__pkgName"
         echo "GOOD - $__executableName is now available"
+        echo ""
       else
         echo "BAD - $__executableName doesn't seem to be available"
+        echo ""
       fi
     else
       echo "install_generic_github (while attempting install $__executableName): OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
@@ -551,8 +553,12 @@ install_lsd () {
   if [ ! -x "$(command -v lsd)" ]; then
     if [ "$OS_FAMILY" = "Darwin" ]; then
       install_generic_homebrew "lsd"
+    elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
+      install_generic_github "Peltoche/lsd" "lsd" "x86_64-unknown-linux-musl"
+    elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x32" ]; then
+      install_generic_github "Peltoche/lsd" "lsd" "i686-unknown-linux-musl"
     else
-      echo "Unable to install lsd - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+      echo "install_lsd: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
 }
