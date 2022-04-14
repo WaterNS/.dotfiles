@@ -523,9 +523,9 @@ install_shfmt () {
     elif [ "$OS_FAMILY" = "Darwin" ]&& [ "$OS_ARCH" = "x64" ]; then
       install_generic_github "mvdan/sh" "shfmt" "darwin_amd64"
     elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
-      install_generic_github "mvdan/sh" "lsd" "linux_amd64"
+      install_generic_github "mvdan/sh" "shfmt" "linux_amd64"
     elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x32" ]; then
-      install_generic_github "mvdan/sh" "lsd" "linux_386"
+      install_generic_github "mvdan/sh" "shfmt" "linux_386"
     else
       echo "Unable to install shfmt - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
