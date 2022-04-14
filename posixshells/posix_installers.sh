@@ -697,7 +697,7 @@ install_ytdlp() {
       install_python3
       install_generic_github "yt-dlp/yt-dlp" "yt-dlp" --exact
     else
-      echo "Unable to install yt-dlp - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+      echo "install_ytdlp: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
   install_ffmpeg
@@ -710,7 +710,7 @@ install_tput () {
     if [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
       install_generic_apk "ncurses" "tput"
     else
-      echo "install_tput: Unable to install - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+      echo "install_tput: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
 }
@@ -740,7 +740,7 @@ install_perl () {
     if [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
       install_generic_apk "perl"
     else
-      echo "install_perl: Unable to install - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+      echo "install_perl: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
 }
@@ -761,6 +761,16 @@ install_python3 () {
       install_generic_apk "python3"
     else
       echo "install_python3: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+    fi
+  fi
+}
+
+install_whereis () {
+  if [ ! -x "$(command -v whereis)" ]; then
+    if [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
+      install_generic_apk "util-linux" "whereis"
+    else
+      echo "install_whereis: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
 }
