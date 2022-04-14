@@ -7,6 +7,40 @@ if notcontains "$PATH" "$HOME/.dotfiles/opt/bin"; then
   PATH=$PATH:~/.dotfiles/opt/bin #Include dotfiles bin
 fi
 
+install_generic_apk () {
+  __pkgName="$1"
+
+  if [ -n "$2" ]; then
+    __executableName=$2
+  else
+    __executableName=$__pkgName
+  fi
+
+  if [ ! -x "$(command -v "$__executableName")" ]; then
+    if [ -x "$(command -v apk)" ]; then
+      echo "NOTE: $__executableName not found, installing via APK"
+      echo "------------------------------------------------"
+      echo "Updating APK cache..."
+      apk update
+
+      echo "Requesting ${__pkgName} from APK..."
+      apk add "$__pkgName"
+
+      if [ -x "$(command -v "$__executableName")" ]; then
+        echo "GOOD - $__executableName is now available"
+      else
+        echo "BAD - $__executableName doesn't seem to be available"
+      fi
+    else
+      echo "install_generic_apk (while attempting install $__executableName): APK package manager not found!"
+    fi
+  fi
+
+  # Cleanup variables - can cause unexpected bugs if not done.
+  # Scoped variables (local) not available in base bourne shell.
+  unset __pkgName; unset __executableName;
+}
+
 identify_github_pkg () {
   # Expected args: $__repoName $__executableName $__searchString $__searchExcludeString
 
@@ -633,4 +667,14 @@ install_ytdlp() {
   install_ffmpeg
   install_ffprobe
   install_phantomjs
+}
+
+install_tput () {
+  if [ ! -x "$(command -v tput)" ]; then
+    if [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
+      install_generic_apk "ncurses" "tput"
+    else
+      echo "install_tput: Unable to install tput (part of ncurses) - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+    fi
+  fi
 }
