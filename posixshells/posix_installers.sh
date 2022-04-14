@@ -242,8 +242,8 @@ install_generic_github () {
           echo "Moving the binary..."
           if [ -f "$HOME"/.dotfiles/opt/tmp/"$__pkgName"/"$__pkgName" ]; then
             mv "$HOME"/.dotfiles/opt/tmp/"$__pkgName"/"$__pkgName" ~/.dotfiles/opt/bin
-          elif [ -f "$HOME"/.dotfiles/opt/tmp/"$__pkgName"/"$(getBaseNameNoExt $__fileName)"/$__executableName ]; then
-            mv "$HOME"/.dotfiles/opt/tmp/"$__pkgName"/"$(getBaseNameNoExt $__fileName)"/$__executableName ~/.dotfiles/opt/bin
+          elif [ -f "$HOME"/.dotfiles/opt/tmp/"$__pkgName"/"$(getBaseNameNoExt "$__fileName")"/"$__executableName" ]; then
+            mv "$HOME"/.dotfiles/opt/tmp/"$__pkgName"/"$(getBaseNameNoExt "$__fileName")"/"$__executableName" ~/.dotfiles/opt/bin
           else
             # shellcheck disable=SC2086
             mv "$HOME"/.dotfiles/opt/tmp/"$__pkgName"/"$__pkgName"/*/bin/$__executableName ~/.dotfiles/opt/bin
@@ -561,12 +561,12 @@ install_lsd () {
   if [ ! -x "$(command -v lsd)" ]; then
     if [ "$OS_FAMILY" = "Darwin" ]; then
       install_generic_homebrew "lsd"
-    elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
+    elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ] && [ "$OS_NAME" != "Alpine" ]; then
       install_generic_github "Peltoche/lsd" "lsd" "x86_64-unknown-linux-musl"
-    elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x32" ]; then
+    elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x32" ] && [ "$OS_NAME" != "Alpine" ]; then
       install_generic_github "Peltoche/lsd" "lsd" "i686-unknown-linux-musl"
     else
-      echo "install_lsd: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+      echo "install_lsd: OS version ($OS_STRING) doesn't have supported function"
     fi
   fi
 }
@@ -786,7 +786,7 @@ install_whereis () {
 }
 
 install_less () {
-  if [ ! -x "$(command -v less)" ]; then
+  if [ ! -x "$(command -v less)" ] || isBusyBoxCmd "less"; then
     if [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
       install_generic_apk "less"
     else

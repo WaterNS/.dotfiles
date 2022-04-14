@@ -239,3 +239,21 @@ caller_func_name() {
     printf "%s\n" "${FUNCNAME[$__stackDepth]}"
   fi
 }
+
+isBusyBoxCmd() {
+  __testcommand="$1"
+  if [ "$__testcommand" ] && [ -x "$(command -v "$__testcommand")" ]; then
+    __commandTarget=$(readlink "$(command -v "$__testcommand")")
+    if [ "$__commandTarget" ] && [ -f "$__commandTarget" ]; then
+      if contains "$__commandTarget" "busybox"; then
+        unset __commandTarget;
+        unset __testcommand;
+        return 0;
+      fi
+    fi
+  fi
+
+  unset __testcommand;
+  unset __commandTarget;
+  return 1;
+}
