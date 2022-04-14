@@ -76,6 +76,8 @@ identify_github_pkg () {
     __searchExcludeString=""
   fi
 
+  install_curl
+
   #OLd code, leaving commented for now
   # #__pkgRelease=$(curl -S "$__repoURL" | jq -r ".assets[] | .browser_download_url" | grep "$__searchString") #jq dependent
   # $__results=""
@@ -113,10 +115,9 @@ install_generic_homebrew () {
   else
     __executableName=$__pkgName
   fi
-  if [ ! -x "$(command -v jq)" ]; then
-      install_jq
-  fi
   if [ ! -x "$(command -v "$__executableName")" ]; then
+    install_curl
+    install_jq
     if [ "$OS_FAMILY" = "Darwin" ]; then
       echo "NOTE: $__pkgName not found, availing into dotfiles bin"
       echo "------------------------------------------------"
@@ -273,6 +274,7 @@ install_generic_binary () {
   fi
 
   if [ ! -x "$(command -v "$__executableName")" ]; then
+    install_curl
     if [ "$OS_FAMILY" = "Darwin" ]; then
       echo "NOTE: $__executableName not found, availing into dotfiles bin"
       echo "------------------------------------------------"
@@ -335,6 +337,8 @@ install_generic_binary () {
 install_diffsofancy () {
   #Git: diff-so-fancy (better git diff)
   if [ ! -f "$HOMEREPO/opt/bin/diff-so-fancy" ]; then
+    install_curl
+    install_perl
     if [ -x "$(command -v perl)" ]; then
       echo "NOTE: diff-so-fancy not found, downloading to dotfiles bin location"
       echo "------------------------------------------------"
@@ -357,6 +361,7 @@ install_diffsofancy () {
 
 install_youtubedl () {
     if [ ! -x "$(command -v youtube-dl)" ] && [ ! -f "$HOME/.dotfiles/opt/bin/youtube-dl" ]; then
+      install_curl
       echo "NOTE: youtube-dl not found, downloading to dotfiles bin location"
       echo "------------------------------------------------"
       curl -L https://yt-dl.org/downloads/latest/youtube-dl -o "$HOME/.dotfiles/opt/bin/youtube-dl"; echo ""
@@ -380,6 +385,7 @@ install_unar () {
 
 install_ffmpeg () {
   if [ ! -x "$(command -v ffmpeg)" ]; then
+    install_curl
     if [ "$OS_FAMILY" = "Darwin" ]; then
       install_unar
       echo "NOTE: ffmpeg not found, installing into dotfiles bin"
@@ -414,6 +420,7 @@ install_ffmpeg () {
 
 install_ffprobe () {
   if [ ! -x "$(command -v ffprobe)" ]; then
+    install_curl
     if [ "$OS_FAMILY" = "Darwin" ]; then
       install_unar
       echo "NOTE: ffprobe not found, installing into dotfiles bin"
@@ -448,6 +455,7 @@ install_ffprobe () {
 
 install_phantomjs () {
     if [ ! -x "$(command -v phantomjs)" ]; then
+      install_curl
       if [ "$OS_FAMILY" = "Darwin" ]; then
         echo "NOTE: phantomjs not found, installing into dotfiles bin"
         echo "------------------------------------------------"
@@ -512,6 +520,7 @@ install_shfmt () {
 install_nerdfonts () {
     fontname="Droid Sans Mono for Powerline Nerd Font Complete.otf"
     if [ ! -f "$HOME/.dotfiles/opt/fonts/$fontname" ] && [ ! -f "$HOME/Library/Fonts/dotfiles/$fontname" ]; then
+      install_curl
       if [ "$OS_FAMILY" = "Darwin" ]; then
         echo "NOTE: nerd-fonts not found, availing into $HOME/Library/Fonts/dotfiles/"
         echo "------------------------------------------------------------------------"
@@ -545,6 +554,7 @@ install_lsd () {
 
 install_prettyping () {
     if [ ! -x "$(command -v prettyping)" ]; then
+      install_curl
       if [ "$OS_FAMILY" = "Darwin" ] || [ "$OS_FAMILY" = "Linux" ]; then
         echo "NOTE: prettyping not found, availing into dotfiles bin"
         echo "------------------------------------------------"
@@ -567,6 +577,7 @@ install_ohmyzsh () {
   #Super enhancement framework for ZSH shell
   if [ ! -d ~/.dotfiles/opt/ohmyzsh ]; then
     if [ -x "$(command -v zsh)" ]; then
+      install_curl
       echo "NOTE: OhMyZSH not found, installing to dotfiles opt location"
       echo "------------------------------------------------"
       echo ""; echo "Calling OhMyZSH installer script (w/ options)..."
@@ -595,6 +606,7 @@ install_blesh () {
   __pkgsafename="blesh"
   __pkgdesc="Bash Syntax Highlighting"
   if [ ! -f "$HOME/.dotfiles/opt/bash-extras/$__pkgsafename/$__pkgName" ] && [ -x "$(command -v bash)" ]; then
+    install_curl
     echo "NOTE: $__pkgName ($__pkgdesc) not found, availing into dotfiles bin"
     echo "------------------------------------------------"
 
@@ -674,7 +686,17 @@ install_tput () {
     if [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
       install_generic_apk "ncurses" "tput"
     else
-      echo "install_tput: Unable to install tput (part of ncurses) - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+      echo "install_tput: Unable to install - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+    fi
+  fi
+}
+
+install_curl () {
+  if [ ! -x "$(command -v curl)" ]; then
+    if [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
+      install_generic_apk "curl"
+    else
+      echo "install_curl: Unable to install - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
 }
