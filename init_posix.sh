@@ -145,6 +145,7 @@ cd "$curpath" || exit
 # Make dev tools available in dotfiles bin
 install_opensshkeygen
 install_tput
+install_less
 install_vim
 install_jq
 install_diffsofancy
