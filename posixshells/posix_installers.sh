@@ -667,6 +667,7 @@ install_ncdu () {
 
 install_git_delta () {
   if [ ! -x "$(command -v delta)" ]; then
+    install_less
     if [ "$OS_FAMILY" = "Darwin" ]; then
       install_generic_homebrew "git-delta" "delta"
     elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
@@ -681,6 +682,7 @@ install_git_delta () {
 
 install_bat () {
   if [ ! -x "$(command -v bat)" ]; then
+    install_less
     if [ "$OS_FAMILY" = "Darwin" ]; then
       install_generic_homebrew "bat"
     elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
@@ -777,6 +779,16 @@ install_whereis () {
       install_generic_apk "util-linux" "whereis"
     else
       echo "install_whereis: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+    fi
+  fi
+}
+
+install_less () {
+  if [ ! -x "$(command -v less)" ]; then
+    if [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
+      install_generic_apk "less"
+    else
+      echo "install_less: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
 }
