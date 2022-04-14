@@ -508,6 +508,8 @@ install_shellcheck () {
   if [ ! -x "$(command -v shellcheck)" ]; then
     if [ "$OS_FAMILY" = "Darwin" ]; then
       install_generic_homebrew "shellcheck"
+    elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
+      install_generic_github "koalaman/shellcheck" "shellcheck" "linux.x86_64"
     else
       echo "Unable to install shellcheck - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
