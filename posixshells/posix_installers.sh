@@ -207,6 +207,7 @@ install_generic_github () {
   fi
 
   if [ ! -x "$(command -v "$__executableName")" ]; then
+    echo "";
     if [ "$OS_FAMILY" = "Darwin" ] || [ "$OS_FAMILY" = "Linux" ]; then
       echo "NOTE: $__executableName not found, availing into dotfiles bin"
       echo "------------------------------------------------"
@@ -238,8 +239,11 @@ install_generic_github () {
             tar -xzf "$HOME/.dotfiles/opt/tmp/$__fileName" -C "$HOME/.dotfiles/opt/tmp/$__pkgName/"
           fi
 
+          echo "Moving the binary..."
           if [ -f "$HOME"/.dotfiles/opt/tmp/"$__pkgName"/"$__pkgName" ]; then
             mv "$HOME"/.dotfiles/opt/tmp/"$__pkgName"/"$__pkgName" ~/.dotfiles/opt/bin
+          elif [ -f "$HOME"/.dotfiles/opt/tmp/"$__pkgName"/"$(getBaseNameNoExt $__fileName)"/$__executableName ]; then
+            mv "$HOME"/.dotfiles/opt/tmp/"$__pkgName"/"$(getBaseNameNoExt $__fileName)"/$__executableName ~/.dotfiles/opt/bin
           else
             # shellcheck disable=SC2086
             mv "$HOME"/.dotfiles/opt/tmp/"$__pkgName"/"$__pkgName"/*/bin/$__executableName ~/.dotfiles/opt/bin
@@ -256,6 +260,7 @@ install_generic_github () {
       fi
     else
       echo "install_generic_github (while attempting install $__executableName): OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+      echo ""
     fi
   fi
 
