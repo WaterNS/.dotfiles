@@ -208,7 +208,10 @@ getFileExt() {
     *.tgz)     echo "tgz" ;;
     *.gz)      echo "gz" ;;
     *.zip)     echo "zip" ;;
+    *.rar)     echo "rar" ;;
     *.7z)      echo "7z" ;;
+    *.ps1)     echo "ps1" ;;
+    *.sh)      echo "sh" ;;
     *)         echo "" ;;
   esac
 }
