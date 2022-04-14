@@ -216,6 +216,15 @@ getFileExt() {
   esac
 }
 
+getBaseNameNoExt() {
+  __basefilename="${1##*/}"
+  __extension=$(getFileExt "$__basefilename")
+  #echo "detected extension: $__extension"
+  echo "${__basefilename%."$__extension"}"
+
+  unset __basefilename; unset __extension;
+}
+
 caller_func_name() {
   if [ -n "$1" ]; then
     __stackDepth="$1"
