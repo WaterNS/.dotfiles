@@ -652,8 +652,12 @@ install_git_delta () {
   if [ ! -x "$(command -v delta)" ]; then
     if [ "$OS_FAMILY" = "Darwin" ]; then
       install_generic_homebrew "git-delta" "delta"
+    elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
+      install_generic_github "dandavison/delta" "delta" "x86_64-unknown-linux-musl"
+    elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x32" ]; then
+      install_generic_github "dandavison/delta" "delta" "i686-unknown-linux"
     else
-      echo "Unable to install git_delta - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+      echo "install_git_delta: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
 }
@@ -662,8 +666,12 @@ install_bat () {
   if [ ! -x "$(command -v bat)" ]; then
     if [ "$OS_FAMILY" = "Darwin" ]; then
       install_generic_homebrew "bat"
+    elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
+      install_generic_github "sharkdp/bat" "bat" "x86_64-unknown-linux-musl"
+    elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x32" ]; then
+      install_generic_github "sharkdp/bat" "bat" "i686-unknown-linux-musl"
     else
-      echo "Unable to install bat - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+      echo "install_bat: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
 }
