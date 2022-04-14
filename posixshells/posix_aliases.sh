@@ -23,6 +23,14 @@ if [ -x "$(command -v mv)" ]; then
   alias mv='mv -i'
 fi
 
+# diskspace: Use ncdu or df, if available
+# Note: NEEDS to be ahead tweaks to base commands
+if [ -x "$(command -v ncdu)" ];then
+  alias diskspace="ncdu"
+elif [ -x "$(command -v df)" ]; then
+  alias diskspace="df -h"
+fi
+
 # df: Human-readable sizes
 if [ -x "$(command -v df)" ]; then
   alias df='df -h'
@@ -104,12 +112,6 @@ if [ "$OS_FAMILY" = "Darwin" ]; then
   fi
 fi
 
-# diskspace: Use ncdu or df, if available
-if [ -x "$(command -v ncdu)" ];then
-  alias diskspace="ncdu"
-elif [ -x "$(command -v df)" ]; then
-  alias diskspace="df"
-fi
 
 # cat: Use bat, if available
 if [ -x "$(command -v bat)" ]; then
