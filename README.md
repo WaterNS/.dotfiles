@@ -23,6 +23,7 @@ Built for:
 
 - PATH: Download some handy tools, if needed (jq, pretty ping, lsd, etc)
   - Doesn't use `apt`, `brew`, `chocolatey` - just plain  scripts w/ `curl`/`wget` and `git`.
+    - Minor exception for `apk`/Alpine linux package manager (for now using `apk` to install some basics)
 
 - Aliases:
   - Override standard commands with preferred defaults (e.g. `ls` -> `ls -ahl`)
