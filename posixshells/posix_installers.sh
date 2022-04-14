@@ -700,3 +700,33 @@ install_curl () {
     fi
   fi
 }
+
+install_vim () {
+  if [ ! -x "$(command -v vim)" ]; then
+    if [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
+      install_generic_apk "vim"
+    else
+      echo "install_vim: Unable to install - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+    fi
+  fi
+}
+
+install_perl () {
+  if [ ! -x "$(command -v perl)" ]; then
+    if [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
+      install_generic_apk "perl"
+    else
+      echo "install_perl: Unable to install - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+    fi
+  fi
+}
+
+install_opensshkeygen () {
+  if [ ! -x "$(command -v ssh-keygen)" ]; then
+    if [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
+      install_generic_apk "openssh-keygen"
+    else
+      echo "install_opensshkeygen: Unable to install - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+    fi
+  fi
+}
