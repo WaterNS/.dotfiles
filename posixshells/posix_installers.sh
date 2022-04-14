@@ -259,7 +259,6 @@ install_generic_github () {
         rm -f "$HOME/.dotfiles/opt/tmp/$__fileName"
         rm -rf "$HOME/.dotfiles/opt/tmp/$__pkgName"
         echo "GOOD - $__executableName is now available"
-        echo ""
       else
         echo "BAD - $__executableName doesn't seem to be available"
         echo ""
@@ -515,7 +514,8 @@ install_shellcheck () {
     elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
       install_generic_github "koalaman/shellcheck" "shellcheck" "linux.x86_64"
     else
-      echo "Unable to install shellcheck - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+      echo "";
+      echo "install_shellcheck: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
 }
@@ -565,9 +565,9 @@ install_lsd () {
   if [ ! -x "$(command -v lsd)" ]; then
     if [ "$OS_FAMILY" = "Darwin" ]; then
       install_generic_homebrew "lsd"
-    elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ] && [ "$OS_NAME" != "Alpine Linux" ]; then
+    elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ] && notcontains "$OS_NAME" "Alpine"; then
       install_generic_github "Peltoche/lsd" "lsd" "x86_64-unknown-linux-musl"
-    elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x32" ] && [ "$OS_NAME" != "Alpine Linux" ]; then
+    elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x32" ] && notcontains "$OS_NAME" "Alpine"; then
       install_generic_github "Peltoche/lsd" "lsd" "i686-unknown-linux-musl"
     else
       echo "install_lsd: OS version ($OS_STRING) doesn't have supported function"
@@ -666,6 +666,7 @@ install_ncdu () {
     if [ "$OS_FAMILY" = "Darwin" ]; then
       install_generic_homebrew "ncdu"
     else
+      echo "";
       echo "Unable to install ncdu - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
@@ -678,9 +679,11 @@ install_git_delta () {
       install_generic_homebrew "git-delta" "delta"
     elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
       install_generic_github "dandavison/delta" "delta" "x86_64-unknown-linux-musl"
-    elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x32" ]; then
-      install_generic_github "dandavison/delta" "delta" "i686-unknown-linux"
+    # Doesn't appear to be a 32bit pkg available on github releases
+    # elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x32" ]; then
+    #   install_generic_github "dandavison/delta" "delta" "i686-unknown-linux"
     else
+      echo "";
       echo "install_git_delta: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
@@ -698,6 +701,7 @@ install_bat () {
     elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x32" ]; then
       install_generic_github "sharkdp/bat" "bat" "i686-unknown-linux-musl"
     else
+      echo "";
       echo "install_bat: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
@@ -711,6 +715,7 @@ install_ytdlp() {
       install_python3
       install_generic_github "yt-dlp/yt-dlp" "yt-dlp" --exact
     else
+      echo "";
       echo "install_ytdlp: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
@@ -724,6 +729,7 @@ install_tput () {
     if [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
       install_generic_apk "ncurses" "tput"
     else
+      echo "";
       echo "install_tput: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
@@ -734,6 +740,7 @@ install_curl () {
     if [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
       install_generic_apk "curl"
     else
+      echo "";
       echo "install_curl: Unable to install - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
@@ -744,6 +751,7 @@ install_vim () {
     if [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
       install_generic_apk "vim"
     else
+      echo "";
       echo "install_vim: Unable to install - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
@@ -754,6 +762,7 @@ install_perl () {
     if [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
       install_generic_apk "perl"
     else
+      echo "";
       echo "install_perl: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
@@ -764,6 +773,7 @@ install_opensshkeygen () {
     if [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
       install_generic_apk "openssh-keygen"
     else
+      echo "";
       echo "install_opensshkeygen: Unable to install - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
@@ -774,6 +784,7 @@ install_python3 () {
     if [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
       install_generic_apk "python3"
     else
+      echo "";
       echo "install_python3: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
@@ -784,6 +795,7 @@ install_whereis () {
     if [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
       install_generic_apk "util-linux" "whereis"
     else
+      echo "";
       echo "install_whereis: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
@@ -794,6 +806,7 @@ install_less () {
     if [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
       install_generic_apk "less"
     else
+      echo "";
       echo "install_less: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
