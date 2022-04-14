@@ -5,7 +5,10 @@ if [ -f "$HOME/.dotfiles/posixshells/sh_prompt/prompt_git_function" ];then
   . "$HOME/.dotfiles/posixshells/sh_prompt/prompt_git_function"
 fi
 
-ps1() {
+# Wrap the prompt command settings in funciton rather than directly assigning,
+# wider compatibility with OSX Terminal (vs directly assigning PS1)
+##ref: https://github.com/riobard/bash-powerline/issues/14#issuecomment-311846617
+__ps1_prompt_command() {
   # DEFINE: Last Exit code: set color of prompt symbol (based on last exit code)
   PS1_PrevCmdExitCode=$?
   if [ "$PS1_PrevCmdExitCode" -eq 0 ]; then
@@ -51,8 +54,15 @@ ps1() {
   fi
 }
 
-# Wider compatibility with OSX Terminal (vs directly assigning PS1)
-##ref: https://github.com/riobard/bash-powerline/issues/14#issuecomment-311846617
-[ "${BASH_VERSION}" ] && PROMPT_COMMAND="ps1${PROMPT_COMMAND:+; $PROMPT_COMMAND}"
-##ref: https://superuser.com/questions/735660/whats-the-zsh-equivalent-of-bashs-prompt-command
-[ "${ZSH_VERSION}" ] && precmd() { ps1; }
+#Execute the prompt (since its not directly assigned)
+if [ "${BASH_VERSION}" ]; then
+  # Wider compatibility with OSX Terminal (vs directly assigning PS1)
+  ##ref: https://github.com/riobard/bash-powerline/issues/14#issuecomment-311846617
+  PROMPT_COMMAND="__ps1_prompt_command${PROMPT_COMMAND:+; $PROMPT_COMMAND}"
+elif [ "${ZSH_VERSION}" ]; then
+  ##ref: https://superuser.com/questions/735660/whats-the-zsh-equivalent-of-bashs-prompt-command
+  precmd() { __ps1_prompt_command; }
+else
+  # Run the prompt on all other shells
+  __ps1_prompt_command
+fi
