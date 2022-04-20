@@ -135,7 +135,7 @@ if [ ! -f ~/.ssh/id_rsa ] && [ ! -f ~/.ssh/WaterNS ]; then
   ssh-keygen -t rsa -b 4096 -f ~/.ssh/WaterNS -N ""
 fi
 if [ -f ~/.ssh/WaterNS ]; then
-	git config core.sshCommand "ssh -i ~/.ssh/WaterNS"
+	git config core.sshCommand "ssh -i $HOME/.ssh/WaterNS" # Use expanding $HOME value to hardcode
 fi
 cd "$curpath" || exit
 
