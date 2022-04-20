@@ -69,17 +69,17 @@ fi
 
 # add Visual Studio Code aliases
 if [ -f "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code" ]; then
-  alias code='/Applications/"Visual Studio Code.app"/Contents/Resources/app/bin/code'
+  alias code="/Applications/Visual\ Studio\ Code.app/Contents/Resources/app/bin/code"
   alias vscode=code
 fi
 
 # add Visual Studio Code Insider aliases
 if [ -f "/Applications/Visual Studio Code - Insiders.app/Contents/Resources/app/bin/code" ]; then
   if [ ! -x "$(command -v code)" ]; then
-    alias code='/Applications/"Visual Studio Code - Insiders.app"/Contents/Resources/app/bin/code'
+    alias code="/Applications/Visual\ Studio\ Code\ -\ Insiders.app/Contents/Resources/app/bin/code"
     alias vscode=code
   else
-    alias codeinsiders='/Applications/"Visual Studio Code - Insiders.app"/Contents/Resources/app/bin/code'
+    alias codeinsiders="/Applications/Visual\ Studio\ Code\ -\ Insiders.app/Contents/Resources/app/bin/code"
   fi
 fi
 
