@@ -4,6 +4,10 @@
 . ~/.dotfiles/posixshells/posix_id_os.sh
 echo "$OS_STRING";
 
+# Identify hardware
+. ~/.dotfiles/posixshells/posix_id_devicehw.sh
+echo "$HW_STRING";
+
 #Identify running shell
 . ~/.dotfiles/posixshells/posix_id_shell.sh
 
