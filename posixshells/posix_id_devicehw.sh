@@ -72,7 +72,8 @@ fi
 
 if [ -f "/proc/cpuinfo" ]; then
   HW_TOTALPCPUs=$(grep "physical id" /proc/cpuinfo | sort | uniq | wc -l)
-  HW_TOTALCORES=$(grep -c "^processor" /proc/cpuinfo)
+  #REF: https://unix.stackexchange.com/a/279354
+  HW_TOTALCORES=$("$(( $(lscpu | awk '/^Socket\(s\)/{ print $2 }') * $(lscpu | awk '/^Core\(s\) per socket/{ print $4 }') ))")
 fi
 
 if [ -x "$(command -v lscpu)" ]; then
