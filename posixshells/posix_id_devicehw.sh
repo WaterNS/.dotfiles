@@ -70,6 +70,14 @@ if [ -x "$(command -v df)" ]; then
   HW_FREESTORAGE=$(kbToHumanReadable "$(echo "$__rootdiskspace" | awk '{print $4}')")
 fi
 
+if [ -f "/proc/cpuinfo" ]; then
+  HW_TOTALPCPUs=$(grep "physical id" /proc/cpuinfo | sort | uniq | wc -l)
+  HW_TOTALCORES=$(grep -c "^processor" /proc/cpuinfo)
+fi
+
+if [ -x "$(command -v lscpu)" ]; then
+  HW_CPUNAME=$(lscpu | grep 'Model name' | cut -f 2 -d ":" | awk '{$1=$1}1')
+fi
 
 HW_STRING="Host: $HW_HOSTNAME / CPU: $HW_CPUNAME ($HW_TOTALPCPUs cpu/${HW_TOTALCORES} cores) RAM: $HW_TOTALRAM / Storage: ${HW_USEDSTORAGE}/${HW_TOTALSTORAGE} ($HW_FREESTORAGE free)";
 export HW_STRING;
