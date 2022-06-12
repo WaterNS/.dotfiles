@@ -87,7 +87,7 @@ identify_github_pkg () {
   # $__results=""
 
   #echo "Looking up URLs for $__repoName..."
-  __results=$(curl -S "$__repoURL" | grep url | grep download)
+  __results=$(curl -S "$__repoURL" | grep url | grep browser_download_url)
   #echo "$__results"
   if [ -n "$__searchExcludeString" ]; then
     #echo "Excluding results with '$__searchExcludeString'"
