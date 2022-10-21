@@ -232,6 +232,8 @@ install_generic_github () {
           curl -L "$__pkgRelease" -o "$HOME/.dotfiles/opt/bin/$__executableName"; echo ""
           chmod +x "$HOME/.dotfiles/opt/bin/$__executableName";
         else
+          # echo "url: $__pkgRelease"
+          # echo "location: $HOME/.dotfiles/opt/tmp/$__fileName"
           curl -L "$__pkgRelease" -o "$HOME/.dotfiles/opt/tmp/$__fileName"; echo ""
           mkdir "$HOME/.dotfiles/opt/tmp/$__pkgName"
 
@@ -710,7 +712,7 @@ install_bat () {
 install_ytdlp() {
   if [ ! -x "$(command -v yt-dlp)" ]; then
     if [ "$OS_FAMILY" = "Darwin" ]; then
-      install_generic_github "yt-dlp/yt-dlp" "yt-dlp" "macos" "zip"
+      install_generic_github "yt-dlp/yt-dlp" "yt-dlp_macos" --exact
     elif [ "$OS_FAMILY" = "Linux" ]; then
       install_python3
       install_generic_github "yt-dlp/yt-dlp" "yt-dlp" --exact
