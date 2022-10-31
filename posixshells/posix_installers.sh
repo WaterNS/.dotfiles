@@ -712,7 +712,7 @@ install_bat () {
 install_ytdlp() {
   if [ ! -x "$(command -v yt-dlp)" ]; then
     if [ "$OS_FAMILY" = "Darwin" ]; then
-      install_generic_github "yt-dlp/yt-dlp" "yt-dlp_macos" --exact
+      install_generic_github "yt-dlp/yt-dlp" "yt-dlp" "yt-dlp_macos" --exact
     elif [ "$OS_FAMILY" = "Linux" ]; then
       install_python3
       install_generic_github "yt-dlp/yt-dlp" "yt-dlp" --exact
