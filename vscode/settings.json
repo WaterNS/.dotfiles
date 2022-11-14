@@ -49,6 +49,21 @@
   "peacock.showColorInStatusBar": false,
   "peacock.surpriseMeFromFavoritesOnly": true,
 
+  // Add some default configs for files outside of workspace
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "PowerShell",
+            "request": "launch",
+            "name": "PowerShell Launch Current File",
+            "script": "${file}",
+            "args": [],
+            "cwd": "${file}"
+        }
+    ]
+  },
+
   "git.autofetch": true,
   "git.showUnpublishedCommitsButton": "never" // Don't show easy sync button in source control pane (undesirable in most Prod contexts)
 }
