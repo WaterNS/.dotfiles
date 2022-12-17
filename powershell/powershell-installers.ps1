@@ -237,3 +237,11 @@ param (
     }
   }
 }
+
+Function install-ntop {
+  if (!(Check-Command ntop)) {
+    if ((Check-OS) -like "*win*") {
+      install-generic-github "gsass1/NTop" -searchstring "exe"
+    }
+  }
+}

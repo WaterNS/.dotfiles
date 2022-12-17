@@ -58,3 +58,10 @@ if (!(Check-Command tr)) {
     Set-Alias tr AliasTr
   }
 }
+
+if (!(Check-Command top)) {
+  if (Check-Command ntop) {
+    Function AliasTop {ntop $args}
+    Set-Alias top AliasTop
+  }
+}

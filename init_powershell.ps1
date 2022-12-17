@@ -163,6 +163,7 @@ install-cht
 install-delta
 install-bat
 install-cloc
+install-ntop
 
 #Write update/init file
 $SHAinitupdated=$(git --git-dir "$HOME/.dotfiles/.git" log -n 1 --pretty=format:%H -- init_powershell.ps1)
