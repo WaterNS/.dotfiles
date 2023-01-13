@@ -212,7 +212,7 @@ param (
 )
 
   if ($Uninstall) {
-    if ((Get-Package | ? {$_.Name -like "*Powershell*"}) -and $global) {
+    if ((Get-Package | Where-Object {$_.Name -like "*Powershell*"}) -and $global) {
       winget uninstall --name PowerShell --exact
     }
 
@@ -225,7 +225,7 @@ param (
 
 
   if ($global -and !$Uninstall) {
-    if (!(Get-Package | ? {$_.Name -like "*Powershell*"})) {
+    if (!(Get-Package | Where-Object {$_.Name -like "*Powershell*"})) {
       install-winget
       winget install --name "PowerShell" --exact
     }
@@ -242,6 +242,14 @@ Function install-ntop {
   if (!(Check-Command ntop)) {
     if ((Check-OS) -like "*win*") {
       install-generic-github "gsass1/NTop" -searchstring "exe"
+    }
+  }
+}
+
+Function install-monitorian {
+  if (!(Check-Command "Monitorian")) {
+    if ((Check-OS) -like "*win*") {
+      install-winget "Monitorian"
     }
   }
 }
