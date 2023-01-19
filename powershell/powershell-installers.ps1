@@ -253,3 +253,11 @@ Function install-monitorian {
     }
   }
 }
+
+Function install-aria2 {
+  if (!(Check-Command "aria2")) {
+    if ((Check-OS) -like "*win*") {
+      install-generic-github -repo "aria2/aria2" -searchstring "win-64bit"
+    }
+  }
+}

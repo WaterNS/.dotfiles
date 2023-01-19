@@ -65,3 +65,17 @@ if (!(Check-Command top)) {
     Set-Alias top AliasTop
   }
 }
+
+if (!(Check-Command "downloadTorrent")) {
+  if (Check-Command "aria2") {
+    Function AliasAria2bt {aria2 --file-allocation=none --seed-time=0 $args}
+    Set-Alias downloadTorrent AliasAria2bt
+  }
+}
+
+if (!(Check-Command "download")) {
+  if (Check-Command "aria2") {
+    Function AliasAria2 {aria2 $args}
+    Set-Alias download AliasAria2
+  }
+}
