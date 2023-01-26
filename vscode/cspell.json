@@ -18,7 +18,7 @@
     "linebreaks", "uniquefield", "hotloads",
     "formname", "formtitle",
     "docx", "localsettings",
-    "docs", "objs",
+    "docs", "objs", "devs",
     "fatals",
     "noopener", "noreferrer", "noindex",
     "readonly", "mixins", "vuex", "axios", "pathify",
