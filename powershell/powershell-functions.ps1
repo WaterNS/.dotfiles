@@ -224,3 +224,32 @@ Function pubkey {
     Write-Host "Didn't find ~/.ssh/$KeyName.pub, aborting..."
   }
 }
+
+function foldertotal {
+  param (
+    [string]$Path = "."
+  )
+
+  $dollarRegex = '(?<=\$|-\$)\d+(\.\d{1,2})?'
+
+  if (Test-Path -Path $Path) {
+    $fileNames = Get-ChildItem -Path $Path -Name
+
+    $sum = 0
+    foreach ($fileName in $fileNames) {
+      $matches = [regex]::Matches($fileName, $dollarRegex)
+      foreach ($match in $matches) {
+        if ($fileName.Contains("-$")) {
+          $sum -= [decimal]::Parse($match.Value)
+        }
+        else {
+          $sum += [decimal]::Parse($match.Value)
+        }
+      }
+    }
+    return "`$$sum"
+  }
+  else {
+    Write-Error "Path '$Path' not found."
+  }
+}
