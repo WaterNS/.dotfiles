@@ -5,7 +5,8 @@
   "telemetry.enableTelemetry": false,
   "restoreTerminals.keepExistingTerminalsOpen": true,
   "terminal.integrated.autoReplies": {
-    "Terminate batch job (Y/N)?": "Y\r"
+    "exited with code 1": "\r"
+    // "Terminate batch job (Y/N)?": "Y\r" // Buggy with concurrent runs
   },
   "terminal.integrated.shellIntegration.decorationsEnabled": "never",
 
