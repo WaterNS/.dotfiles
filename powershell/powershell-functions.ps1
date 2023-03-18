@@ -227,13 +227,18 @@ Function pubkey {
 
 function foldertotal {
   param (
-    [string]$Path = "."
+    [string]$Path = ".",
+    [switch][Alias('r')]$rootDirOnly
   )
 
   $dollarRegex = '(?<=\$|-\$)\d+(\.\d{1,2})?'
 
   if (Test-Path -Path $Path) {
-    $fileNames = Get-ChildItem -Path $Path -Name
+    if ($rootDirOnly) {
+      $fileNames = Get-ChildItem -Path $Path -Name
+    } else {
+      $fileNames = Get-ChildItem -Path $Path -Name -Recurse
+    }
 
     $sum = 0
     foreach ($fileName in $fileNames) {
@@ -247,6 +252,7 @@ function foldertotal {
         }
       }
     }
+    $sum = '{0:N2}' -f $sum
     return "`$$sum"
   }
   else {
