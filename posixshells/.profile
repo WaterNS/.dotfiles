@@ -22,6 +22,11 @@ if [ ! -d ~/.vim/undo ]; then mkdir -p ~/.vim/undo; fi
 # PATH: Include .dotfiles bin
 PATH=$PATH:~/.dotfiles/opt/bin
 
+# PATH: Include custom Homebrew bin
+if [ -d ~/.dotfiles/opt/homebrew/bin ]; then
+  PATH=$PATH:~/.dotfiles/opt/homebrew/bin
+fi
+
 ############################################
 # INCLUDES
 ############################################
