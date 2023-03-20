@@ -124,3 +124,18 @@ if [ -x "$(command -v scp)" ]; then
     alias scp='rsync --archive --xattrs --acls --progress --rsh="ssh"'
   fi
 fi
+
+# aria: Alias to aria2c
+if [ -x "$(command -v aria2c)" ]; then
+  alias aria='aria2c'
+fi
+
+# download: Use aria2c, if available
+if [ -x "$(command -v aria2c)" ]; then
+  alias download='aria2c'
+fi
+
+# downloadTorrent: Use aria2c, if available
+if [ -x "$(command -v aria2c)" ]; then
+  alias downloadTorrent='aria2c --file-allocation=none --seed-time=0'
+fi

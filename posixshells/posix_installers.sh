@@ -813,3 +813,14 @@ install_less () {
     fi
   fi
 }
+
+install_aria2 () {
+  if [ ! -x "$(command -v aria2)" ]; then
+    if [ "$OS_FAMILY" = "Darwin" ]; then
+      install_generic_homebrew "aria2" "aria2c"
+    else
+      echo "";
+      echo "Unable to install aria2 - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+    fi
+  fi
+}
