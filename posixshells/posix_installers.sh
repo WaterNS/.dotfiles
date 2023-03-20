@@ -826,8 +826,8 @@ install_aria2 () {
 }
 
 install_homebrew () {
-  if [ ! -x "$(command -v brew)" ]; then
-    if [ "$OS_FAMILY" = "Darwin" ]; then
+  if [ "$OS_FAMILY" = "Darwin" ]; then
+    if [ ! -x "$(command -v brew)" ]; then
       install_xcodeCMDlineTools
       __homebrewNewDir="$HOME/.dotfiles/opt/homebrew"
       mkdir "$__homebrewNewDir"
@@ -842,34 +842,29 @@ install_homebrew () {
       else
         echo "BAD - brew doesn't seem to be available"
       fi
-    else
-      echo "";
-      echo "Unable to install brew - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
 }
 
 install_xcodeCMDlineTools () {
   if [ "$OS_FAMILY" = "Darwin" ]; then
-    if ! softwareupdate --history | grep --silent "Command Line Tools"; then
+    if [ ! -f "/Library/Developer/CommandLineTools/usr/bin/clang" ]; then
       echo 'Installing XCode Command Line tools...'
       in_progress=/tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
       touch ${in_progress}
-      product=$(softwareupdate --list | grep "\*.*Command Line" | head -n 1 | awk -F"*" '{print $2}' |
+      product=$(softwareupdate --list | grep "\*.*Command Line" | tail -n 1 | awk -F"*" '{print $2}' |
                       sed -e 's/^ *Label: //' -e 's/^ *//' |
                       sort -V |
                       tail -n1)
+      echo "Available version installing: $product"
       softwareupdate --verbose --install "${product}" || echo 'Installation failed.' 1>&2
       if [ -f "$in_progress" ]; then rm ${in_progress}; fi
 
-      if softwareupdate --history | grep --silent "Command Line Tools"; then
+      if [ -f "/Library/Developer/CommandLineTools/usr/bin/clang" ]; then
         echo "GOOD - Command Line Tools are now available"
       else
         echo "BAD - Command Line Tools don't seem to be available"
       fi
     fi
-  else
-    echo "";
-    echo "Unable to install brew - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
   fi
 }
