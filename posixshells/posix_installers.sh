@@ -627,40 +627,40 @@ install_ohmyzsh () {
 install_blesh () {
   echo "ble.sh installer script doesn't work, cant install, skipping for now"
   return 1
-  __pkgName="ble.sh"
-  __pkgsafename="blesh"
-  __pkgdesc="Bash Syntax Highlighting"
-  if [ ! -f "$HOME/.dotfiles/opt/bash-extras/$__pkgsafename/$__pkgName" ] && [ -x "$(command -v bash)" ]; then
-    install_curl
-    echo "NOTE: $__pkgName ($__pkgdesc) not found, availing into dotfiles bin"
-    echo "------------------------------------------------"
+  # __pkgName="ble.sh"
+  # __pkgsafename="blesh"
+  # __pkgdesc="Bash Syntax Highlighting"
+  # if [ ! -f "$HOME/.dotfiles/opt/bash-extras/$__pkgsafename/$__pkgName" ] && [ -x "$(command -v bash)" ]; then
+  #   install_curl
+  #   echo "NOTE: $__pkgName ($__pkgdesc) not found, availing into dotfiles bin"
+  #   echo "------------------------------------------------"
 
-    if [ ! -d "$HOME/.dotfiles/opt/tmp" ]; then
-      mkdir -p "$HOME/.dotfiles/opt/tmp"
-    fi
+  #   if [ ! -d "$HOME/.dotfiles/opt/tmp" ]; then
+  #     mkdir -p "$HOME/.dotfiles/opt/tmp"
+  #   fi
 
-    __pkgurl="https://api.github.com/repos/akinomyoga/ble.sh/releases/latest"
-    latest=$(curl $__pkgurl -s  | grep url | grep "tar.xz" | sed 's/.*\(http[s?]:\/\/.*[^"]\).*/\1/')
-    __fileName=${latest##*/}
+  #   __pkgurl="https://api.github.com/repos/akinomyoga/ble.sh/releases/latest"
+  #   latest=$(curl $__pkgurl -s  | grep url | grep "tar.xz" | sed 's/.*\(http[s?]:\/\/.*[^"]\).*/\1/')
+  #   __fileName=${latest##*/}
 
-    curl -L "$latest" -o "$HOME/.dotfiles/opt/tmp/$__fileName"; echo ""
+  #   curl -L "$latest" -o "$HOME/.dotfiles/opt/tmp/$__fileName"; echo ""
 
-    mkdir "$HOME/.dotfiles/opt/tmp/$__pkgsafename"
-    tar -xzf "$HOME/.dotfiles/opt/tmp/$__fileName" -C "$HOME/.dotfiles/opt/tmp/$__pkgsafename"
-    mkdir -p "$HOME/.dotfiles/opt/bash-extras/$__pkgsafename"
-    cp -r "$HOME"/.dotfiles/opt/tmp/$__pkgsafename/*/ ~/.dotfiles/opt/bash-extras/$__pkgsafename
+  #   mkdir "$HOME/.dotfiles/opt/tmp/$__pkgsafename"
+  #   tar -xzf "$HOME/.dotfiles/opt/tmp/$__fileName" -C "$HOME/.dotfiles/opt/tmp/$__pkgsafename"
+  #   mkdir -p "$HOME/.dotfiles/opt/bash-extras/$__pkgsafename"
+  #   cp -r "$HOME"/.dotfiles/opt/tmp/$__pkgsafename/*/ ~/.dotfiles/opt/bash-extras/$__pkgsafename
 
-    rm "$HOME/.dotfiles/opt/tmp/$__fileName"
-    rm -rf "$HOME/.dotfiles/opt/tmp/$__pkgsafename"
+  #   rm "$HOME/.dotfiles/opt/tmp/$__fileName"
+  #   rm -rf "$HOME/.dotfiles/opt/tmp/$__pkgsafename"
 
-    if [ -f "$HOME/.dotfiles/opt/bash-extras/$__pkgsafename/$__pkgName" ]; then
-      echo "GOOD - $__pkgName ($__pkgdesc) is now available"
-    else
-      echo "BAD - $__pkgName ($__pkgdesc) doesn't seem to be available"
-    fi
-    unset __pkgurl; unset latest; unset __fileName;
-  fi
-  unset __pkgName; unset __pkgsafename; unset __pkgdesc;
+  #   if [ -f "$HOME/.dotfiles/opt/bash-extras/$__pkgsafename/$__pkgName" ]; then
+  #     echo "GOOD - $__pkgName ($__pkgdesc) is now available"
+  #   else
+  #     echo "BAD - $__pkgName ($__pkgdesc) doesn't seem to be available"
+  #   fi
+  #   unset __pkgurl; unset latest; unset __fileName;
+  # fi
+  # unset __pkgName; unset __pkgsafename; unset __pkgdesc;
 }
 
 install_ncdu () {
