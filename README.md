@@ -22,8 +22,8 @@ Built for:
 - Prompt: Colorize, Git status, node_modules/.bin to PATH
 
 - PATH: Download some handy tools, if needed (jq, pretty ping, lsd, etc)
-  - Doesn't use `apt`, `brew`, `chocolatey` - just plain  scripts w/ `curl`/`wget` and `git`.
-    - Minor exception for `apk`/Alpine linux package manager (for now using `apk` to install some basics)
+  - Prefers single binary/statically compiled versions. Avoids using `apt`, `apk`, `brew`, `chocolatey` - just plain  scripts w/ `curl`/`wget` and `git`.
+    - Package managers (ala `brew`) are kept in `~/.dotfiles/opt` (in effort to keep deployment self contained)
 
 - Aliases:
   - Override standard commands with preferred defaults (e.g. `ls` -> `ls -ahl`)

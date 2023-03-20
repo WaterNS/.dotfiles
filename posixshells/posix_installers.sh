@@ -666,7 +666,12 @@ install_blesh () {
 install_ncdu () {
   if [ ! -x "$(command -v ncdu)" ]; then
     if [ "$OS_FAMILY" = "Darwin" ]; then
-      install_generic_homebrew "ncdu"
+      if [ -x "$(command -v brew)" ]; then
+        install_homebrew
+        brew install "ncdu"
+      # else
+      #   install_generic_homebrew "ncdu"
+      fi
     else
       echo "";
       echo "Unable to install ncdu - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
@@ -817,7 +822,12 @@ install_less () {
 install_aria2 () {
   if [ ! -x "$(command -v aria2)" ]; then
     if [ "$OS_FAMILY" = "Darwin" ]; then
-      install_generic_homebrew "aria2" "aria2c"
+      if [ -x "$(command -v brew)" ]; then
+        install_homebrew
+        brew install "aria2"
+      # else
+      #   install_generic_homebrew "aria2" "aria2c"
+      fi
     else
       echo "";
       echo "Unable to install aria2 - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
