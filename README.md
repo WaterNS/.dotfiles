@@ -45,11 +45,11 @@ Cache and downloaded binaries stored in `$HOME/.dotfiles/opt/`.
 
 
 # POSIX OS bootstrap (OSX/Linux):
-1. Install git (if needed): https://git-scm.com/download/
-
-2. Init dotfiles
+1. Pull & Init dotfiles
 ```
-git clone https://github.com/WaterNS/.dotfiles.git ~/.dotfiles && \
+mkdir "$HOME/.dotfiles" && \
+curl -L https://github.com/WaterNS/.dotfiles/tarball/master | \
+  tar xz --strip 1 -C "$HOME/.dotfiles" && \
   cd ~/.dotfiles && ./init_posix.sh
 ```
 

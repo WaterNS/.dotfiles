@@ -13,9 +13,6 @@ while getopts ":ur" opt ; do
   esac
 done
 
-# Ignore git config and force git output in English to make our work easier
-git_eng="env LANG=C GIT_CONFIG_NOSYSTEM=1 GIT_CONFIG=/dev/null HOME=/dev/null git"
-
 ### Set ZSH to word split IFS
 if [ "$ZSH_VERSION" ]; then
   setopt sh_word_split
@@ -30,6 +27,12 @@ fi
 if [ -f "$HOME/.dotfiles/posixshells/posix_installers.sh" ]; then
   . "$HOME/.dotfiles/posixshells/posix_installers.sh"
 fi
+
+# Preload Git (if not yet available)
+install_git
+
+# Ignore git config and force git output in English to make our work easier
+git_eng="env LANG=C GIT_CONFIG_NOSYSTEM=1 GIT_CONFIG=/dev/null HOME=/dev/null git"
 
 # Function: Update git repo (if needed)
 updategitrepo () {
@@ -69,6 +72,15 @@ elif [ $u ]; then
 fi
 
 HOMEREPO="$HOME/.dotfiles"
+
+# Init dotfiles repo (if came from tarball/zip)
+if [ -z "$(git -C "$HOMEREPO" remote show origin 2>/dev/null)" ]; then
+  echo "Init $HOMEREPO dotfiles remote git connection..."
+  $git_eng -C "$HOMEREPO" init
+  $git_eng -C "$HOMEREPO" remote add origin https://github.com/WaterNS/.dotfiles.git
+  $git_eng -C "$HOMEREPO" fetch origin
+  $git_eng -C "$HOMEREPO" reset origin/master
+fi
 
 # Update dotfiles repo
 if [ $u ]; then
@@ -141,6 +153,11 @@ cd "$curpath" || exit
 
 # Install VIM plugins
 . "$HOMEREPO/vim/init_vim.sh"
+
+# Package Manager/OS requirements
+if [ "$OS_FAMILY" = "Darwin" ]; then
+  install_macRosetta2
+fi
 
 # Make dev tools available in dotfiles bin
 install_opensshkeygen
