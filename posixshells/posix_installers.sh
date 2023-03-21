@@ -878,3 +878,32 @@ install_xcodeCMDlineTools () {
     fi
   fi
 }
+
+install_macRosetta2 () {
+  if [ "$OS_FAMILY" = "Darwin" ]; then
+    if [ ! -f "/Library/Apple/usr/share/rosetta/rosetta" ]; then
+      echo 'Installing Rosetta2...'
+      softwareupdate --install-rosetta || echo 'Installation failed.' 1>&2
+
+      if [ -f "/Library/Apple/usr/share/rosetta/rosetta" ]; then
+        echo "GOOD - Rosetta2 is now available"
+      else
+        echo "BAD - Rosetta2 don't seem to be available"
+      fi
+    fi
+  fi
+}
+
+install_git () {
+  if [ ! -x "$(command -v git)" ] || isFakeXcodeCmd "git"; then
+    if [ "$OS_FAMILY" = "Darwin" ]; then
+      install_homebrew
+      if [ -x "$(command -v brew)" ]; then
+        brew install "git"
+      fi
+    else
+      echo "";
+      echo "Unable to install aria2 - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+    fi
+  fi
+}
