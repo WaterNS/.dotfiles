@@ -266,3 +266,16 @@ isFakeXcodeCmd() {
     return 0
   fi
 }
+
+compare_versions() {
+  LC_ALL=C awk -- '
+    function pad(v,  ret) {
+      while (match(v, /[0-9]+/)) {
+        ret = ret substr(v, 1, RSTART - 1) \
+              sprintf("%09d", substr(v, RSTART, RLENGTH))
+        v = substr(v, RSTART + RLENGTH)
+      }
+      return ret v
+    }
+    BEGIN {exit !(pad(ARGV[1]) '"$2"' pad(ARGV[2]))}' "$1" "$3"
+}
