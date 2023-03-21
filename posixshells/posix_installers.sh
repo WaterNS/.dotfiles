@@ -840,7 +840,7 @@ install_homebrew () {
     if [ ! -x "$(command -v brew)" ]; then
       install_xcodeCMDlineTools
       __homebrewNewDir="$HOME/.dotfiles/opt/homebrew"
-      mkdir "$__homebrewNewDir"
+      mkdir -p "$__homebrewNewDir"
       curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C "$__homebrewNewDir"
 
       eval "$("$__homebrewNewDir"/bin/brew shellenv)"
