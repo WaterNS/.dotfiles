@@ -257,3 +257,12 @@ isBusyBoxCmd() {
   unset __commandTarget;
   return 1;
 }
+
+isFakeXcodeCmd() {
+  xcode_tools_dir=$(xcode-select -p 2>/dev/null)
+  if [ -f "$xcode_tools_dir"/usr/bin/"$1" ]; then
+    return 1
+  else
+    return 0
+  fi
+}
