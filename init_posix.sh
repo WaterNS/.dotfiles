@@ -28,6 +28,11 @@ if [ -f "$HOME/.dotfiles/posixshells/posix_installers.sh" ]; then
   . "$HOME/.dotfiles/posixshells/posix_installers.sh"
 fi
 
+# Preload Rosetta (lot of utils aren't compiled for ARM in macOS space)
+if [ "$OS_FAMILY" = "Darwin" ]; then
+  install_macRosetta2
+fi
+
 # Preload Git (if not yet available)
 install_git
 

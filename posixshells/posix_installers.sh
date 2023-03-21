@@ -883,7 +883,7 @@ install_macRosetta2 () {
   if [ "$OS_FAMILY" = "Darwin" ]; then
     if [ ! -f "/Library/Apple/usr/share/rosetta/rosetta" ]; then
       echo 'Installing Rosetta2...'
-      softwareupdate --install-rosetta || echo 'Installation failed.' 1>&2
+      softwareupdate --install-rosetta --agree-to-license || echo 'Installation failed.' 1>&2
 
       if [ -f "/Library/Apple/usr/share/rosetta/rosetta" ]; then
         echo "GOOD - Rosetta2 is now available"

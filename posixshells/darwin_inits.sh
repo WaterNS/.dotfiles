@@ -3,7 +3,7 @@
 # ref: https://github.com/mathiasbynens/dotfiles/blob/main/.macos
 
 if [ "$OS_FAMILY" = "Darwin" ]; then
-  install_macRosetta2
+  install_macRosetta2 # Install Rosetta (lot of utils aren't compiled for ARM in macOS space)
 
   # macOS: Disable .DSStore on network shares and USB
   defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool TRUE
