@@ -65,9 +65,9 @@ updategitrepo () {
   cd "$olddir" || return
 }
 
-if [ $r ]; then
+if [ "$r" ]; then
   echo "ReInitializing...";
-elif [ $u ]; then
+elif [ "$u" ]; then
   echo "UPDATING...";
 fi
 
@@ -83,7 +83,7 @@ if [ -z "$(git -C "$HOMEREPO" remote show origin 2>/dev/null)" ]; then
 fi
 
 # Update dotfiles repo
-if [ $u ]; then
+if [ "$u" ]; then
   updategitrepo "dotfiles" "profile configs" "$HOMEREPO"
 fi
 
@@ -91,7 +91,7 @@ fi
 "$HOME/.dotfiles/posixshells/posix_dotfilelinker.sh"
 
 # If ReInitializing, remove existing bin folders
-if [ $r ] && [ -d "$HOMEREPO/opt" ]; then
+if [ "$r" ] && [ -d "$HOMEREPO/opt" ]; then
 	if [ -d "$HOMEREPO/opt" ]; then rm -rf "$HOMEREPO/opt"; fi
 	if [ "$OS_FAMILY" = "Darwin" ]; then
 		if [ -d "$HOME/Library/Fonts/dotfiles" ]; then
@@ -184,7 +184,7 @@ fi
 
 
 # Update youtube-dl, if installed
-if [ $u ] && [ -x "$(command -v youtube-dl)" ]; then
+if [ "$u" ] && [ -x "$(command -v youtube-dl)" ]; then
   youtube-dl -U
 fi
 
@@ -200,15 +200,15 @@ if [ ! -f "$HOMEREPO/opt/lastupdate" ] || [ ! -f "$HOMEREPO/opt/lastinit" ]; the
 		echo "Last commit at which init_posix.sh initialization ran:" > "$HOMEREPO/opt/lastinit"
 		echo "$SHAinitupdated" >> "$HOMEREPO/opt/lastinit"
 	fi
-elif [ $u ] || [ $r ]; then
-	if [ $u ]; then
+elif [ "$u" ] || [ "$r" ]; then
+	if [ "$u" ]; then
 		echo ""
 		echo "Updating last update time file with current date"
 		date +%s > "$HOMEREPO/opt/lastupdate"
 		date '+%A %F %I:%M:%S %p %Z' >> "$HOMEREPO/opt/lastupdate"
 	fi
 
-	if [ $r ]; then
+	if [ "$r" ]; then
 		echo ""
 		echo "Updating lastinit time with current SHA: $SHAinitupdated"
 	  echo "Last commit at which init_posix.sh initialization ran:" > "$HOMEREPO/opt/lastinit"
@@ -216,10 +216,10 @@ elif [ $u ] || [ $r ]; then
 	fi
 fi
 
-if [ $r ]; then
+if [ "$r" ]; then
 	echo ""
 	echo "ReINITIALIZATION Completed!"
-elif [ $u ]; then
+elif [ "$u" ]; then
 	echo ""
 	echo "UPDATING Completed!"
 fi
