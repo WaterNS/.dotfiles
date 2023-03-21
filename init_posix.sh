@@ -172,7 +172,6 @@ install_shellcheck
 install_shfmt
 install_lsd
 install_blesh
-install_ncdu
 install_whereis
 
 # Install ZSH and its addons
