@@ -26,7 +26,7 @@ git config --global core.eol lf
 
 # Set GIT Config Settings
 if (Check-Command git) {
-  git config --global --unset-all include.path
+  git config --global --remove-section include.path
   git config --global --add include.path '~/.dotfiles/git/git_tweaks'
 }
 

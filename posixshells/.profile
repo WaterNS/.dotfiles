@@ -72,7 +72,7 @@ export EDITOR=vim
 
     # Set GIT Config Settings
     if [ -x "$(command -v git)" ]; then
-      git config --global --unset-all include.path
+      git config --global --remove-section include
       #shellcheck disable=2088 # Exception: Want to explictly write the tidle to config
       git config --global --add include.path '~/.dotfiles/git/git_tweaks'
     fi
