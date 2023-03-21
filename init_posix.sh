@@ -100,11 +100,6 @@ if [ "$r" ] && [ -d "$HOMEREPO/opt" ]; then
 	fi
 fi
 
-# macOS: Disable .DSStore on network shares
-if [ "$OS_FAMILY" = "Darwin" ]; then
-  defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool TRUE
-fi
-
 # Create dir for installation of packages for dotfiles
 mkdir -p "$HOMEREPO/opt"
 mkdir -p "$HOMEREPO/opt/bin"
@@ -154,11 +149,6 @@ cd "$curpath" || exit
 # Install VIM plugins
 . "$HOMEREPO/vim/init_vim.sh"
 
-# Package Manager/OS requirements
-if [ "$OS_FAMILY" = "Darwin" ]; then
-  install_macRosetta2
-fi
-
 # Make dev tools available in dotfiles bin
 install_opensshkeygen
 install_tput
@@ -185,6 +175,11 @@ fi
 # Update youtube-dl, if installed
 if [ "$u" ] && [ -x "$(command -v youtube-dl)" ]; then
   youtube-dl -U
+fi
+
+# Init Darwin based systems
+if [ "$OS_FAMILY" = "Darwin" ]; then
+  . "$HOMEREPO/posixshells/darwin_inits.sh"
 fi
 
 #Write last update file
