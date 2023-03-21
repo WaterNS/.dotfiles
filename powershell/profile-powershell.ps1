@@ -28,6 +28,14 @@ git config --global core.eol lf
 if (Check-Command git) {
   git config --global --remove-section include.path
   git config --global --add include.path '~/.dotfiles/git/git_tweaks'
+
+  if ([version]$(((git --version) -replace('[^0-9.]')).split('.')[0..2] -join (".")) >= [Version]'2.21') {
+    git config --global --add log.date 'auto:format:%a %Y-%h-%d %I:%M %p %z %Z'
+  }
+  else {
+    git config --global --add log.test 'foobar'
+    git config --global --remove-section log
+  }
 }
 
 if (Check-Command delta) {

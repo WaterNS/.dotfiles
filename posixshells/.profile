@@ -75,6 +75,13 @@ export EDITOR=vim
       git config --global --remove-section include
       #shellcheck disable=2088 # Exception: Want to explictly write the tidle to config
       git config --global --add include.path '~/.dotfiles/git/git_tweaks'
+
+      if compare_versions "$(git --version | cut -f3 -d " ")" '>' 2.21;then
+        git config --global --add log.date 'auto:format:%a %Y-%h-%d %I:%M %p %z %Z'
+      else
+        git config --global --add log.test 'foobar'
+        git config --global --remove-section log
+      fi
     fi
 
     # GIT PAGER and LESS settings

@@ -6,7 +6,7 @@
 [push]
   default = simple
 [log]
-  date = auto:format:%a %Y-%h-%d %I:%M %p %z %Z
+  date = default # older versions of git don't support advanced time formats (need git ^2.21.0)
 [color "status"]
   branch = cyan black bold ul
 [alias]
