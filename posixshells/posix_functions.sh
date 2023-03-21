@@ -259,11 +259,15 @@ isBusyBoxCmd() {
 }
 
 isFakeXcodeCmd() {
-  xcode_tools_dir=$(xcode-select -p 2>/dev/null)
-  if [ -f "$xcode_tools_dir"/usr/bin/"$1" ]; then
-    return 1
-  else
+  __cmd=$(which "$1")
+  if [ -L "$__cmd" ]; then
+    __cmd="$(readlink -f "$__cmd")";
+  fi
+  __cmdByteSize=$(stat -f %z "$__cmd")
+  if [ -x "$(command -v "$__cmd")" ] && [ "$__cmdByteSize" -lt 180000 ]; then
     return 0
+  else
+    return 1
   fi
 }
 
