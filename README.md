@@ -53,12 +53,12 @@ curl -L https://github.com/WaterNS/.dotfiles/tarball/master | \
   cd ~/.dotfiles && ./init_posix.sh
 ```
 
-3. [Optional] Add SSH pubkey to github account:
+2. [Optional] Add SSH pubkey to github account:
 ```
 pubkey WaterNS
 ```
 
-4. [Optional] Update local repo with SSH remote:
+3. [Optional] Update local repo with SSH remote:
 ```
 cd ~/.dotfiles && git remote set-url origin git@github.com:WaterNS/.dotfiles.git
 ```
