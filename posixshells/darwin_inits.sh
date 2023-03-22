@@ -37,7 +37,7 @@ if [ "$OS_FAMILY" = "Darwin" ]; then
   defaults write -g AppleReduceDesktopTinting -bool yes
 
   # macOS: Disable screen dimming on battery
-  defaults write /Library/Preferences/com.apple.iokit.AmbientLightSensor "Automatic Display Enabled" -bool false
+  #defaults write /Library/Preferences/com.apple.iokit.AmbientLightSensor "Automatic Display Enabled" -bool false #doesn't appear to work
   #sudo launchctl stop com.apple.AmbientDisplayAgent
   #sudo launchctl remove com.apple.AmbientDisplayAgent
 
