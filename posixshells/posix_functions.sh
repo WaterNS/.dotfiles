@@ -311,7 +311,6 @@ isMissingOrFakeCmd() {
   if isRealCommand "$1"; then
     return 1
   else
-    echo "fake"
     return 0
   fi
 }
