@@ -3,6 +3,9 @@
 # Identify Operating System (better uname)
 . ~/.dotfiles/posixshells/posix_id_os.sh
 
+# Source posix functions
+. ~/.dotfiles/posixshells/posix_functions.sh
+
 if notcontains "$PATH" "$HOME/.dotfiles/opt/bin"; then
   PATH=$PATH:~/.dotfiles/opt/bin #Include dotfiles bin
 fi
