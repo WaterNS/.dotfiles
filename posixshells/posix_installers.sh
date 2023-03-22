@@ -901,7 +901,8 @@ install_git () {
   if isMissingOrFakeCmd "git"; then
     if [ "$OS_FAMILY" = "Darwin" ]; then
       install_homebrew
-      if [ -x "$(command -v brew)" ]; then
+      if [ -x "$(command -v brew)" ] && isMissingOrFakeCmd "git"; then
+        #This likely won't run since Homebrew installs xCode, which installs git
         brew install "git"
       fi
     else
