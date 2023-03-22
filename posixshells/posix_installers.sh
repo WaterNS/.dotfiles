@@ -16,7 +16,7 @@ install_generic_apk () {
     __executableName=$__pkgName
   fi
 
-  if [ ! -x "$(command -v "$__executableName")" ] || isBusyBoxCmd "$__executableName"; then
+  if isMissingOrFakeCmd "$__executableName"; then
     if [ -x "$(command -v apk)" ]; then
       if isBusyBoxCmd "$__executableName"; then
         echo "NOTE: $__executableName is busybox polyfill, installing real version via APK"
@@ -809,7 +809,7 @@ install_whereis () {
 }
 
 install_less () {
-  if [ ! -x "$(command -v less)" ] || isBusyBoxCmd "less"; then
+  if isMissingOrFakeCmd "less"; then
     if [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
       install_generic_apk "less"
     else
@@ -895,7 +895,7 @@ install_macRosetta2 () {
 }
 
 install_git () {
-  if [ ! -x "$(command -v git)" ] || isFakeXcodeCmd "git"; then
+  if isMissingOrFakeCmd "git"; then
     if [ "$OS_FAMILY" = "Darwin" ]; then
       install_homebrew
       if [ -x "$(command -v brew)" ]; then
