@@ -259,15 +259,60 @@ isBusyBoxCmd() {
 }
 
 isFakeXcodeCmd() {
-  __cmd=$(which "$1")
-  if [ -L "$__cmd" ]; then
-    __cmd="$(readlink -f "$__cmd")";
+  __originalCmd=$1
+  __fakeXcodeCmd=false
+
+  if [ -x "$(command -v "$__originalCmd")" ]; then
+    __cmd=$(which "$__originalCmd")
+    if [ -L "$__cmd" ]; then __cmd="$(readlink -f "$__cmd")"; fi
+
+    __cmdByteSize=$(stat -f %z "$__cmd")
+    if [ "$__cmdByteSize" -lt 180000 ]; then
+      xcodeTest=$(xcode_tools_dir=$(xcode-select -p 2>/dev/null) && ls "${xcode_tools_dir}"/usr/bin/"$__originalCmd")
+      if [ -z "$xcodeTest" ]; then
+        __fakeXcodeCmd=true
+      fi
+    fi
+
   fi
-  __cmdByteSize=$(stat -f %z "$__cmd")
-  if [ -x "$(command -v "$__cmd")" ] && [ "$__cmdByteSize" -lt 180000 ]; then
+
+  if [ "$__fakeXcodeCmd" = true ]; then
     return 0
   else
     return 1
+  fi
+}
+
+isRealCommand() {
+  __originalCmd=$1
+  __realCmd=false
+
+  if [ -x "$(command -v "$__originalCmd")" ]; then
+    __realCmd=true
+
+    if isFakeXcodeCmd "$__originalCmd"; then
+      __realCmd=false
+    fi
+
+    if isBusyBoxCmd "$__originalCmd"; then
+      __realCmd=false
+    fi
+
+  fi
+
+  if [ "$__realCmd" = true ]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+isMissingOrFakeCmd() {
+  if isRealCommand "$1"; then
+    return 1
+  else
+    echo "fake"
+    return 0
   fi
 }
 
