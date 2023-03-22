@@ -15,7 +15,7 @@ pubkey () {
   if [ -f "$HOME/.ssh/$file.pub" ]; then
     cat "$HOME/.ssh/$file.pub";
     if [ -x "$(command -v pbcopy)" ]; then
-      printf "%s" "$(cat ~/.ssh/$file.pub)" | pbcopy
+      printf "%s" "$(cat ~/.ssh/"$file".pub)" | pbcopy
       printf '\nCopied to Clipboard!\n'
     fi
   else
