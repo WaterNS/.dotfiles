@@ -2,6 +2,41 @@
 
 # ref: https://github.com/mathiasbynens/dotfiles/blob/main/.macos
 
+function setMacTerminalDefaultTheme() {
+  if contains "$TERM_PROGRAM" "Terminal"; then
+    # Set Terminal theme
+  osascript <<EOD
+tell application "Terminal"
+	local allOpenedWindows
+	local initialOpenedWindows
+	local windowID
+	set themeName to "Pro"
+
+	(* Store the IDs of all the open terminal windows. *)
+	set initialOpenedWindows to id of every window
+
+	(* Set the custom theme as the default terminal theme. *)
+	set default settings to settings set themeName
+
+	(* Get the IDs of all the currently opened terminal windows. *)
+	set allOpenedWindows to id of every window
+	repeat with windowID in allOpenedWindows
+		(* Close the additional windows that were opened in order
+		   to add the custom theme to the list of terminal themes. *)
+		if initialOpenedWindows does not contain windowID then
+			close (every window whose id is windowID)
+		(* Change the theme for the initial opened terminal windows
+		   to remove the need to close them in order for the custom
+		   theme to be applied. *)
+		else
+			set current settings of tabs of (every window whose id is windowID) to settings set themeName
+		end if
+	end repeat
+end tell
+EOD
+  fi
+}
+
 if [ "$OS_FAMILY" = "Darwin" ]; then
   install_macRosetta2 # Install Rosetta (lot of utils aren't compiled for ARM in macOS space)
 
@@ -159,6 +194,8 @@ if [ "$OS_FAMILY" = "Darwin" ]; then
   # Warn about fraudulent websites
   defaults write com.apple.Safari WarnAboutFraudulentWebsites -bool true
 
+  # Set Terminal default theme
+  setMacTerminalDefaultTheme
 
   echo "** Darwin Init Done ** Note that some of these changes require a logout/restart to take effect."
 fi

@@ -30,6 +30,9 @@ fi
 
 # Preload Rosetta (lot of utils aren't compiled for ARM in macOS space)
 if [ "$OS_FAMILY" = "Darwin" ]; then
+  if contains "$TERM_PROGRAM" "Terminal"; then
+    echo 'tell application "Terminal" to set current settings of first window to settings set "Pro"' | osascript
+  fi
   install_macRosetta2
 fi
 
