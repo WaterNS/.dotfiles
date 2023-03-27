@@ -917,3 +917,21 @@ install_git () {
     fi
   fi
 }
+
+install_pip () {
+  if isMissingOrFakeCmd "pip"; then
+    install_python3
+    if isRealCommand "python3"; then
+      python3 -m ensurepip --upgrade
+
+      if isRealCommand "pip"; then
+        echo "GOOD - pip is now available"
+      else
+        echo "BAD - pip doesn't seem to be available"
+      fi
+    else
+      echo "";
+      echo "Unable to install pip - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+    fi
+  fi
+}
