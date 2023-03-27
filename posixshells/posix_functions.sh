@@ -287,7 +287,7 @@ isRealCommand() {
   __originalCmd=$1
   __realCmd=false
 
-  if [ -x "$(command -v "$__originalCmd")" ]; then
+  if [ -x "$(command -v "$__originalCmd")" ] || which "$__originalCmd" > /dev/null 2>&1; then
     __realCmd=true
 
     if isFakeXcodeCmd "$__originalCmd"; then
