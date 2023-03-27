@@ -919,6 +919,12 @@ install_git () {
 }
 
 install_pip () {
+  if [ ! -d ~/.dotfiles/opt/pip_packages ]; then
+    mkdir -p ~/.dotfiles/opt/pip_packages
+  fi
+  PATH=$PATH:~/.dotfiles/opt/pip_packages/bin
+  PYTHONPATH=~/.dotfiles/opt/pip_packages
+  export PYTHONPATH
   if isMissingOrFakeCmd "pip"; then
     install_python3
     if isRealCommand "python3"; then
