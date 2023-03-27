@@ -941,3 +941,23 @@ install_pip () {
     fi
   fi
 }
+
+install_asitop () {
+  if [ "$OS_FAMILY" = "Darwin" ]; then
+    if isMissingOrFakeCmd "asitop"; then
+      install_pip
+      if isRealCommand "pip"; then
+        pip install asitop --target ~/.dotfiles/opt/pip_packages/
+
+        if isRealCommand "asitop"; then
+          echo "GOOD - asitop is now available"
+        else
+          echo "BAD - asitop doesn't seem to be available"
+        fi
+      fi
+    fi
+  else
+    echo "";
+    echo "Unable to install asitop - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+  fi
+}
