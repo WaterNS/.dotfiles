@@ -27,6 +27,13 @@ if [ -d ~/.dotfiles/opt/homebrew/bin ]; then
   PATH=$PATH:~/.dotfiles/opt/homebrew/bin
 fi
 
+# PATH: Include custom pip bin
+if [ -d ~/.dotfiles/opt/pip_packages/bin ]; then
+  PATH=$PATH:~/.dotfiles/opt/pip_packages/bin
+  PYTHONPATH=~/.dotfiles/opt/pip_packages
+  export PYTHONPATH
+fi
+
 ############################################
 # INCLUDES
 ############################################
