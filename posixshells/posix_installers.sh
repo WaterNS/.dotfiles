@@ -905,9 +905,15 @@ install_git () {
         #This likely won't run since Homebrew installs xCode, which installs git
         brew install "git"
       fi
+
+      if isRealCommand "git"; then
+        echo "GOOD - git is now available"
+      else
+        echo "BAD - git doesn't seem to be available"
+      fi
     else
       echo "";
-      echo "Unable to install aria2 - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+      echo "Unable to install git - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
     fi
   fi
 }
