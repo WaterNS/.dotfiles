@@ -21,8 +21,8 @@ Built for:
 ### Enhances command line experience:
 - Prompt: Colorize, Git status, node_modules/.bin to PATH
 
-- PATH: Download some handy tools, if needed (jq, pretty ping, lsd, etc)
-  - Prefers single binary/statically compiled versions. Avoids using `apt`, `apk`, `brew`, `chocolatey` - just plain  scripts w/ `curl`/`wget` and `git`.
+- PATH: Download some handy tools, if needed (`jq`, `prettyping`, `lsd`, etc)
+  - Prefers single binary/statically compiled versions. Minimizes using `apt`, `apk`, `brew`, `chocolatey` - prefers plain scripts w/ `curl`/`wget` and `git`.
     - Package managers (ala `brew`) are kept in `~/.dotfiles/opt` (in effort to keep deployment self contained)
 
 - Aliases:
@@ -50,7 +50,7 @@ Cache and downloaded binaries stored in `$HOME/.dotfiles/opt/`.
 mkdir "$HOME/.dotfiles" && \
 curl -L https://github.com/WaterNS/.dotfiles/tarball/master | \
   tar xz --strip 1 -C "$HOME/.dotfiles" && \
-  cd ~/.dotfiles && ./init_posix.sh
+  cd $HOME/.dotfiles && ./init_posix.sh
 ```
 
 2. [Optional] Add SSH pubkey to github account:

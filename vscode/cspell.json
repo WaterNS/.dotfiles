@@ -22,7 +22,7 @@
     "fatals",
     "noopener", "noreferrer", "noindex",
     "readonly", "mixins", "vuex", "axios", "pathify",
-    "chocolatey", "Monitorian"
+    "chocolatey", "Monitorian", "prettyping"
   ],
   "ignoreWords": [
     "ify", "sify", // Word-'ify' hacks
