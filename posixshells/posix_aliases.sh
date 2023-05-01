@@ -101,7 +101,7 @@ fi
 if [ "$OS_FAMILY" = "Darwin" ]; then
   if [ -d ~/Library/Mobile\ Documents/com~apple~CloudDocs/ ]; then
     if contains "$RUNNINGSHELL" "bash"; then
-      #shellcheck disable=2039 # Exception: shopt will be available if running under bash.
+      #shellcheck disable=3044 # Exception: shopt will be available if running under bash.
       shopt -s cdable_vars
     elif contains "$RUNNINGSHELL" "zsh"; then
       setopt cdable_vars
