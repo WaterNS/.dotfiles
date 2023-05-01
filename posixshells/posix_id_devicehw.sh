@@ -63,9 +63,9 @@ if [ "$OS_FAMILY" = "Darwin" ]; then
 fi
 
 if [ -x "$(command -v df)" ]; then
-  __rootdiskspace=$(df -k / | awk 'NR>1')
+  __rootdiskspace=$(df -kP / | awk 'NR>1')
   if [ "$OS_FAMILY" = "Darwin" ];then
-    __rootdiskspace=$(df -k /System/Volumes/Data | awk 'NR>1')
+    __rootdiskspace=$(df -kP /System/Volumes/Data | awk 'NR>1')
   fi
   HW_TOTALSTORAGE=$(kbToHumanReadable "$(echo "$__rootdiskspace" | awk '{print $2}')")
   HW_USEDSTORAGE=$(kbToHumanReadable "$(echo "$__rootdiskspace" | awk '{print $3}')")
