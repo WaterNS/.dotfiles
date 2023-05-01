@@ -1,11 +1,11 @@
 #!/bin/sh
 
-# statFormatted: Handle different flags for GNU/Linux `stat` vs Darwin version
+# statByteSize: Handle different flags for GNU/Linux `stat` vs Darwin version
 if [ -x "$(command -v stat)" ]; then
   if [ "$OS_FAMILY" = "Darwin" ]; then
-    alias statFormatted='stat -f'
+    alias statByteSize='stat -f %z'
   else
-    alias statFormatted='stat -c'
+    alias statByteSize='stat -c %s'
   fi
 fi
 
@@ -275,7 +275,7 @@ isFakeXcodeCmd() {
     __cmd=$(which "$__originalCmd")
     if [ -L "$__cmd" ]; then __cmd="$(readlink -f "$__cmd")"; fi
 
-    __cmdByteSize=$(statFormatted "%z" "$__cmd")
+    __cmdByteSize=$(statByteSize "$__cmd")
     if [ "$__cmdByteSize" -lt 180000 ]; then
       xcode_tools_dir=$(xcode-select -p 2>/dev/null)
       #xcodeTest=$(xcode_tools_dir=$(xcode-select -p 2>/dev/null) && ls "${xcode_tools_dir}"/usr/bin/"$__originalCmd")

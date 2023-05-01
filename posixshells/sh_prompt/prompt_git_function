@@ -80,7 +80,7 @@ if [ "$($git_eng config --get branch."$($git_eng rev-parse --abbrev-ref HEAD)".m
 
   if [ -f "$__gitdir/FETCH_HEAD" ]; then
     if [ "$PS1_DARWIN" ]; then
-      __lastfetch=$(statFormatted "%m" "$__gitdir/FETCH_HEAD")
+      __lastfetch=$(statByteSize "$__gitdir/FETCH_HEAD")
     else
       __lastfetch=$(date +%s -r "$__gitdir/FETCH_HEAD")
     fi
