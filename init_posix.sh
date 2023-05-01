@@ -146,6 +146,7 @@ git config user.name "User"
 git config user.email waterns@users.noreply.github.com
 git config push.default matching
 if [ ! -f ~/.ssh/id_rsa ] && [ ! -f ~/.ssh/WaterNS ]; then
+  install_opensshkeygen # ssh-keygen is required to generate key
   echo "Creating ~/.ssh/WaterNS"
   ssh-keygen -t rsa -b 4096 -f ~/.ssh/WaterNS -N ""
 fi
