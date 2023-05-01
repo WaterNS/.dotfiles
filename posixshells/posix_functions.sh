@@ -3,9 +3,9 @@
 # statFormatted: Handle different flags for GNU/Linux `stat` vs Darwin version
 if [ -x "$(command -v stat)" ]; then
   if [ "$OS_FAMILY" = "Darwin" ]; then
-    alias statFormatted='stat -c'
+    alias statFormatted='stat -f'
   else
-    alias statFormatted='stat --format'
+    alias statFormatted='stat -c'
   fi
 fi
 
