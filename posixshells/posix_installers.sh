@@ -911,6 +911,8 @@ install_git () {
       else
         echo "BAD - git doesn't seem to be available"
       fi
+    elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
+      install_generic_apk "git"
     else
       echo "";
       echo "Unable to install git - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
