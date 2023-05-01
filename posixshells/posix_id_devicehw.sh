@@ -54,10 +54,12 @@ if [ -f "/proc/meminfo" ]; then
 fi
 
 if [ "$OS_FAMILY" = "Darwin" ]; then
-  HW_CPUNAME=$(sysctl -n machdep.cpu.brand_string)
   HW_TOTALPCPUs="1" #$(sysctl -n machdep.cpu.core_count)
-  HW_TOTALCORES=$(sysctl -n machdep.cpu.core_count)
-  HW_TOTALRAM=$(bytesToHumanReadable "$(sysctl -n hw.memsize)")
+  if [ -x "$(command -v sysctl)" ] && [ "$(sysctl -n hw 2>/dev/null)" ]; then
+    HW_CPUNAME=$(sysctl -n machdep.cpu.brand_string)
+    HW_TOTALCORES=$(sysctl -n machdep.cpu.core_count)
+    HW_TOTALRAM=$(bytesToHumanReadable "$(sysctl -n hw.memsize)")
+  fi
 fi
 
 if [ -x "$(command -v df)" ]; then
@@ -71,12 +73,14 @@ if [ -x "$(command -v df)" ]; then
 fi
 
 if [ -f "/proc/cpuinfo" ]; then
-  HW_TOTALPCPUs=$(grep "physical id" /proc/cpuinfo | sort | uniq | wc -l)
+  HW_TOTALPCPUs=$(grep "processor" /proc/cpuinfo | sort | uniq | wc -l)
   #REF: https://unix.stackexchange.com/a/279354
-  HW_TOTALCORES=$(printf "%s\n" "$(( $(lscpu | awk '/^Socket\(s\)/{ print $2 }') * $(lscpu | awk '/^Core\(s\) per socket/{ print $4 }') ))")
+  if [ "$(lscpu 2>/dev/null)" ]; then
+    HW_TOTALCORES=$(printf "%s\n" "$(( $(lscpu | awk '/^Socket\(s\)/{ print $2 }') * $(lscpu | awk '/^Core\(s\) per socket/{ print $4 }') ))")
+  fi
 fi
 
-if [ -x "$(command -v lscpu)" ]; then
+if [ -x "$(command -v lscpu)" ] && [ "$(lscpu 2>/dev/null)" ]; then
   HW_CPUNAME=$(lscpu | grep 'Model name' | cut -f 2 -d ":" | awk '{$1=$1}1')
 fi
 
