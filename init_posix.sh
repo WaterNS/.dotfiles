@@ -88,6 +88,7 @@ if [ -z "$(git -C "$HOMEREPO" remote show origin 2>/dev/null)" ]; then
   $git_eng -C "$HOMEREPO" remote add origin https://github.com/WaterNS/.dotfiles.git
   $git_eng -C "$HOMEREPO" fetch origin
   $git_eng -C "$HOMEREPO" reset origin/master
+  $git_eng -C "$HOMEREPO" branch --set-upstream-to=origin/master master
 fi
 
 # Update dotfiles repo
