@@ -781,7 +781,7 @@ install_perl () {
 install_opensshkeygen () {
   if [ ! -x "$(command -v ssh-keygen)" ]; then
     if [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
-      install_generic_apk "openssh-keygen"
+      install_generic_apk "openssh-keygen" "ssh-keygen"
     else
       echo "";
       echo "install_opensshkeygen: Unable to install - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
