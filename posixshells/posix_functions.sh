@@ -9,6 +9,15 @@ if [ -x "$(command -v stat)" ]; then
   fi
 fi
 
+# statWhenModified: Handle different flags for GNU/Linux `stat` vs Darwin version
+if [ -x "$(command -v stat)" ]; then
+  if [ "$OS_FAMILY" = "Darwin" ]; then
+    alias statWhenModified='stat -f %m'
+  else
+    alias statWhenModified='stat -c %Y'
+  fi
+fi
+
 #Enable help command, using tldr library
 help () {
   curl -s cheat.sh/"$1" | less
