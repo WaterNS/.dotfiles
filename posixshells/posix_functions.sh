@@ -1,5 +1,14 @@
 #!/bin/sh
 
+# statFormatted: Handle different flags for GNU/Linux `stat` vs Darwin version
+if [ -x "$(command -v stat)" ]; then
+  if [ "$OS_FAMILY" = "Darwin" ]; then
+    alias statFormatted='stat -c'
+  else
+    alias statFormatted='stat --format'
+  fi
+fi
+
 #Enable help command, using tldr library
 help () {
   curl -s cheat.sh/"$1" | less

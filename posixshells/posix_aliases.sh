@@ -139,12 +139,3 @@ fi
 if [ -x "$(command -v pip3)" ] && [ ! -x "$(command -v pip)" ]; then
   alias pip='pip3'
 fi
-
-# statFormatted: Handle different flags for GNU/Linux `stat` vs Darwin version
-if [ -x "$(command -v stat)" ]; then
-  if [ "$OS_FAMILY" = "Darwin" ]; then
-    alias statFormatted='stat -c'
-  else
-    alias statFormatted='stat --format'
-  fi
-fi
