@@ -266,7 +266,7 @@ isFakeXcodeCmd() {
     __cmd=$(which "$__originalCmd")
     if [ -L "$__cmd" ]; then __cmd="$(readlink -f "$__cmd")"; fi
 
-    __cmdByteSize=$(stat -f %z "$__cmd")
+    __cmdByteSize=$(statFormatted "%z" "$__cmd")
     if [ "$__cmdByteSize" -lt 180000 ]; then
       xcode_tools_dir=$(xcode-select -p 2>/dev/null)
       #xcodeTest=$(xcode_tools_dir=$(xcode-select -p 2>/dev/null) && ls "${xcode_tools_dir}"/usr/bin/"$__originalCmd")
