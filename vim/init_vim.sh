@@ -20,25 +20,29 @@ fi
 
 #VIM Theme: Badwolf
 if [ ! -d "$HOME/.vim/bundle/badwolf" ]; then
-	git clone https://github.com/sjl/badwolf/ ~/.vim/bundle/badwolf; echo ""
+	# git clone https://github.com/sjl/badwolf/ ~/.vim/bundle/badwolf; echo ""
+  githubCloneByCurl https://github.com/sjl/badwolf/ ~/.vim/bundle/badwolf; echo ""
 elif [ "$u" = true  ]; then updategitrepo "BadWolf" "VIM theme" ~/.vim/bundle/badwolf ;
 fi
 
 #VIM Plugin: vim-airline (light weight vim powerline) + themes
 if [ ! -d "$HOME/.vim/bundle/vim-airline" ]; then
-	git clone https://github.com/vim-airline/vim-airline ~/.vim/bundle/vim-airline; echo ""
+	# git clone https://github.com/vim-airline/vim-airline ~/.vim/bundle/vim-airline; echo ""
+  githubCloneByCurl https://github.com/vim-airline/vim-airline ~/.vim/bundle/vim-airline; echo ""
 elif [ "$u" = true  ]; then updategitrepo "vim-airline" "VIM status bar plugin" ~/.vim/bundle/vim-airline ;
 fi
 
 if [ ! -d "$HOME/.vim/bundle/vim-airline-themes" ]; then
-	git clone https://github.com/vim-airline/vim-airline-themes ~/.vim/bundle/vim-airline-themes; echo ""
+	# git clone https://github.com/vim-airline/vim-airline-themes ~/.vim/bundle/vim-airline-themes; echo ""
+  githubCloneByCurl https://github.com/vim-airline/vim-airline-themes ~/.vim/bundle/vim-airline-themes; echo ""
 elif [ "$u" = true  ]; then updategitrepo "vim-airline-themes" "vim-airline themes" ~/.vim/bundle/vim-airline-themes ;
 fi
 
 #VIM Plugin: Super Tab (tab to complete)
 if [ ! -d "$HOME/.vim/bundle/supertab" ]; then
 	printf -- "- Installing: SuperTab (VIM tab completion plugin)\n";
-	git clone https://github.com/ervandew/supertab.git ~/.vim/bundle/supertab; echo ""
+	# git clone https://github.com/ervandew/supertab.git ~/.vim/bundle/supertab; echo ""
+  githubCloneByCurl https://github.com/ervandew/supertab.git ~/.vim/bundle/supertab; echo ""
 elif [ "$u" = true  ]; then updategitrepo "supertab" "VIM tab completion plugin" ~/.vim/bundle/supertab ;
 fi
 
