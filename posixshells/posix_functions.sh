@@ -346,3 +346,70 @@ compare_versions() {
     }
     BEGIN {exit !(pad(ARGV[1]) '"$2"' pad(ARGV[2]))}' "$1" "$3"
 }
+
+reHydrateRepo() {
+  if [ -z "$1" ] || [ -z "$2" ]; then
+    echo "Usage: reHydrateRepo <path_to_repo> <repo_remote_url> (git is required)"
+    return 1
+  fi
+
+  if [ ! -x "$(command -v git)" ]; then
+    echo "ERROR - reHydrateRepo - * git * is required"
+    return 2
+  fi
+
+  path_to_repo="$1"
+  repo_remote_url="$2"
+
+  if [ -d "$path_to_repo" ]; then
+    git -C "$path_to_repo" init -q
+    git -C "$path_to_repo" remote add origin "$repo_remote_url"
+    git -C "$path_to_repo" fetch -q origin
+    git -C "$path_to_repo" reset -q origin/master
+    git -C "$path_to_repo" branch -q --set-upstream-to=origin/master master
+  else
+    echo "ERROR - reHydrateRepo - Folder provided doesn't exist: $path_to_repo"
+    return 3
+  fi
+}
+
+githubCloneByCurl() {
+  if [ -z "$1" ]; then
+    echo "Usage: githubCloneByCurl <repo_url> [destination_folder] (requires curl + tar|unzip)"
+    return 1
+  fi
+
+  if [ ! -x "$(command -v curl)" ]; then
+    echo "ERROR - githubCloneByCurl - requires curl + tar|unzip"
+    return 2
+  fi
+
+  repo_url="$1"
+  [ "${repo_url%.git}" != "$repo_url" ] && repo_remote=$repo_url || repo_remote="$repo_url.git"
+  repo_name=$(basename "$repo_url" .git)
+
+  if [ -n "$2" ]; then
+    dest_folder="$2"
+  else
+    dest_folder="$PWD/$repo_name"
+  fi
+
+  # Identify which type of archive to fetch
+  echo "Downloading, extracting, and rehydrating $repo_url to $dest_folder ..."
+  if [ -x "$(command -v tar)" ]; then
+    archive_url="${repo_url%/}/tarball/master"
+    mkdir -p "$dest_folder" && curl -L -s "$archive_url" | tar xz --strip 1 -C "$dest_folder" && reHydrateRepo "$dest_folder" "$repo_remote"
+  elif [ -x "$(command -v unzip)" ]; then
+    archive_url="${repo_url%/}/zipball/master"
+    mkdir -p "$dest_folder" && curl -L -s "$archive_url" | unzip -q -d "$dest_folder" - && reHydrateRepo "$dest_folder" "$repo_remote"
+  else
+    echo " -- githubCloneByCurl: Couldn't find extract tool (tar/unzip)"
+    return 1
+  fi
+
+  if [ -d "$dest_folder" ] && [ -d "$dest_folder/.git" ];then
+    echo "  ++ SUCCESS: Downloaded and set up $repo_name in $dest_folder ++"
+  else
+    echo " -- githubCloneByCurl - FAILED - didn't find folder or failed git rehydrate"
+  fi
+}
