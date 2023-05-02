@@ -48,7 +48,7 @@ Cache and downloaded binaries stored in `$HOME/.dotfiles/opt/`.
 1. Pull & Init dotfiles
 ```
 mkdir "$HOME/.dotfiles" && \
-curl -L https://github.com/WaterNS/.dotfiles/tarball/master | \
+curl -L -S -s https://github.com/WaterNS/.dotfiles/tarball/master | \
   tar xz --strip 1 -C "$HOME/.dotfiles" && \
   cd $HOME/.dotfiles && ./init_posix.sh
 ```
