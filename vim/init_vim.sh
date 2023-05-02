@@ -8,7 +8,6 @@ if [ "$r" = true ]; then
 elif [ "$u" = true ]; then
 	echo "  UPDATING Vim components";
 else
-	echo "";
   echo "Initializing Vim components";
 fi
 

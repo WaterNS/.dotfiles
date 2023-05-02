@@ -518,7 +518,6 @@ install_shellcheck () {
     elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
       install_generic_github "koalaman/shellcheck" "shellcheck" "linux.x86_64"
     else
-      echo "";
       echo "install_shellcheck: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
     fi
   fi
