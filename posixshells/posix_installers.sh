@@ -214,7 +214,6 @@ install_generic_github () {
   fi
 
   if [ ! -x "$(command -v "$__executableName")" ]; then
-    echo "";
     if [ "$OS_FAMILY" = "Darwin" ] || [ "$OS_FAMILY" = "Linux" ]; then
       echo "NOTE: $__executableName not found, availing into dotfiles bin"
       echo "------------------------------------------------"
