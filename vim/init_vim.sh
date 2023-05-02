@@ -7,6 +7,9 @@ if [ "$r" = true ]; then
   if [ -d "$HOME/.vim/bundle" ]; then rm -rf "$HOME/.vim/bundle"; fi
 elif [ "$u" = true ]; then
 	echo "  UPDATING Vim components";
+else
+	echo "";
+  echo "Initializing Vim components";
 fi
 
 #VIM Plugin Loader: Pathogen
@@ -51,4 +54,6 @@ if [ "$r" = true ]; then
 elif [ "$u" = true  ]; then
 	echo ""
 	echo "  Finished UPDATING Vim components!";
+else
+	echo "  ++ Finished initializing Vim components! ++";
 fi

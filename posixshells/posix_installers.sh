@@ -167,7 +167,7 @@ install_generic_homebrew () {
         echo "BAD - $__pkgName doesn't seem to be available"
       fi
     else
-      echo "Unable to install $__pkgName - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+      echo "Unable to install $__pkgName - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
     fi
   fi
 
@@ -215,7 +215,7 @@ install_generic_github () {
 
   if [ ! -x "$(command -v "$__executableName")" ]; then
     if [ "$OS_FAMILY" = "Darwin" ] || [ "$OS_FAMILY" = "Linux" ]; then
-      echo "NOTE: $__executableName not found, availing into dotfiles bin"
+      echo "NOTE: $__executableName not found, downlading into dotfiles bin"
       echo "------------------------------------------------"
       # shellcheck disable=SC2086
       __pkgRelease=$(identify_github_pkg $__originalArgs)
@@ -229,7 +229,7 @@ install_generic_github () {
         __fileName=${__pkgRelease##*/}
         __fileExt=$(getFileExt "$__fileName")
 
-        echo "Downloading ${__executableName}..."
+        # echo "Downloading ${__executableName}..."
         if [ -z "$__fileExt" ]; then
           curl -L -S -s "$__pkgRelease" -o "$HOME/.dotfiles/opt/bin/$__executableName"; echo ""
           chmod +x "$HOME/.dotfiles/opt/bin/$__executableName";
@@ -268,7 +268,7 @@ install_generic_github () {
         echo ""
       fi
     else
-      echo "install_generic_github (while attempting install $__executableName): OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+      echo "install_generic_github (while attempting install $__executableName): OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
       echo ""
     fi
   fi
@@ -338,7 +338,7 @@ install_generic_binary () {
         echo "BAD - $__executableName doesn't seem to be available"
       fi
     else
-      echo "Unable to install $__executableName - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+      echo "Unable to install $__executableName - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
     fi
   fi
 
@@ -392,7 +392,7 @@ install_unar () {
       install_generic_homebrew unar
       #install_generic_binary "https://cdn.theunarchiver.com/downloads/unarMac.zip" "unar"
     else
-      echo "Unable to install unar - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+      echo "Unable to install unar - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
     fi
   fi
 }
@@ -426,7 +426,7 @@ install_ffmpeg () {
         echo "BAD - ffmpeg doesn't seem to be available"
       fi
     else
-      echo "Unable to install ffmpeg - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+      echo "Unable to install ffmpeg - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
     fi
     unset ffmpeg; unset latest;
   fi
@@ -461,7 +461,7 @@ install_ffprobe () {
         echo "BAD - ffprobe doesn't seem to be available"
       fi
     else
-      echo "Unable to install ffprobe - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+      echo "Unable to install ffprobe - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
     fi
     unset ffprobe; unset latest;
   fi
@@ -491,7 +491,7 @@ install_phantomjs () {
           echo "BAD - phantomjs doesn't seem to be available"
         fi
       else
-        echo "Unable to install phantomjs - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+        echo "Unable to install phantomjs - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
       fi
       unset phantomjs; unset latest;
     fi
@@ -506,7 +506,7 @@ install_jq () {
     elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x32" ]; then
       install_generic_github "stedolan/jq" "jq" "linux32"
     else
-      echo "install_jq: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+      echo "install_jq: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
     fi
   fi
 }
@@ -519,7 +519,7 @@ install_shellcheck () {
       install_generic_github "koalaman/shellcheck" "shellcheck" "linux.x86_64"
     else
       echo "";
-      echo "install_shellcheck: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+      echo "install_shellcheck: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
     fi
   fi
 }
@@ -535,7 +535,7 @@ install_shfmt () {
     elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x32" ]; then
       install_generic_github "mvdan/sh" "shfmt" "linux_386"
     else
-      echo "Unable to install shfmt - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+      echo "Unable to install shfmt - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
     fi
   fi
 }
@@ -559,7 +559,7 @@ install_nerdfonts () {
           echo "BAD - nerd-fonts don't seem to be available"
         fi
       else
-        echo "Unable to install nerd-fonts - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+        echo "Unable to install nerd-fonts - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
       fi
     fi
     unset fontname;
@@ -574,7 +574,7 @@ install_lsd () {
     elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x32" ] && notcontains "$OS_NAME" "Alpine"; then
       install_generic_github "Peltoche/lsd" "lsd" "i686-unknown-linux-musl"
     else
-      echo "install_lsd: OS version ($OS_STRING) doesn't have supported function"
+      echo "install_lsd: OS version ($OS_STRING) doesn't have supported function"; echo "";
     fi
   fi
 }
@@ -595,7 +595,7 @@ install_prettyping () {
           echo "BAD - prettyping doesn't seem to be available"
         fi
       else
-        echo "Unable to install prettyping - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+        echo "Unable to install prettyping - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
       fi
     fi
 }
@@ -627,7 +627,7 @@ install_ohmyzsh () {
 }
 
 install_blesh () {
-  echo "ble.sh installer script doesn't work, cant install, skipping for now"
+  echo "ble.sh installer script doesn't work, cant install, skipping for now"; echo "";
   return 1
   # __pkgName="ble.sh"
   # __pkgsafename="blesh"
@@ -676,7 +676,7 @@ install_ncdu () {
       fi
     else
       echo "";
-      echo "Unable to install ncdu - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+      echo "Unable to install ncdu - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
     fi
   fi
 }
@@ -693,7 +693,7 @@ install_git_delta () {
     #   install_generic_github "dandavison/delta" "delta" "i686-unknown-linux"
     else
       echo "";
-      echo "install_git_delta: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+      echo "install_git_delta: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
     fi
   fi
 }
@@ -711,7 +711,7 @@ install_bat () {
       install_generic_github "sharkdp/bat" "bat" "i686-unknown-linux-musl"
     else
       echo "";
-      echo "install_bat: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+      echo "install_bat: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
     fi
   fi
 }
@@ -725,7 +725,7 @@ install_ytdlp() {
       install_generic_github "yt-dlp/yt-dlp" "yt-dlp" --exact
     else
       echo "";
-      echo "install_ytdlp: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+      echo "install_ytdlp: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
     fi
   fi
   install_ffmpeg
@@ -739,7 +739,7 @@ install_tput () {
       install_generic_apk "ncurses" "tput"
     else
       echo "";
-      echo "install_tput: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+      echo "install_tput: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
     fi
   fi
 }
@@ -750,7 +750,7 @@ install_curl () {
       install_generic_apk "curl"
     else
       echo "";
-      echo "install_curl: Unable to install - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+      echo "install_curl: Unable to install - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
     fi
   fi
 }
@@ -761,7 +761,7 @@ install_vim () {
       install_generic_apk "vim"
     else
       echo "";
-      echo "install_vim: Unable to install - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+      echo "install_vim: Unable to install - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
     fi
   fi
 }
@@ -772,7 +772,7 @@ install_perl () {
       install_generic_apk "perl"
     else
       echo "";
-      echo "install_perl: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+      echo "install_perl: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
     fi
   fi
 }
@@ -783,7 +783,7 @@ install_opensshkeygen () {
       install_generic_apk "openssh-keygen" "ssh-keygen"
     else
       echo "";
-      echo "install_opensshkeygen: Unable to install - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+      echo "install_opensshkeygen: Unable to install - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
     fi
   fi
 }
@@ -794,7 +794,7 @@ install_python3 () {
       install_generic_apk "python3"
     else
       echo "";
-      echo "install_python3: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+      echo "install_python3: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
     fi
   fi
 }
@@ -805,7 +805,7 @@ install_whereis () {
       install_generic_apk "util-linux" "whereis"
     else
       echo "";
-      echo "install_whereis: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+      echo "install_whereis: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
     fi
   fi
 }
@@ -816,7 +816,7 @@ install_less () {
       install_generic_apk "less"
     else
       echo "";
-      echo "install_less: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+      echo "install_less: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
     fi
   fi
 }
@@ -832,7 +832,7 @@ install_aria2 () {
       fi
     else
       echo "";
-      echo "Unable to install aria2 - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+      echo "Unable to install aria2 - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
     fi
   fi
 }
@@ -914,7 +914,7 @@ install_git () {
       install_generic_apk "git"
     else
       echo "";
-      echo "Unable to install git - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+      echo "Unable to install git - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
     fi
   fi
 }
@@ -938,7 +938,7 @@ install_pip () {
       fi
     else
       echo "";
-      echo "Unable to install pip - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+      echo "Unable to install pip - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
     fi
   fi
 }
@@ -959,6 +959,6 @@ install_asitop () {
     fi
   else
     echo "";
-    echo "Unable to install asitop - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"
+    echo "Unable to install asitop - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
   fi
 }

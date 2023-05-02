@@ -408,7 +408,7 @@ githubCloneByCurl() {
   fi
 
   if [ -d "$dest_folder" ] && [ -d "$dest_folder/.git" ];then
-    echo "  ++ SUCCESS: Downloaded and set up $repo_name in $dest_folder ++"
+    echo "  ++ SUCCESS: Cloned $repo_name -> $dest_folder ++"
   else
     echo " -- githubCloneByCurl - FAILED - didn't find folder or failed git rehydrate"
   fi
