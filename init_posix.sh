@@ -84,11 +84,7 @@ HOMEREPO="$HOME/.dotfiles"
 # Init dotfiles repo (if came from tarball/zip)
 if [ -z "$(git -C "$HOMEREPO" remote show origin 2>/dev/null)" ]; then
   echo "Init $HOMEREPO dotfiles remote git connection..."
-  $git_eng -C "$HOMEREPO" init
-  $git_eng -C "$HOMEREPO" remote add origin https://github.com/WaterNS/.dotfiles.git
-  $git_eng -C "$HOMEREPO" fetch origin
-  $git_eng -C "$HOMEREPO" reset origin/master
-  $git_eng -C "$HOMEREPO" branch --set-upstream-to=origin/master master
+  reHydrateRepo "$HOMEREPO" "https://github.com/WaterNS/.dotfiles.git"
 fi
 
 # Update dotfiles repo
