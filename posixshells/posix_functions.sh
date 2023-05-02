@@ -395,7 +395,7 @@ githubCloneByCurl() {
   fi
 
   # Identify which type of archive to fetch
-  echo "Downloading, extracting, and rehydrating $repo_url to $dest_folder ..."
+  echo "Downloading and rehydrating repo $repo_url to $dest_folder ..."
   if [ -x "$(command -v tar)" ]; then
     archive_url="${repo_url%/}/tarball/master"
     mkdir -p "$dest_folder" && curl -L -s "$archive_url" | tar xz --strip 1 -C "$dest_folder" && reHydrateRepo "$dest_folder" "$repo_remote"

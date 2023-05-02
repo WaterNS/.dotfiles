@@ -34,7 +34,7 @@ install_generic_apk () {
       apk add "$__pkgName"
 
       if [ -x "$(command -v "$__executableName")" ]; then
-        echo "GOOD - $__executableName is now available"
+        echo "  ++ GOOD - $__executableName is now available ++"; echo "";
       else
         echo "BAD - $__executableName doesn't seem to be available"
       fi
@@ -90,7 +90,7 @@ identify_github_pkg () {
   # $__results=""
 
   #echo "Looking up URLs for $__repoName..."
-  __results=$(curl -S "$__repoURL" | grep url | grep browser_download_url)
+  __results=$(curl -S -s "$__repoURL" | grep url | grep browser_download_url)
   #echo "$__results"
   if [ -n "$__searchExcludeString" ]; then
     #echo "Excluding results with '$__searchExcludeString'"
@@ -129,7 +129,7 @@ install_generic_homebrew () {
       echo "NOTE: $__pkgName not found, availing into dotfiles bin"
       echo "------------------------------------------------"
       __pkgurl="https://formulae.brew.sh/api/formula/$__pkgName.json"
-      bottles=$(curl -S "$__pkgurl" | jq -r "[.bottle.stable.files][0]")
+      bottles=$(curl -S -s "$__pkgurl" | jq -r "[.bottle.stable.files][0]")
 
       if [ "$bottles" ]; then
         if contains "$(arch)" "arm64"; then
@@ -151,7 +151,7 @@ install_generic_homebrew () {
         __fileName=${latest##*/}
         # shellcheck disable=SC2086
         # curl has a hard time with the URL when doulbe quoted (probably due to colons)
-        curl -H "Authorization: Bearer QQ==" -L $latest > "$HOME/.dotfiles/opt/tmp/$__fileName"; echo ""
+        curl -H "Authorization: Bearer QQ==" -L -S -s $latest > "$HOME/.dotfiles/opt/tmp/$__fileName"; echo ""
 
         mkdir "$HOME/.dotfiles/opt/tmp/$__pkgName"
         tar -xzf "$HOME/.dotfiles/opt/tmp/$__fileName" -C "$HOME/.dotfiles/opt/tmp/$__pkgName/"
@@ -162,7 +162,7 @@ install_generic_homebrew () {
       if [ -x "$(command -v "$__executableName")" ]; then
         rm "$HOME/.dotfiles/opt/tmp/$__fileName"
         rm -rf "$HOME/.dotfiles/opt/tmp/$__pkgName"
-        echo "GOOD - $__pkgName is now available"
+        echo "  ++ GOOD - $__pkgName is now available ++"; echo "";
       else
         echo "BAD - $__pkgName doesn't seem to be available"
       fi
@@ -220,7 +220,7 @@ install_generic_github () {
       echo "------------------------------------------------"
       # shellcheck disable=SC2086
       __pkgRelease=$(identify_github_pkg $__originalArgs)
-      echo "pkg: $__pkgRelease"
+      #echo "pkg: $__pkgRelease"
 
       if [ "$__pkgRelease" ];then
         if [ ! -d "$HOME/.dotfiles/opt/tmp" ]; then
@@ -232,12 +232,12 @@ install_generic_github () {
 
         echo "Downloading ${__executableName}..."
         if [ -z "$__fileExt" ]; then
-          curl -L "$__pkgRelease" -o "$HOME/.dotfiles/opt/bin/$__executableName"; echo ""
+          curl -L -S -s "$__pkgRelease" -o "$HOME/.dotfiles/opt/bin/$__executableName"; echo ""
           chmod +x "$HOME/.dotfiles/opt/bin/$__executableName";
         else
           # echo "url: $__pkgRelease"
           # echo "location: $HOME/.dotfiles/opt/tmp/$__fileName"
-          curl -L "$__pkgRelease" -o "$HOME/.dotfiles/opt/tmp/$__fileName"; echo ""
+          curl -L -S -s "$__pkgRelease" -o "$HOME/.dotfiles/opt/tmp/$__fileName"; echo ""
           mkdir "$HOME/.dotfiles/opt/tmp/$__pkgName"
 
           echo "Extracting archive..."
@@ -263,7 +263,7 @@ install_generic_github () {
       if [ -x "$(command -v "$__executableName")" ]; then
         rm -f "$HOME/.dotfiles/opt/tmp/$__fileName"
         rm -rf "$HOME/.dotfiles/opt/tmp/$__pkgName"
-        echo "GOOD - $__executableName is now available"
+        echo "  ++ GOOD - $__executableName is now available ++"; echo "";
       else
         echo "BAD - $__executableName doesn't seem to be available"
         echo ""
@@ -305,10 +305,10 @@ install_generic_binary () {
 
         echo "Downloading ${__executableName}..."
         if [ -z "$__fileExt" ]; then
-          curl -L "$__pkgRelease" -o "$HOME/.dotfiles/opt/bin/$__executableName"; echo ""
+          curl -L -S -s "$__pkgRelease" -o "$HOME/.dotfiles/opt/bin/$__executableName"; echo ""
           chmod +x "$HOME/.dotfiles/opt/bin/$__executableName";
         else
-          curl -L "$__pkgRelease" -o "$HOME/.dotfiles/opt/tmp/$__fileName"; echo ""
+          curl -L -S -s "$__pkgRelease" -o "$HOME/.dotfiles/opt/tmp/$__fileName"; echo ""
           mkdir "$HOME/.dotfiles/opt/tmp/$__pkgName"
 
           echo "Extracting archive..."
@@ -334,7 +334,7 @@ install_generic_binary () {
       if [ -x "$(command -v "$__executableName")" ]; then
         rm -f "$HOME/.dotfiles/opt/tmp/$__fileName"
         rm -rf "$HOME/.dotfiles/opt/tmp/$__pkgName"
-        echo "GOOD - $__executableName is now available"
+        echo "  ++ GOOD - $__executableName is now available ++"; echo "";
       else
         echo "BAD - $__executableName doesn't seem to be available"
       fi
@@ -357,13 +357,13 @@ install_diffsofancy () {
     if [ -x "$(command -v perl)" ]; then
       echo "NOTE: diff-so-fancy not found, downloading to dotfiles bin location"
       echo "------------------------------------------------"
-      echo ""; echo "Pulling down: diff-so-fancy (better git diff)"
+      #echo ""; echo "Pulling down: diff-so-fancy (better git diff)"
       diffsofancy="https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy"
 
-      curl $diffsofancy > "$HOMEREPO/opt/bin/diff-so-fancy" && chmod 0755 "$HOMEREPO/opt/bin/diff-so-fancy";
+      curl -S -s $diffsofancy > "$HOMEREPO/opt/bin/diff-so-fancy" && chmod 0755 "$HOMEREPO/opt/bin/diff-so-fancy";
 
       if [ -f "$HOMEREPO/opt/bin/diff-so-fancy" ]; then
-        echo "GOOD - diff-so-fancy is now available"
+        echo "  ++ GOOD - diff-so-fancy is now available ++"; echo "";
       else
         echo "BAD - diff-so-fancy doesn't seem to be available"
       fi
@@ -379,7 +379,7 @@ install_youtubedl () {
       install_curl
       echo "NOTE: youtube-dl not found, downloading to dotfiles bin location"
       echo "------------------------------------------------"
-      curl -L https://yt-dl.org/downloads/latest/youtube-dl -o "$HOME/.dotfiles/opt/bin/youtube-dl"; echo ""
+      curl -L -S -s https://yt-dl.org/downloads/latest/youtube-dl -o "$HOME/.dotfiles/opt/bin/youtube-dl"; echo ""
       chmod a+rx "$HOME/.dotfiles/opt/bin/youtube-dl"
     fi
     install_ffmpeg
@@ -422,7 +422,7 @@ install_ffmpeg () {
       rm -r "$HOME/.dotfiles/opt/tmp/ffmpeg.7z"
 
       if [ -x "$(command -v ffmpeg)" ]; then
-        echo "GOOD - ffmpeg is now available"
+        echo "  ++ GOOD - ffmpeg is now available ++"; echo "";
       else
         echo "BAD - ffmpeg doesn't seem to be available"
       fi
@@ -457,7 +457,7 @@ install_ffprobe () {
       rm -r "$HOME/.dotfiles/opt/tmp/ffprobe.7z"
 
       if [ -x "$(command -v ffprobe)" ]; then
-        echo "GOOD - ffprobe is now available"
+        echo "  ++ GOOD - ffprobe is now available ++"; echo "";
       else
         echo "BAD - ffprobe doesn't seem to be available"
       fi
@@ -480,14 +480,14 @@ install_phantomjs () {
         fi
 
         phantomjs="http://phantomjs.org/download.html"
-        latest=$(curl -L $phantomjs | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep osx.zip)
-        curl -L "$latest" -o "$HOME/.dotfiles/opt/tmp/phantomjs.zip"; echo ""
+        latest=$(curl -L -S -s $phantomjs | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep osx.zip)
+        curl -L -S -s "$latest" -o "$HOME/.dotfiles/opt/tmp/phantomjs.zip"; echo ""
 
         unzip -j "$HOME/.dotfiles/opt/tmp/phantomjs.zip" "*/bin/phantomjs" -d "$HOME/.dotfiles/opt/bin/"
         rm -r "$HOME/.dotfiles/opt/tmp/phantomjs.zip"
 
         if [ -x "$(command -v phantomjs)" ]; then
-          echo "GOOD - phantomjs is now available"
+          echo "  ++ GOOD - phantomjs is now available ++"; echo "";
         else
           echo "BAD - phantomjs doesn't seem to be available"
         fi
@@ -555,7 +555,7 @@ install_nerdfonts () {
           https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/DroidSansMono/complete/Droid%20Sans%20Mono%20Nerd%20Font%20Complete.otf
 
         if [ -f "$HOME/Library/Fonts/dotfiles/$fontname" ]; then
-          echo "GOOD - nerd-fonts are now available"
+          echo "  ++ GOOD - nerd-fonts are now available ++"; echo "";
         else
           echo "BAD - nerd-fonts don't seem to be available"
         fi
@@ -587,11 +587,11 @@ install_prettyping () {
         echo "NOTE: prettyping not found, availing into dotfiles bin"
         echo "------------------------------------------------"
 
-        curl -L https://raw.githubusercontent.com/denilsonsa/prettyping/master/prettyping -o ~/.dotfiles/opt/bin/prettyping
+        curl -L -S -s https://raw.githubusercontent.com/denilsonsa/prettyping/master/prettyping -o ~/.dotfiles/opt/bin/prettyping
         chmod +x ~/.dotfiles/opt/bin/prettyping
 
         if [ -x "$(command -v prettyping)" ]; then
-          echo "GOOD - prettyping is now available"
+          echo "  ++ GOOD - prettyping is now available ++"; echo "";
         else
           echo "BAD - prettyping doesn't seem to be available"
         fi
@@ -617,7 +617,7 @@ install_ohmyzsh () {
       sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
       if [ -d ~/.dotfiles/opt/ohmyzsh ]; then
-        echo "GOOD - OhMyZSH is now available"
+        echo "  ++ GOOD - OhMyZSH is now available ++"; echo "";
       else
         echo "BAD - OhMyZSH doesn't seem to be available"
       fi
@@ -643,10 +643,10 @@ install_blesh () {
   #   fi
 
   #   __pkgurl="https://api.github.com/repos/akinomyoga/ble.sh/releases/latest"
-  #   latest=$(curl $__pkgurl -s  | grep url | grep "tar.xz" | sed 's/.*\(http[s?]:\/\/.*[^"]\).*/\1/')
+  #   latest=$(curl $__pkgurl -S -s  | grep url | grep "tar.xz" | sed 's/.*\(http[s?]:\/\/.*[^"]\).*/\1/')
   #   __fileName=${latest##*/}
 
-  #   curl -L "$latest" -o "$HOME/.dotfiles/opt/tmp/$__fileName"; echo ""
+  #   curl -L -S -s "$latest" -o "$HOME/.dotfiles/opt/tmp/$__fileName"; echo ""
 
   #   mkdir "$HOME/.dotfiles/opt/tmp/$__pkgsafename"
   #   tar -xzf "$HOME/.dotfiles/opt/tmp/$__fileName" -C "$HOME/.dotfiles/opt/tmp/$__pkgsafename"
@@ -657,7 +657,7 @@ install_blesh () {
   #   rm -rf "$HOME/.dotfiles/opt/tmp/$__pkgsafename"
 
   #   if [ -f "$HOME/.dotfiles/opt/bash-extras/$__pkgsafename/$__pkgName" ]; then
-  #     echo "GOOD - $__pkgName ($__pkgdesc) is now available"
+  #     echo "  ++ GOOD - $__pkgName ($__pkgdesc) is now available ++"; echo "";
   #   else
   #     echo "BAD - $__pkgName ($__pkgdesc) doesn't seem to be available"
   #   fi
@@ -844,14 +844,14 @@ install_homebrew () {
       install_xcodeCMDlineTools
       __homebrewNewDir="$HOME/.dotfiles/opt/homebrew"
       mkdir -p "$__homebrewNewDir"
-      curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C "$__homebrewNewDir"
+      curl -L -S -s https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C "$__homebrewNewDir"
 
       eval "$("$__homebrewNewDir"/bin/brew shellenv)"
       brew update --force --quiet
       chmod -R go-w "$(brew --prefix)/share/zsh"
 
       if [ -x "$(command -v brew)" ]; then
-        echo "GOOD - brew is now available"
+        echo "  ++ GOOD - brew is now available ++"; echo "";
       else
         echo "BAD - brew doesn't seem to be available"
       fi
@@ -874,7 +874,7 @@ install_xcodeCMDlineTools () {
       if [ -f "$in_progress" ]; then rm ${in_progress}; fi
 
       if [ -f "/Library/Developer/CommandLineTools/usr/bin/clang" ]; then
-        echo "GOOD - Command Line Tools are now available"
+        echo "  ++ GOOD - Command Line Tools are now available ++"; echo "";
       else
         echo "BAD - Command Line Tools don't seem to be available"
       fi
@@ -889,7 +889,7 @@ install_macRosetta2 () {
       softwareupdate --install-rosetta --agree-to-license || echo 'Installation failed.' 1>&2
 
       if [ -f "/Library/Apple/usr/share/rosetta/rosetta" ]; then
-        echo "GOOD - Rosetta2 is now available"
+        echo "  ++ GOOD - Rosetta2 is now available ++"; echo "";
       else
         echo "BAD - Rosetta2 don't seem to be available"
       fi
@@ -907,7 +907,7 @@ install_git () {
       fi
 
       if isRealCommand "git"; then
-        echo "GOOD - git is now available"
+        echo "  ++ GOOD - git is now available ++"; echo "";
       else
         echo "BAD - git doesn't seem to be available"
       fi
@@ -933,7 +933,7 @@ install_pip () {
       python3 -m ensurepip --upgrade
 
       if isRealCommand "pip"; then
-        echo "GOOD - pip is now available"
+        echo "  ++ GOOD - pip is now available ++"; echo "";
       else
         echo "BAD - pip doesn't seem to be available"
       fi
@@ -952,7 +952,7 @@ install_asitop () {
         pip install asitop --target ~/.dotfiles/opt/pip_packages/
 
         if isRealCommand "asitop"; then
-          echo "GOOD - asitop is now available"
+          echo "  ++ GOOD - asitop is now available ++"; echo "";
         else
           echo "BAD - asitop doesn't seem to be available"
         fi
