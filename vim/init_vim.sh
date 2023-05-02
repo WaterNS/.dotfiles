@@ -21,7 +21,7 @@ fi
 #VIM Theme: Badwolf
 if [ ! -d "$HOME/.vim/bundle/badwolf" ]; then
 	# git clone https://github.com/sjl/badwolf/ ~/.vim/bundle/badwolf; echo ""
-  githubCloneByCurl https://github.com/sjl/badwolf/ ~/.vim/bundle/badwolf; echo ""
+  githubCloneByCurl https://github.com/sjl/badwolf ~/.vim/bundle/badwolf; echo ""
 elif [ "$u" = true  ]; then updategitrepo "BadWolf" "VIM theme" ~/.vim/bundle/badwolf ;
 fi
 
@@ -41,8 +41,8 @@ fi
 #VIM Plugin: Super Tab (tab to complete)
 if [ ! -d "$HOME/.vim/bundle/supertab" ]; then
 	printf -- "- Installing: SuperTab (VIM tab completion plugin)\n";
-	# git clone https://github.com/ervandew/supertab.git ~/.vim/bundle/supertab; echo ""
-  githubCloneByCurl https://github.com/ervandew/supertab.git ~/.vim/bundle/supertab; echo ""
+	# git clone https://github.com/ervandew/supertab ~/.vim/bundle/supertab; echo ""
+  githubCloneByCurl https://github.com/ervandew/supertab ~/.vim/bundle/supertab; echo ""
 elif [ "$u" = true  ]; then updategitrepo "supertab" "VIM tab completion plugin" ~/.vim/bundle/supertab ;
 fi
 
