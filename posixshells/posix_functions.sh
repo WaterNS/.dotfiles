@@ -548,3 +548,42 @@ githubCloneByCurl() {
     echo " -- githubCloneByCurl - FAILED - didn't find folder or failed git rehydrate"
   fi
 }
+
+shortcutHere() {
+  #Creates Finder shortcuts in OSX, via commandline
+  if [ "$OS_FAMILY" = "Darwin" ]; then
+    target="$1"
+    targetBasename=$(basename "$target")
+    shortcutLocation=""
+
+    shortcutLocation=$PWD
+
+    if [ -n "$target" ] && [ -n "$targetBasename" ] && [ -n "$shortcutLocation" ];then
+      from=$(printf '%s' "$(cd "$(dirname "$target")" && pwd)/$(basename "$target")")
+      shortcutName=$shortcutLocation/$targetBasename
+      #shortcutName=$targetBasename
+      if [ -f "$from" ]; then
+          type="file"
+      elif [ -d "$from" ]; then
+          type="folder"
+      else
+          echo "mkalias: invalid path or unsupported type: '$from'" >&2
+          return 1
+      fi
+
+    echo "target: $target"
+    echo "dest: $shortcutLocation/$targetBasename (type: $type)"
+
+      osascript <<EOF
+        tell application "Finder"
+          make new alias to $type (posix file "$from") at (posix file "$shortcutLocation")
+          set name of result to "$shortcutName"
+        end tell
+EOF
+    else
+      echo "Missing required items";
+    fi
+  else
+    echo "Unable to run makeShortcut - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function";
+  fi
+}
