@@ -348,34 +348,96 @@ compare_versions() {
 }
 
 reHydrateRepo() {
-  if [ -z "$1" ] || [ -z "$2" ]; then
-    echo "Usage: reHydrateRepo <path_to_repo> <repo_remote_url> (git is required)"
-    return 1
+  path_to_repo=""
+  repo_remote_url=""
+  depth=""
+
+  positional_counter=0
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      -p|--path)
+        path_to_repo="$2"; shift 2 ;;
+      -r|--repo)
+        repo_remote_url="$2"; shift 2 ;;
+      -d|--depth)
+        depth="$2"; shift 2 ;;
+      --)
+        shift; break ;;
+      -*)
+        echo "Unknown option: $1" >&2; return 1 ;;
+      *)
+        if [ $positional_counter -eq 0 ]; then
+          path_to_repo="$1"
+        elif [ $positional_counter -eq 1 ]; then
+          repo_remote_url="$1"
+        elif [ $positional_counter -eq 2 ]; then
+          depth="$1"
+        fi
+        positional_counter=$((positional_counter + 1))
+        shift ;;
+    esac
+  done
+
+  if [ -z "$path_to_repo" ] || [ -z "$repo_remote_url" ]; then
+    echo "Usage: reHydrateRepo [-p|--path] <path_to_repo> [-r|--repo] <repo_remote_url> [-d|--depth depth] (git is required)"
+    return 2
   fi
 
   if [ ! -x "$(command -v git)" ]; then
     echo "ERROR - reHydrateRepo - * git * is required"
-    return 2
+    return 3
   fi
-
-  path_to_repo="$1"
-  repo_remote_url="$2"
 
   if [ -d "$path_to_repo" ]; then
     git -C "$path_to_repo" init -q
     git -C "$path_to_repo" remote add origin "$repo_remote_url"
-    git -C "$path_to_repo" fetch -q origin
+    if [ -n "$depth" ]; then
+      git -C "$path_to_repo" fetch -q --depth="$depth" origin
+    else
+      git -C "$path_to_repo" fetch -q origin
+    fi
     git -C "$path_to_repo" reset -q origin/master
+    git -C "$path_to_repo" checkout -q master
     git -C "$path_to_repo" branch -q --set-upstream-to=origin/master master
   else
     echo "ERROR - reHydrateRepo - Folder provided doesn't exist: $path_to_repo"
-    return 3
+    return 4
   fi
 }
 
 githubCloneByCurl() {
-  if [ -z "$1" ]; then
-    echo "Usage: githubCloneByCurl <repo_url> [destination_folder] (requires curl + tar|unzip)"
+  repo_url=""
+  dest_folder=""
+  depth=""
+
+  positional_counter=0
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      -r|--repo)
+        repo_url="$2"; shift 2 ;;
+      -p|--path)
+        dest_folder="$2"; shift 2 ;;
+      -d|--depth)
+        depth="$2"; shift 2 ;;
+      --)
+        shift; break ;;
+      -*)
+        echo "Unknown option: $1" >&2; return 1 ;;
+      *)
+        if [ $positional_counter -eq 0 ]; then
+          repo_url="$1"
+        elif [ $positional_counter -eq 1 ]; then
+          dest_folder="$1"
+        elif [ $positional_counter -eq 2 ]; then
+          depth="$1"
+        fi
+        positional_counter=$((positional_counter + 1))
+        shift ;;
+    esac
+  done
+
+  if [ -z "$repo_url" ]; then
+    echo "Usage: githubCloneByCurl [-r|--repo] <repo_url> [-p|--path] [destination_folder] [-d|--depth depth] (requires curl + tar|unzip)"
     return 1
   fi
 
@@ -384,13 +446,10 @@ githubCloneByCurl() {
     return 2
   fi
 
-  repo_url="$1"
   [ "${repo_url%.git}" != "$repo_url" ] && repo_remote=$repo_url || repo_remote="$repo_url.git"
   repo_name=$(basename "$repo_url" .git)
 
-  if [ -n "$2" ]; then
-    dest_folder="$2"
-  else
+  if [ -z "$dest_folder" ]; then
     dest_folder="$PWD/$repo_name"
   fi
 
@@ -398,10 +457,10 @@ githubCloneByCurl() {
   echo "Downloading and rehydrating repo $repo_url to $dest_folder ..."
   if [ -x "$(command -v tar)" ]; then
     archive_url="${repo_url%/}/tarball/master"
-    mkdir -p "$dest_folder" && curl -L -s "$archive_url" | tar xz --strip 1 -C "$dest_folder" && reHydrateRepo "$dest_folder" "$repo_remote"
+    mkdir -p "$dest_folder" && curl -L -s "$archive_url" | tar xz --strip 1 -C "$dest_folder" && reHydrateRepo "$dest_folder" "$repo_remote" "$depth"
   elif [ -x "$(command -v unzip)" ]; then
     archive_url="${repo_url%/}/zipball/master"
-    mkdir -p "$dest_folder" && curl -L -s "$archive_url" | unzip -q -d "$dest_folder" - && reHydrateRepo "$dest_folder" "$repo_remote"
+    mkdir -p "$dest_folder" && curl -L -s "$archive_url" | unzip -q -d "$dest_folder" - && reHydrateRepo "$dest_folder" "$repo_remote" "$depth"
   else
     echo " -- githubCloneByCurl: Couldn't find extract tool (tar/unzip)"
     return 1
