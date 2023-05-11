@@ -41,7 +41,7 @@ if ($reinit) {
 }
 
 if ($update) {
-  updategitrepo "dotfiles" "profile configs" "$HOMEREPO"
+  updateGitRepo "dotfiles" "profile configs" "$HOMEREPO"
 }
 
 if ($reinit) {Remove-Item "$HOMEREPO/opt" -Recurse}

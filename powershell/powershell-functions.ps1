@@ -1,4 +1,4 @@
-Function updategitrepo {
+Function updateGitRepo {
   param (
     $reponame=$($args[0]),
     $description=$($args[1]),

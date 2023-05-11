@@ -1,5 +1,39 @@
 #!/bin/sh
 
+# Function: Update git repo (if needed)
+updateGitRepo () {
+  olddir=$PWD
+  reponame=$1
+  description=$2
+  repolocation=$3
+
+  # Ignore git config and force git output in English to make our work easier
+  git_eng="env LANG=C GIT_CONFIG_NOSYSTEM=1 GIT_CONFIG=/dev/null HOME=/dev/null git"
+
+  #echo ""
+  #echo "-Check updates: $reponame ($description)"
+  cd "$repolocation" || return
+  $git_eng fetch
+
+  if [ "$($git_eng rev-list --count master..origin/master)" -gt 0 ]; then
+    printf -- "--Updating %s %s repo " "$reponame" "$description"
+    printf "(from %s to " "$($git_eng rev-parse --short master)"
+    printf "%s)" "$($git_eng rev-parse --short origin/master)"
+    $git_eng pull origin master --quiet
+
+    # Restart the init script if it self updated
+    if [ "$reponame" = "dotfiles" ]; then
+      cd "$olddir" || return
+      echo ""
+      echo ""
+      exec "$SCRIPTPATHINIT" "$INITSCRIPTARGS";
+    fi
+
+  fi
+
+  cd "$olddir" || return
+}
+
 # statByteSize: Handle different flags for GNU/Linux `stat` vs Darwin version
 if [ -x "$(command -v stat)" ]; then
   if [ "$OS_FAMILY" = "Darwin" ]; then

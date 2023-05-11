@@ -2,16 +2,18 @@
 
 SCRIPTDIR=$( cd "$(dirname "$0")" || exit ; pwd -P )
 SCRIPTPATH=$SCRIPTDIR/$(basename "$0")
-cmdlineargs=""
+export SCRIPTPATHINIT="$SCRIPTPATH"
+INITSCRIPTARGS=""
 
 # Check passed options/args
 while getopts ":ur" opt ; do
   case $opt in
-    u) u=true && cmdlineargs="-u";; # Handle -u, for Update flag
-    r) r=true && cmdlineargs="-r";; # Handle -r, for ReInit flag
+    u) u=true && INITSCRIPTARGS="-u";; # Handle -u, for Update flag
+    r) r=true && INITSCRIPTARGS="-r";; # Handle -r, for ReInit flag
     *) ;;
   esac
 done
+export INITSCRIPTARGS
 
 ### Set ZSH to word split IFS
 if [ "$ZSH_VERSION" ]; then
@@ -42,37 +44,6 @@ install_git
 # Ignore git config and force git output in English to make our work easier
 git_eng="env LANG=C GIT_CONFIG_NOSYSTEM=1 GIT_CONFIG=/dev/null HOME=/dev/null git"
 
-# Function: Update git repo (if needed)
-updategitrepo () {
-  olddir=$PWD
-  reponame=$1
-  description=$2
-  repolocation=$3
-
-  #echo ""
-  #echo "-Check updates: $reponame ($description)"
-  cd "$repolocation" || return
-  $git_eng fetch
-
-  if [ "$($git_eng rev-list --count master..origin/master)" -gt 0 ]; then
-    printf -- "--Updating %s %s repo " "$reponame" "$description"
-    printf "(from %s to " "$($git_eng rev-parse --short master)"
-    printf "%s)" "$($git_eng rev-parse --short origin/master)"
-    $git_eng pull origin master --quiet
-
-    # Restart the init script if it self updated
-    if [ "$reponame" = "dotfiles" ]; then
-      cd "$olddir" || return
-      echo ""
-      echo ""
-      exec "$SCRIPTPATH" "$cmdlineargs";
-    fi
-
-  fi
-
-  cd "$olddir" || return
-}
-
 if [ "$r" ]; then
   echo "ReInitializing...";
 elif [ "$u" ]; then
@@ -89,7 +60,7 @@ fi
 
 # Update dotfiles repo
 if [ "$u" ]; then
-  updategitrepo "dotfiles" "profile configs" "$HOMEREPO"
+  updateGitRepo "dotfiles" "profile configs" "$HOMEREPO"
 fi
 
 # Script to link dotfiles from home folder to dotfiles versions
