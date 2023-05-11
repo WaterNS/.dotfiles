@@ -1,25 +1,67 @@
 #!/bin/sh
 
 # Function: Update git repo (if needed)
-updateGitRepo () {
+updateGitRepo() {
   olddir=$PWD
-  reponame=$1
-  description=$2
-  repolocation=$3
+  reponame=""
+  description=""
+  repolocation=""
+  depth=""
 
   # Ignore git config and force git output in English to make our work easier
   git_eng="env LANG=C GIT_CONFIG_NOSYSTEM=1 GIT_CONFIG=/dev/null HOME=/dev/null git"
 
-  #echo ""
-  #echo "-Check updates: $reponame ($description)"
+  positional_counter=0
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      -n|--name)
+        reponame="$2"; shift 2 ;;
+      -desc|--description)
+        description="$2"; shift 2 ;;
+      -p|--path)
+        repolocation="$2"; shift 2 ;;
+      -z|--depth)
+        depth="$2"; shift 2 ;;
+      --)
+        shift; break ;;
+      -*)
+        echo "Unknown option: $1" >&2; return 1 ;;
+      *)
+        if [ $positional_counter -eq 0 ]; then
+          reponame="$1"
+        elif [ $positional_counter -eq 1 ]; then
+          description="$1"
+        elif [ $positional_counter -eq 2 ]; then
+          repolocation="$1"
+        elif [ $positional_counter -eq 3 ]; then
+          depth="$1"
+        fi
+        positional_counter=$((positional_counter + 1))
+        shift ;;
+    esac
+  done
+
+  if [ -z "$reponame" ] || [ -z "$description" ] || [ -z "$repolocation" ]; then
+    echo "Usage: updateGitRepo [-n|--name] <reponame> [-desc|--description] <description> [-p|--path] <repolocation> [-d|--depth depth]"
+    return 1
+  fi
+
   cd "$repolocation" || return
-  $git_eng fetch
+  if [ -n "$depth" ]; then
+    $git_eng fetch --depth="$depth" -q
+  else
+    $git_eng fetch -q
+  fi
 
   if [ "$($git_eng rev-list --count master..origin/master)" -gt 0 ]; then
     printf -- "--Updating %s %s repo " "$reponame" "$description"
     printf "(from %s to " "$($git_eng rev-parse --short master)"
     printf "%s)" "$($git_eng rev-parse --short origin/master)"
-    $git_eng pull origin master --quiet
+    if [ -n "$depth" ]; then
+      $git_eng pull --depth="$depth" origin master --quiet
+    else
+      $git_eng pull origin master --quiet
+    fi
 
     # Restart the init script if it self updated
     if [ "$reponame" = "dotfiles" ]; then
@@ -28,11 +70,11 @@ updateGitRepo () {
       echo ""
       exec "$SCRIPTPATHINIT" "$INITSCRIPTARGS";
     fi
-
   fi
 
   cd "$olddir" || return
 }
+
 
 # statByteSize: Handle different flags for GNU/Linux `stat` vs Darwin version
 if [ -x "$(command -v stat)" ]; then
