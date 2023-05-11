@@ -12,7 +12,7 @@ fi
 #ZSH theme: powerlevel10k
 if [ ! -d "$HOME/.dotfiles/opt/ohmyzsh-custom/themes/powerlevel10k" ]; then
 	# git clone https://github.com/romkatv/powerlevel10k ~/.dotfiles/opt/ohmyzsh-custom/themes/powerlevel10k;
-  githubCloneByCurl https://github.com/romkatv/powerlevel10k ~/.dotfiles/opt/ohmyzsh-custom/themes/powerlevel10k;
+  githubCloneByCurl https://github.com/romkatv/powerlevel10k ~/.dotfiles/opt/ohmyzsh-custom/themes/powerlevel10k --depth 1;
   echo ""
 elif [ "$u" = true  ]; then updategitrepo "Powerlevel10k" "OhMyZSH theme" ~/.dotfiles/opt/ohmyzsh-custom/themes/powerlevel10k;
 fi
@@ -20,7 +20,7 @@ fi
 #ZSH extra: Auto Suggestions
 if [ ! -d "$HOME/.dotfiles/opt/zsh-extras/zsh-autosuggestions" ]; then
 	# git clone https://github.com/zsh-users/zsh-autosuggestions ~/.dotfiles/opt/zsh-extras/zsh-autosuggestions;
-  githubCloneByCurl https://github.com/zsh-users/zsh-autosuggestions ~/.dotfiles/opt/zsh-extras/zsh-autosuggestions;
+  githubCloneByCurl https://github.com/zsh-users/zsh-autosuggestions ~/.dotfiles/opt/zsh-extras/zsh-autosuggestions --depth 1;
   echo ""
 elif [ "$u" = true  ]; then updategitrepo "ZSH Auto Suggestions" "ZSH extra" ~/.dotfiles/opt/zsh-extras/zsh-autosuggestions;
 fi
@@ -28,7 +28,7 @@ fi
 #ZSH extra: Syntax Highlighting
 if [ ! -d "$HOME/.dotfiles/opt/zsh-extras/zsh-syntax-highlighting" ]; then
 	# git clone https://github.com/zsh-users/zsh-syntax-highlighting ~/.dotfiles/opt/zsh-extras/zsh-syntax-highlighting;
-  githubCloneByCurl https://github.com/zsh-users/zsh-syntax-highlighting ~/.dotfiles/opt/zsh-extras/zsh-syntax-highlighting;
+  githubCloneByCurl https://github.com/zsh-users/zsh-syntax-highlighting ~/.dotfiles/opt/zsh-extras/zsh-syntax-highlighting --depth 1;
   echo ""
 elif [ "$u" = true  ]; then updategitrepo "ZSH Syntax Highlighting" "ZSH extra" ~/.dotfiles/opt/zsh-extras/zsh-syntax-highlighting;
 fi
