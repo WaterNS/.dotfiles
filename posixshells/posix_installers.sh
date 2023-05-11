@@ -838,6 +838,7 @@ install_aria2 () {
 
 install_homebrew () {
   if [ "$OS_FAMILY" = "Darwin" ]; then
+    export HOMEBREW_INSTALL_FROM_API=1;
     if [ ! -x "$(command -v brew)" ]; then
       install_xcodeCMDlineTools
       __homebrewNewDir="$HOME/.dotfiles/opt/homebrew"
