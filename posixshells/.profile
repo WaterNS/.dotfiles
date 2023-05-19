@@ -67,6 +67,8 @@ export GIT_EDITOR=vim
 export VISUAL=vim
 export EDITOR=vim
 
+export CONDA_AUTO_ACTIVATE_BASE=false # Don't auto activate Conda on install
+
 # Enable highlight's integration with LESS (if available)
 [ -x "$(command -v highlight)" ] && export LESSOPEN="| highlight %s --out-format xterm256 --force"
 
