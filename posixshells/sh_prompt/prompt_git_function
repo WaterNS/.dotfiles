@@ -55,6 +55,10 @@ fi
 
 [ -n "$__ref" ] || return  # not a git repo
 
+# Default Branch:
+GITDEFAULTBRANCH="$(fetchGitDefaultBranch "$PWD")"
+export GITDEFAULTBRANCH
+
 #Check if Gone or not branch
 __goneBranch=$($git_eng branch -vv | grep "$__branch" | grep ': gone]')
 
@@ -161,7 +165,7 @@ unset gitstatusoutput
 
 # Count commits on new branch (that doesn't have a remote)
 if [ -z "$__git_ahead_count" ] && [ -z "$($git_eng config --get branch."$__branch".remote)" ]; then
-  __commitsOnBranch=$($git_eng rev-list master.. --count) #TODO: replace 'master' with looked up Parent branch
+  __commitsOnBranch=$($git_eng rev-list "$GITDEFAULTBRANCH".. --count)
   if [ "$__commitsOnBranch" ] && [ "$__commitsOnBranch" != "0" ]; then
     __git_ahead_count=$__commitsOnBranch
   fi

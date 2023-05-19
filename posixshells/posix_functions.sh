@@ -1,5 +1,34 @@
 #!/bin/sh
 
+fetchGitDefaultBranch() {
+  if [ "$#" -ne 1 ]; then
+    printf "Usage: fetchGitDefaultBranch /path/to/repo"
+    return 1
+  fi
+
+  if [ -d "$1" ]; then
+    # Default Branch:
+    GITDEFAULTBRANCH="master"
+    __gitLocalLookup=$($git_eng -C "$1" rev-parse --abbrev-ref origin/HEAD 2>/dev/null)
+    if [ -n "$__gitLocalLookup" ] && [ "$__gitLocalLookup" != "origin/HEAD" ]; then
+      GITDEFAULTBRANCH="$__gitLocalLookup"
+    else
+      # Second check: git remote show with sed
+      # assuming that "origin" is your remote. Replace "origin" with your actual remote name if different.
+      __gitDefaultRemoteBranch=$($git_eng -C "$1" remote show origin | sed -n '/HEAD branch/s/.*: //p' 2>/dev/null)
+      if [ -n "$__gitDefaultRemoteBranch" ]; then
+        GITDEFAULTBRANCH="$__gitDefaultRemoteBranch"
+      fi
+    fi
+
+    # strip out "origin/" if exists in $GITDEFAULTBRANCH
+    GITDEFAULTBRANCH=${GITDEFAULTBRANCH#origin/}
+
+    printf "%s" "$GITDEFAULTBRANCH"
+  fi
+}
+
+
 # Function: Update git repo (if needed)
 updateGitRepo() {
   olddir=$PWD
@@ -53,14 +82,15 @@ updateGitRepo() {
     $git_eng fetch -q
   fi
 
-  if [ "$($git_eng rev-list --count master..origin/master)" -gt 0 ]; then
+  GITDEFAULTBRANCH="$(fetchGitDefaultBranch "$repolocation")"
+  if [ "$($git_eng rev-list --count "$GITDEFAULTBRANCH"..origin/"$GITDEFAULTBRANCH")" -gt 0 ]; then
     printf -- "--Updating %s %s repo " "$reponame" "$description"
-    printf "(from %s to " "$($git_eng rev-parse --short master)"
-    printf "%s)" "$($git_eng rev-parse --short origin/master)"
+    printf "(from %s to " "$($git_eng rev-parse --short "$GITDEFAULTBRANCH")"
+    printf "%s)" "$($git_eng rev-parse --short origin/"$GITDEFAULTBRANCH")"
     if [ -n "$depth" ]; then
-      $git_eng pull --depth="$depth" origin master --quiet
+      $git_eng pull --depth="$depth" origin "$GITDEFAULTBRANCH" --quiet
     else
-      $git_eng pull origin master --quiet
+      $git_eng pull origin "$GITDEFAULTBRANCH" --quiet
     fi
 
     # Restart the init script if it self updated
@@ -472,9 +502,10 @@ reHydrateRepo() {
     else
       git -C "$path_to_repo" fetch -q origin
     fi
-    git -C "$path_to_repo" reset -q origin/master
-    git -C "$path_to_repo" checkout -q master
-    git -C "$path_to_repo" branch -q --set-upstream-to=origin/master master
+    GITDEFAULTBRANCH="$(GITDEFAULTBRANCH "$path_to_repo")"
+    git -C "$path_to_repo" reset -q origin/"$GITDEFAULTBRANCH"
+    git -C "$path_to_repo" checkout -q "$GITDEFAULTBRANCH"
+    git -C "$path_to_repo" branch -q --set-upstream-to=origin/"$GITDEFAULTBRANCH" "$GITDEFAULTBRANCH"
   else
     echo "ERROR - reHydrateRepo - Folder provided doesn't exist: $path_to_repo"
     return 4
