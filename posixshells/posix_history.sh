@@ -39,3 +39,6 @@ rm -f "$HOME/.vim/.netrwhist" >/dev/null 2>&1
 
 #SQLite: Remove history
 rm -f "$HOME/.sqlite_history" >/dev/null 2>&1
+
+#Python: Remove history
+rm -f "$HOME/.python_history" >/dev/null 2>&1
