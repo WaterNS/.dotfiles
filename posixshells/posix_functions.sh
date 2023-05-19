@@ -270,22 +270,29 @@ rootpid() { #Ref: https://stackoverflow.com/a/34765059/7650275
     fi
   fi
 
-  # Look up the parent of the given PID.
   PID=${PIDarg:-$$}
-  PARENT=$(ps -p "$PID" -o ppid=)
-  PARENTCMD=$(ps -p "$PID" -o args | awk 'NR>1')
 
-  # /sbin/init always has a PID of 1, so if you reach that, the current PID is
-  # the top-level parent. Otherwise, keep looking.
-  if [ "${PARENT}" -eq 1 ] || contains "$PARENTCMD" "$catchterm"; then
+  while true; do
+    PARENT=$(ps -p "$PID" -o ppid=)
+    PARENTCMD=$(ps -p "$PID" -o args | awk 'NR>1')
+
+    # /sbin/init always has a PID of 1, so if you reach that, the current PID is
+    # the top-level parent. Otherwise, keep looking.
+    if [ "${PARENT}" -eq 1 ]; then
       echo "${PID}"
-  else
-    if [ "$catchterm" ]; then
-      rootpid "${PARENT}" "$catchterm"
+      break
     else
-      rootpid "${PARENT}"
+      case "$PARENTCMD" in
+        *"$catchterm"*)
+          echo "${PID}"
+          break
+        ;;
+        *)
+          PID="${PARENT}"
+        ;;
+      esac
     fi
-  fi
+  done
 
   unset PARENT
   unset PARENTCMD
