@@ -22,7 +22,8 @@
     "fatals",
     "noopener", "noreferrer", "noindex",
     "readonly", "mixins", "vuex", "axios", "pathify",
-    "chocolatey", "Monitorian", "prettyping", "shellcheck"
+    "chocolatey", "Monitorian", "prettyping", "shellcheck",
+    "ggml", "subpattern", "neox"
   ],
   "ignoreWords": [
     "ify", "sify", // Word-'ify' hacks
