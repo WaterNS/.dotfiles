@@ -2,9 +2,12 @@
 
 fetchGitDefaultBranch() {
   if [ "$#" -ne 1 ]; then
-    printf "Usage: fetchGitDefaultBranch /path/to/repo"
+    echo "Usage: fetchGitDefaultBranch /path/to/repo"
     return 1
   fi
+
+  # Ignore git config and force git output in English to make our work easier
+  git_eng="env LANG=C GIT_CONFIG_NOSYSTEM=1 GIT_CONFIG=/dev/null HOME=/dev/null git"
 
   if [ -d "$1" ]; then
     # Default Branch:
@@ -24,7 +27,7 @@ fetchGitDefaultBranch() {
     # strip out "origin/" if exists in $GITDEFAULTBRANCH
     GITDEFAULTBRANCH=${GITDEFAULTBRANCH#origin/}
 
-    printf "%s" "$GITDEFAULTBRANCH"
+    echo "$GITDEFAULTBRANCH"
   fi
 }
 
