@@ -512,7 +512,7 @@ reHydrateRepo() {
     else
       git -C "$path_to_repo" fetch -q origin
     fi
-    GITDEFAULTBRANCH="$(GITDEFAULTBRANCH "$path_to_repo")"
+    GITDEFAULTBRANCH="$(fetchGitDefaultBranch "$path_to_repo")"
     git -C "$path_to_repo" reset -q origin/"$GITDEFAULTBRANCH"
     git -C "$path_to_repo" checkout -q "$GITDEFAULTBRANCH"
     git -C "$path_to_repo" branch -q --set-upstream-to=origin/"$GITDEFAULTBRANCH" "$GITDEFAULTBRANCH"
