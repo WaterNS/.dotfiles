@@ -68,7 +68,7 @@ __goneBranch=$($git_eng branch -vv | grep "$__branch" | grep ': gone]')
 # Between the two can identify when last updated or attempted a fetch.
 
 #-- Check to see if this branch has an upstream, cause if doesn't, we don't need to fetch
-if [ "$($git_eng config --get branch."$($git_eng rev-parse --abbrev-ref HEAD)".merge)" ] && [ -z "$__goneBranch" ]; then
+if [ "$($git_eng config --get branch."$($git_eng rev-parse --abbrev-ref HEAD 2>/dev/null)".merge)" ] && [ -z "$__goneBranch" ]; then
   __MaxFetchSeconds=600
   __upstream=$($git_eng rev-parse --abbrev-ref "@{upstream}")
   __gitdir=$($git_eng rev-parse --git-dir)
@@ -165,7 +165,7 @@ unset gitstatusoutput
 
 # Count commits on new branch (that doesn't have a remote)
 if [ -z "$__git_ahead_count" ] && [ -z "$($git_eng config --get branch."$__branch".remote)" ]; then
-  __commitsOnBranch=$($git_eng rev-list "$GITDEFAULTBRANCH".. --count)
+  __commitsOnBranch=$($git_eng rev-list "$GITDEFAULTBRANCH".. --count 2>/dev/null)
   if [ "$__commitsOnBranch" ] && [ "$__commitsOnBranch" != "0" ]; then
     __git_ahead_count=$__commitsOnBranch
   fi
