@@ -963,3 +963,25 @@ install_asitop () {
     echo "Unable to install asitop - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
   fi
 }
+
+install_tmux() {
+  if isMissingOrFakeCmd "tmux"; then
+    if [ "$OS_FAMILY" = "Darwin" ]; then
+      install_homebrew
+      if [ -x "$(command -v brew)" ] && isMissingOrFakeCmd "tmux"; then
+        brew install "tmux"
+      fi
+
+      if isRealCommand "tmux"; then
+        echo "  ++ GOOD - tmux is now available ++"; echo "";
+      else
+        echo "BAD - tmux doesn't seem to be available"
+      fi
+    elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
+      install_generic_apk "tmux"
+    else
+      echo "";
+      echo "Unable to install tmux - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
+    fi
+  fi
+}
