@@ -15,12 +15,12 @@ if [ -d ~/.dotfiles/opt/pip_packages/bin ]; then
   export PYTHONPATH
 fi
 
-# Activate TMUX session
-if [ -z "$TMUX" ] && [ -x "$(command -v tmux)" ] && [ "$TERM_PROGRAM" != "vscode" ]; then
-  # shellcheck disable=2093 #TMUX is taking over the process here
-  exec tmux; # This makes TMUX replace process, rather than becoming child process
-  #tmux attach -t default || tmux new -s default # This would spawn TMUX as child process
-fi
+# # Activate TMUX session
+# if [ -z "$TMUX" ] && [ -x "$(command -v tmux)" ] && [ "$TERM_PROGRAM" != "vscode" ]; then
+#   # shellcheck disable=2093 #TMUX is taking over the process here
+#   exec tmux; # This makes TMUX replace process, rather than becoming child process
+#   #tmux attach -t default || tmux new -s default # This would spawn TMUX as child process
+# fi
 
 #Identify running shell
 . ~/.dotfiles/posixshells/posix_id_shell.sh
