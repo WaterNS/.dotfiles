@@ -161,7 +161,7 @@ fi
 
 # Init Darwin based systems
 if [ "$OS_FAMILY" = "Darwin" ]; then
-  . "$HOMEREPO/posixshells/darwin_inits.sh"
+  . "$HOMEREPO/macOS/darwin_inits.sh"
 fi
 
 #Write last update file
