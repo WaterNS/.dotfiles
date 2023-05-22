@@ -43,7 +43,7 @@ rm -f "$HOME/.sqlite_history" >/dev/null 2>&1
 #Python: Remove history
 rm -f "$HOME/.python_history" >/dev/null 2>&1
 
-#TMUX: Clear rollback
-if [ -n "$TMUX" ]; then
-  tmux clear-history #clears rollback
-fi
+# #TMUX: Clear rollback - Likely causes issue on reload
+# if [ -n "$TMUX" ]; then
+#   tmux clear-history #clears rollback
+# fi
