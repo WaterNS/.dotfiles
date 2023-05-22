@@ -1,5 +1,27 @@
 #!/bin/sh
 
+# PATH: Include .dotfiles bin
+PATH=$PATH:~/.dotfiles/opt/bin
+
+# PATH: Include custom Homebrew bin
+if [ -d ~/.dotfiles/opt/homebrew/bin ]; then
+  PATH=$PATH:~/.dotfiles/opt/homebrew/bin
+fi
+
+# PATH: Include custom pip bin
+if [ -d ~/.dotfiles/opt/pip_packages/bin ]; then
+  PATH=$PATH:~/.dotfiles/opt/pip_packages/bin
+  PYTHONPATH=~/.dotfiles/opt/pip_packages
+  export PYTHONPATH
+fi
+
+# Activate TMUX session
+if [ -z "$TMUX" ] && [ -x "$(command -v tmux)" ]; then
+  # shellcheck disable=2093 #TMUX is taking over the process here
+  exec tmux; # This makes TMUX replace process, rather than becoming child process
+  #tmux attach -t default || tmux new -s default # This would spawn TMUX as child process
+fi
+
 # Identify Operating System (better uname)
 . ~/.dotfiles/posixshells/posix_id_os.sh
 echo "$OS_STRING";
@@ -18,21 +40,6 @@ echo "$HW_STRING";
 if [ ! -d ~/.vim/backups ]; then mkdir -p ~/.vim/backups; fi
 if [ ! -d ~/.vim/swaps ]; then mkdir -p ~/.vim/swaps; fi
 if [ ! -d ~/.vim/undo ]; then mkdir -p ~/.vim/undo; fi
-
-# PATH: Include .dotfiles bin
-PATH=$PATH:~/.dotfiles/opt/bin
-
-# PATH: Include custom Homebrew bin
-if [ -d ~/.dotfiles/opt/homebrew/bin ]; then
-  PATH=$PATH:~/.dotfiles/opt/homebrew/bin
-fi
-
-# PATH: Include custom pip bin
-if [ -d ~/.dotfiles/opt/pip_packages/bin ]; then
-  PATH=$PATH:~/.dotfiles/opt/pip_packages/bin
-  PYTHONPATH=~/.dotfiles/opt/pip_packages
-  export PYTHONPATH
-fi
 
 ############################################
 # INCLUDES
