@@ -31,3 +31,11 @@ else
   fi
 fi
 export RUNNINGSHELLVERSION;
+
+# Identify TMUX pane
+if [ -n "$TMUX_PANE" ]; then
+  TMUX_PANE_INDEX=$(tmux list-panes | grep "$TMUX_PANE" | cut -d: -f1 | sed 's/%//')
+  export TMUX_PANE_INDEX
+  [ "$TMUX_PANE_INDEX" -eq 1 ] && export TMUX_FIRST_PANE=true
+fi
+[ -z "$TMUX" ] || [ "$TMUX_FIRST_PANE" ] && export NOT_TMUX_OR_FIRSTPANE=true
