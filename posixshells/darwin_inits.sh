@@ -2,18 +2,36 @@
 
 # ref: https://github.com/mathiasbynens/dotfiles/blob/main/.macos
 
+# Source posix functions
+if [ -f "$HOME/.dotfiles/posixshells/posix_functions.sh" ]; then
+  . "$HOME/.dotfiles/posixshells/posix_functions.sh"
+fi
+
+# Source installer functions
+if [ -f "$HOME/.dotfiles/posixshells/posix_installers.sh" ]; then
+  . "$HOME/.dotfiles/posixshells/posix_installers.sh"
+fi
+
 function setMacTerminalDefaultTheme() {
-  if contains "$TERM_PROGRAM" "Terminal"; then
+  if contains "$__CFBundleIdentifier" "Terminal"; then
     # Set Terminal theme
   osascript <<EOD
 tell application "Terminal"
 	local allOpenedWindows
 	local initialOpenedWindows
 	local windowID
-	set themeName to "Pro"
+	set themeName to "Dracula-Custom"
 
 	(* Store the IDs of all the open terminal windows. *)
 	set initialOpenedWindows to id of every window
+
+	(* Open the custom theme so that it gets added to the list
+	   of available terminal themes (note: this will open two
+	   additional terminal windows). *)
+	do shell script "open '$HOME/.dotfiles/macOS/" & themeName & ".terminal'"
+
+	(* Wait a little bit to ensure that the custom theme is added. *)
+	delay 1
 
 	(* Set the custom theme as the default terminal theme. *)
 	set default settings to settings set themeName
