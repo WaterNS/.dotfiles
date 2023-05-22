@@ -628,3 +628,20 @@ EOF
     echo "Unable to run makeShortcut - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function";
   fi
 }
+
+tripleSplitTMUX() {
+  if [ -n "$TMUX" ]; then
+    # If there's only one pane, split it horizontally
+    if [ "$(tmux list-panes | wc -l)" -eq 1 ]; then
+      tmux split-window -h -p 30
+    fi
+
+    # If there are two panes, split the second pane vertically
+    if [ "$(tmux list-panes | wc -l)" -eq 2 ]; then
+      tmux split-window -v -p 40
+    fi
+
+    # Select the first pane
+    tmux select-pane -t 1
+  fi
+}
