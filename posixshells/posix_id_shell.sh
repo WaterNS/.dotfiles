@@ -38,4 +38,4 @@ if [ -n "$TMUX_PANE" ]; then
   export TMUX_PANE_INDEX
   [ "$TMUX_PANE_INDEX" -eq 1 ] && export TMUX_FIRST_PANE=true
 fi
-[ -z "$TMUX" ] || [ "$TMUX_FIRST_PANE" ] && export NOT_TMUX_OR_FIRSTPANE=true
+[ -z "$TMUX" ] || [ "$TMUX_FIRST_PANE" ] && export NOT_SECONDARY_SESSION=true
