@@ -966,6 +966,7 @@ install_asitop () {
 
 install_tmux() {
   if isMissingOrFakeCmd "tmux"; then
+    install_git # git is required for TMUX Plugin Manager
     if [ "$OS_FAMILY" = "Darwin" ]; then
       install_homebrew
       if [ -x "$(command -v brew)" ] && isMissingOrFakeCmd "tmux"; then
@@ -983,5 +984,10 @@ install_tmux() {
       echo "";
       echo "Unable to install tmux - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
     fi
+  fi
+
+  if isRealCommand "tmux" && [ ! -d ~/.dotfiles/opt/tmux/tpm ]; then
+    # Init TMUX extras
+    . ~/.dotfiles/tmux/init_tmux.sh
   fi
 }
