@@ -62,9 +62,22 @@ fi
 
 # add common clear screen alias
 if [ -x "$(command -v clear)" ]; then
-  alias cls='clear'
-  alias clea='clear' #typo fix
-  alias ckear='clear' #typo fix
+  clearScreen() {
+    # if [ -n "$ZSH" ]; then
+    #   #zle clear-screen
+    # else
+    #   clear
+    # fi
+    clear
+    if [ -n "$TMUX" ]; then
+      tmux clear-history #clears rollback
+    fi
+  }
+  alias clear='clearScreen' # overwrite factory default
+
+  alias cls='clearScreen'
+  alias clea='clearScreen' #typo fix
+  alias ckear='clearScreen' #typo fix
 fi
 
 # add Visual Studio Code aliases
