@@ -124,9 +124,6 @@ if [ -f ~/.ssh/WaterNS ]; then
 fi
 cd "$curpath" || exit
 
-# Install VIM plugins
-. "$HOMEREPO/vim/init_vim.sh"
-
 # Make dev tools available in dotfiles bin
 install_opensshkeygen
 install_tput
@@ -141,6 +138,13 @@ install_shfmt
 install_lsd
 install_blesh
 install_whereis
+install_tmux
+
+# Install VIM items
+. "$HOMEREPO/vim/init_vim.sh"
+
+# Init TMUX items
+. "$HOMEREPO/tmux/init_tmux.sh"
 
 # Install ZSH and its addons
 #install_zsh
