@@ -5,6 +5,9 @@
 #   alias ping='prettyping --nolegend'
 # fi
 
+# cd helper
+alias cd..='cd ..'
+
 if [ -x "$(command -v rsync)" ]; then
   rsync_cp() {
     rsync -pogbr -hhh --backup-dir=/tmp/rsync -e /dev/null --progress "$@"
