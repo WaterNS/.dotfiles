@@ -68,7 +68,7 @@ if [ -x "$(command -v clear)" ]; then
     # else
     #   clear
     # fi
-    clear
+    clear && printf '\e[3J' && printf '\e[2J\e[3J\e[H'
     if [ -n "$TMUX" ]; then
       tmux clear-history #clears rollback
     fi
