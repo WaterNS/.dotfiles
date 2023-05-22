@@ -22,16 +22,16 @@ if [ -z "$TMUX" ] && [ -x "$(command -v tmux)" ]; then
   #tmux attach -t default || tmux new -s default # This would spawn TMUX as child process
 fi
 
+#Identify running shell
+. ~/.dotfiles/posixshells/posix_id_shell.sh
+
 # Identify Operating System (better uname)
 . ~/.dotfiles/posixshells/posix_id_os.sh
-echo "$OS_STRING";
+[ "$NOT_SECONDARY_SESSION" ] && echo "$OS_STRING";
 
 # Identify hardware
 . ~/.dotfiles/posixshells/posix_id_devicehw.sh
-echo "$HW_STRING";
-
-#Identify running shell
-. ~/.dotfiles/posixshells/posix_id_shell.sh
+[ "$NOT_SECONDARY_SESSION" ] && echo "$HW_STRING";
 
 ### History Stuffs
 . "$HOME/.dotfiles/posixshells/posix_history.sh"
@@ -86,49 +86,51 @@ export CONDA_AUTO_ACTIVATE_BASE=false # Don't auto activate Conda on install
     ## Exporting GIT settings ##
     ############################
 
-    # Set GIT Config Settings
-    if [ -x "$(command -v git)" ]; then
-      git config --global --remove-section include
-      #shellcheck disable=2088 # Exception: Want to explictly write the tidle to config
-      git config --global --add include.path '~/.dotfiles/git/git_tweaks'
+    if [ "$NOT_SECONDARY_SESSION" ]; then
+      # Set GIT Config Settings
+      if [ -x "$(command -v git)" ]; then
+        git config --global --remove-section include
+        #shellcheck disable=2088 # Exception: Want to explictly write the tidle to config
+        git config --global --add include.path '~/.dotfiles/git/git_tweaks'
 
-      if compare_versions "$(git --version | cut -f3 -d " ")" '>' 2.21;then
-        git config --global --add log.date 'auto:format:%a %Y-%h-%d %I:%M %p %z %Z'
-      else
-        git config --global --add log.test 'foobar'
-        git config --global --remove-section log
+        if compare_versions "$(git --version | cut -f3 -d " ")" '>' 2.21;then
+          git config --global --add log.date 'auto:format:%a %Y-%h-%d %I:%M %p %z %Z'
+        else
+          git config --global --add log.test 'foobar'
+          git config --global --remove-section log
+        fi
       fi
-    fi
 
-    # GIT PAGER and LESS settings
-    # Use diff-so-fancy (if available)
-    if [ -x "$(command -v delta)" ]; then
-      export GIT_PAGER='delta'
-      #shellcheck disable=2088 # Exception: Want to explictly write the tidle to config
-      git config --global --add include.path '~/.dotfiles/git/git_deltadiff'
-    elif [ -x "$(command -v diff-so-fancy)" ]; then
-      # Set Git Pager and LESS settings for session
-      export GIT_PAGER='diff-so-fancy | less'
-      export LESS="-x2 -RFX $LESS"
+      # GIT PAGER and LESS settings
+      # Use diff-so-fancy (if available)
+      if [ -x "$(command -v delta)" ]; then
+        export GIT_PAGER='delta'
+        #shellcheck disable=2088 # Exception: Want to explictly write the tidle to config
+        git config --global --add include.path '~/.dotfiles/git/git_deltadiff'
+      elif [ -x "$(command -v diff-so-fancy)" ]; then
+        # Set Git Pager and LESS settings for session
+        export GIT_PAGER='diff-so-fancy | less'
+        export LESS="-x2 -RFX $LESS"
 
-      # Include diff-so-fancy colors
-      #shellcheck disable=2088 # Exception: Want to explictly write the tidle to config
-      git config --global --add include.path '~/.dotfiles/git/git_diffsofancy'
-    else # Set to use LESS as fallback and undo gitconfig change
-      export GIT_PAGER='less'
-      export LESS="-x2 -RFX $LESS"
+        # Include diff-so-fancy colors
+        #shellcheck disable=2088 # Exception: Want to explictly write the tidle to config
+        git config --global --add include.path '~/.dotfiles/git/git_diffsofancy'
+      else # Set to use LESS as fallback and undo gitconfig change
+        export GIT_PAGER='less'
+        export LESS="-x2 -RFX $LESS"
 
-      #shellcheck disable=2088 # Exception: Want to explictly write the tidle to config
-      git config --global --unset-all include.path '~/.dotfiles/git/git_diffsofancy'
-      #shellcheck disable=2088 # Exception: Want to explictly write the tidle to config
-      git config --global --unset-all include.path '~/.dotfiles/git/git_deltadiff'
+        #shellcheck disable=2088 # Exception: Want to explictly write the tidle to config
+        git config --global --unset-all include.path '~/.dotfiles/git/git_diffsofancy'
+        #shellcheck disable=2088 # Exception: Want to explictly write the tidle to config
+        git config --global --unset-all include.path '~/.dotfiles/git/git_deltadiff'
+      fi
     fi
 
 #########################
 # Run some shell tweaks #
 #########################
   # Fix SSH permissions
-  fixsshperms
+  [ "$NOT_SECONDARY_SESSION" ] && fixsshperms
 
   # Set path when running on OSX and from Terminal window
   if [ "$OS_FAMILY" = "Darwin" ]; then
@@ -141,4 +143,8 @@ export CONDA_AUTO_ACTIVATE_BASE=false # Don't auto activate Conda on install
 
 
 ## Update, if needed
-. ~/.dotfiles/posixshells/dotfiles_updater.sh
+if [ "$NOT_SECONDARY_SESSION" ]; then
+  . ~/.dotfiles/posixshells/dotfiles_updater.sh
+fi
+
+tripleSplitTMUX # Split terminal into 3 by default
