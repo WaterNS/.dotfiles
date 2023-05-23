@@ -170,7 +170,7 @@ if [ "$OS_FAMILY" = "Darwin" ]; then
   defaults write com.apple.Safari WarnAboutFraudulentWebsites -bool true
 
   # Set Terminal default theme
-  setMacTerminalDefaultTheme
+  # setMacTerminalDefaultTheme ## This is set in the init_posix instead
 
   echo "** Darwin Init Done ** Note that some of these changes require a logout/restart to take effect."
 fi
