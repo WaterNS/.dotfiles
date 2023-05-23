@@ -4,6 +4,7 @@ SCRIPTDIR=$( cd "$(dirname "$0")" || exit ; pwd -P )
 SCRIPTPATH=$SCRIPTDIR/$(basename "$0")
 export SCRIPTPATHINIT="$SCRIPTPATH"
 INITSCRIPTARGS=""
+HOMEREPO="$HOME/.dotfiles"
 
 # Check passed options/args
 while getopts ":ur" opt ; do
@@ -32,9 +33,7 @@ fi
 
 # Preload Rosetta (lot of utils aren't compiled for ARM in macOS space)
 if [ "$OS_FAMILY" = "Darwin" ]; then
-  if contains "$TERM_PROGRAM" "Terminal"; then
-    echo 'tell application "Terminal" to set current settings of first window to settings set "Pro"' | osascript
-  fi
+  setMacTerminalDefaultTheme
   install_macRosetta2
 fi
 
@@ -49,8 +48,6 @@ if [ "$r" ]; then
 elif [ "$u" ]; then
   echo "UPDATING...";
 fi
-
-HOMEREPO="$HOME/.dotfiles"
 
 # Init dotfiles repo (if came from tarball/zip)
 if [ -z "$(git -C "$HOMEREPO" remote show origin 2>/dev/null)" ]; then
@@ -165,32 +162,7 @@ if [ "$OS_FAMILY" = "Darwin" ]; then
 fi
 
 #Write last update file
-SHAinitupdated=$($git_eng --git-dir "$HOMEREPO/.git" log -n 1 --pretty=format:%H -- init_posix.sh)
-if [ ! -f "$HOMEREPO/opt/lastupdate" ] || [ ! -f "$HOMEREPO/opt/lastinit" ]; then
-	if [ ! -f "$HOMEREPO/opt/lastupdate" ]; then
-		date +%s > "$HOMEREPO/opt/lastupdate"
-		date '+%A %F %I:%M:%S %p %Z' >> "$HOMEREPO/opt/lastupdate"
-	fi
-
-	if [ ! -f "$HOMEREPO/opt/lastinit" ]; then
-		echo "Last commit at which init_posix.sh initialization ran:" > "$HOMEREPO/opt/lastinit"
-		echo "$SHAinitupdated" >> "$HOMEREPO/opt/lastinit"
-	fi
-elif [ "$u" ] || [ "$r" ]; then
-	if [ "$u" ]; then
-		echo ""
-		echo "Updating last update time file with current date"
-		date +%s > "$HOMEREPO/opt/lastupdate"
-		date '+%A %F %I:%M:%S %p %Z' >> "$HOMEREPO/opt/lastupdate"
-	fi
-
-	if [ "$r" ]; then
-		echo ""
-		echo "Updating lastinit time with current SHA: $SHAinitupdated"
-	  echo "Last commit at which init_posix.sh initialization ran:" > "$HOMEREPO/opt/lastinit"
-	  echo "$SHAinitupdated" >> "$HOMEREPO/opt/lastinit"
-	fi
-fi
+. "$HOMEREPO/posixshells/init_log.sh"
 
 if [ "$r" ]; then
 	echo ""
