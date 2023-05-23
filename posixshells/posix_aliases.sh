@@ -151,7 +151,12 @@ if [ -x "$(command -v aria2c)" ]; then
   alias download='aria2c'
 fi
 
-# pip: Use pip3, if available
+# pip: Use pip3, if nothing else available
 if [ -x "$(command -v pip3)" ] && [ ! -x "$(command -v pip)" ]; then
   alias pip='pip3'
+fi
+
+# python: Use python3, if nothing else available
+if [ -x "$(command -v python3)" ] && [ ! -x "$(command -v python)" ]; then
+  alias python='python3'
 fi
