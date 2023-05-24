@@ -1,6 +1,7 @@
 #!/bin/sh
 
-# PATH: Include .dotfiles bin
+# PATH: Include .dotfiles bins
+PATH=$PATH:~/.dotfiles/bin
 PATH=$PATH:~/.dotfiles/opt/bin
 
 # PATH: Include custom Homebrew bin
