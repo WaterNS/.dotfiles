@@ -918,6 +918,30 @@ install_git () {
       echo "Unable to install git - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
     fi
   fi
+  install_git_lfs
+}
+
+install_git_lfs() {
+  if isMissingOrFakeCmd "git-lfs"; then
+    if [ "$OS_FAMILY" = "Darwin" ]; then
+      install_homebrew
+      if [ -x "$(command -v brew)" ] && isMissingOrFakeCmd "git-lfs"; then
+        brew install "git-lfs"
+        git lfs install
+      fi
+
+      if isRealCommand "git-lfs"; then
+        echo "  ++ GOOD - git-lfs is now available ++"; echo "";
+      else
+        echo "BAD - git-lfs doesn't seem to be available"
+      fi
+    elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
+      install_generic_apk "git-lfs"
+    else
+      echo "";
+      echo "Unable to install git-lfs - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
+    fi
+  fi
 }
 
 install_pip () {
