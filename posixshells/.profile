@@ -14,6 +14,11 @@ if [ -d ~/.dotfiles/opt/pip_packages/bin ]; then
   PYTHONPATH=~/.dotfiles/opt/pip_packages
   export PYTHONPATH
 fi
+# PATH: Include custom python bin
+if [ -d ~/Library/Python/3.9/bin ]; then
+  PATH=$PATH:~/Library/Python/3.9/bin
+fi
+
 
 # # Activate TMUX session
 # if [ -z "$TMUX" ] && [ -x "$(command -v tmux)" ] && [ "$TERM_PROGRAM" != "vscode" ]; then
