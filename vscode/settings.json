@@ -46,10 +46,10 @@
   "powershell.codeFormatting.trimWhitespaceAroundPipe": true,
   "powershell.codeFormatting.whitespaceBetweenParameters": true,
 
-  "peacock.surpriseMeOnStartup": true, // Window Color: Auto adds a colored window theme on startup
-  "peacock.affectStatusBar": false,
-  "peacock.showColorInStatusBar": false,
-  "peacock.surpriseMeFromFavoritesOnly": true,
+  // "peacock.surpriseMeOnStartup": true, // Window Color: Auto adds a colored window theme on startup
+  // "peacock.affectStatusBar": false,
+  // "peacock.showColorInStatusBar": false,
+  // "peacock.surpriseMeFromFavoritesOnly": true,
 
   // Add some default configs for files outside of workspace
   "launch": {
