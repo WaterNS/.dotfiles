@@ -25,6 +25,7 @@ find "$HOME" -maxdepth 1 -type f -name '.*zcompdump*' -delete # cache is relocat
 export SAVEHIST=0
 export HISTSIZE=30 # Keep temporary session history
 rm -rf "$HOME/.zsh_sessions" >/dev/null 2>&1
+export SHELL_SESSIONS_DISABLE=1 # Don't save/restore sessions on exit
 
 # LESS: history delete
 export LESSHISTFILE=/dev/null
