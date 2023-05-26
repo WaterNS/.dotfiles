@@ -1010,7 +1010,7 @@ install_tmux() {
     fi
   fi
 
-  if isRealCommand "tmux" && [ ! -d ~/.dotfiles/opt/tmux/tpm ]; then
+  if isRealCommand "tmux" && [ ! -d ~/.dotfiles/opt/tmux/tpm ] && [ ! "$RUNNINGINITSCRIPT" ]; then
     # Init TMUX extras
     . ~/.dotfiles/tmux/init_tmux.sh
   fi
