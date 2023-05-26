@@ -696,3 +696,88 @@ EOD
     echo " --- Not running Terminal, skipping setting theme ---"
   fi
 }
+
+sandboxAppMac() {
+  # Example:
+  # cd path_where_want_sandbox_to_live
+  #  e.g. cd ~/Desktop
+  #    will create:
+  #      - ~/Desktop/sndbx-AppName.sparsebundle (disk image)
+  #      - ~/Desktop/$appNameShort-DataFolder (shortcut)
+  #      - ~/Desktop/$appNameShort-launcher (helper)
+  # sandboxAppMac -a "$PWD/apps/My app.app" -c "com.appMaker.AppName"
+
+  # Todo: Refactor into gui/command?
+
+  if [ ! "$OS_FAMILY" = "Darwin" ]; then
+    echo "Only works in Darwin based OSes"
+    return 5
+  fi
+
+  appPath=""
+  containerName=""
+  sandboxSize="100GB"
+
+  positional_counter=0
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      -a|--appPath)
+        appPath="$2"; shift 2 ;;
+      -c|--containerName)
+        containerName="$2"; shift 2 ;;
+      -s|--sandboxSize)
+        sandboxSize="$2" || "100GB"; shift 2 ;;
+      --)
+        shift; break ;;
+      -*)
+        echo "Unknown option: $1" >&2; return 1 ;;
+      *)
+        if [ $positional_counter -eq 0 ]; then
+          appPath="$1"
+        elif [ $positional_counter -eq 1 ]; then
+          containerName="$1"
+        elif [ $positional_counter -eq 2 ]; then
+          sandboxSize="$1"
+        fi
+        positional_counter=$((positional_counter + 1))
+        shift ;;
+    esac
+  done
+
+  if [ -z "$appPath" ] || [ -z "$containerName" ]; then
+    echo "Usage: sandboxAppMac [-a|--appPath] <appPath> [-c|--containerName] <containerName> [-s|--sandboxSize size]"
+    return 1
+  fi
+
+  if [ -f "$appPath" ]; then
+    echo "-a/--appPath provided ($appPath) not found, EXITING..."
+    return 2
+  fi
+
+  appNameShort=$(basename "$appPath" .app | sed 's/ //g')
+  containerPath="$PWD/sndbx-$appNameShort.sparsebundle"
+  mountPoint="$HOME/Library/Containers/$containerName"
+
+  if [ -d "$mountPoint" ]; then
+    echo "App Container path ($mountPoint) already exists, manually move and let app recreate from scratch, EXITING..."
+    return 3
+  fi
+
+  if [ ! -d "$containerPath" ]; then
+    echo "Creating new sparsebundle at $containerPath ..."
+    hdiutil create -size "$sandboxSize" \
+      -fs APFS -type SPARSEBUNDLE \
+      -volname "$appNameShort" \
+      "$containerPath"
+  fi
+
+  [ ! -d "$mountPoint" ] && echo "Mounting disk image to $mountPoint ..." && hdiutil attach "$containerPath" -mountpoint "$mountPoint"
+
+  [ -d "$mountPoint" ] && open "$appPath"
+  [ ! -d "$PWD/$($appNameShort)-DataFolder" ] && ln -s "$mountPoint" "$PWD/$($appNameShort)-DataFolder"
+
+  #Create shortcut launcher:
+  #cd -- "$(dirname "$0")" #gets path of execution
+  #.command extension enables clickable script
+  # copy function into script itself?
+}
