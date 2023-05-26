@@ -140,7 +140,7 @@ export CONDA_AUTO_ACTIVATE_BASE=false # Don't auto activate Conda on install
 
   # Set path when running on OSX and from Terminal window
   if [ "$OS_FAMILY" = "Darwin" ]; then
-    if DidTerminalCallShell; then
+    if DidTerminalCallShell && [ "$PWD" = "$HOME" ]; then
       if [ -d "$HOME/Desktop" ]; then
         cd ~/Desktop || exit
       fi
