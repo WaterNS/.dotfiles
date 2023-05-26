@@ -1,5 +1,8 @@
 #!/bin/zsh
 
+## .zshrc: Interactive shell
+### .zshenv → [.zprofile if login] → [.zshrc if interactive] → [.zlogin if login] → [.zlogout sometimes]
+
 # ZSH: posix/sh -> zsh -> OhMyZsh -> Generic POSIX customizations
 
 ############################################
