@@ -1,10 +1,12 @@
 #!/bin/sh
 
+export RUNNINGINITSCRIPT=true
 SCRIPTDIR=$( cd "$(dirname "$0")" || exit ; pwd -P )
 SCRIPTPATH=$SCRIPTDIR/$(basename "$0")
 export SCRIPTPATHINIT="$SCRIPTPATH"
 INITSCRIPTARGS=""
 HOMEREPO="$HOME/.dotfiles"
+PATH=$PATH:$HOMEREPO/bin
 
 # Check passed options/args
 while getopts ":ur" opt ; do
@@ -171,3 +173,4 @@ elif [ "$u" ]; then
 	echo ""
 	echo "UPDATING Completed!"
 fi
+unset RUNNINGINITSCRIPT;
