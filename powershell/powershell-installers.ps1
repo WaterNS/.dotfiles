@@ -124,7 +124,7 @@ Function install-generic-github {
 Function install-jq {
   if (!(Check-Command jq)) {
     if ((Check-OS) -like "*win*") {
-      install-generic-github "stedolan/jq" -searchstring "win64"
+      install-generic-github "jqlang/jq" -searchstring "win64"
     }
   }
 }
