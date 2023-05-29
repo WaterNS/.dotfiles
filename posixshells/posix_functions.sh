@@ -697,6 +697,20 @@ EOD
   fi
 }
 
+authedRebootShortcut() {
+  if [ ! "$OS_FAMILY" = "Darwin" ]; then
+    echo "Only works in Darwin based OSes"
+    return 5
+  fi
+
+  cat << EOF > ~/Desktop/AuthedReboot.command
+#!/bin/sh
+sudo fdesetup authrestart -user "$USER"
+EOF
+
+  chmod +x ~/Desktop/AuthedReboot.command
+}
+
 sandboxAppMac() {
   # Example:
   # cd path_where_want_sandbox_to_live
