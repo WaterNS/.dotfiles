@@ -160,3 +160,8 @@ fi
 if [ -x "$(command -v python3)" ] && [ ! -x "$(command -v python)" ]; then
   alias python='python3'
 fi
+
+# exit: In TMUX, exit kills TMUX session if primary window
+if [ -n "$TMUX" ] && [ "$NOT_SECONDARY_SESSION" ]; then
+  alias exit='tmux kill-session'
+fi
