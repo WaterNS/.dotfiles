@@ -1,6 +1,4 @@
 {
-
-  "window.zoomLevel": 0,
   "terminal.integrated.rendererType": "experimentalWebgl",
   "telemetry.enableTelemetry": false,
   "restoreTerminals.keepExistingTerminalsOpen": true,
@@ -70,5 +68,6 @@
   "git.showActionButton": {
     //"publish": false, // Don't show easy sync button in source control pane (undesirable in most Prod contexts)
     "sync": false // Don't show easy sync button in source control pane (undesirable in most Prod contexts)
-  }
+  },
+  "git.suggestSmartCommit": false
 }
