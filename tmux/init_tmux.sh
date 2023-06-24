@@ -20,7 +20,7 @@ fi
 if [ "$u" = true ]; then
   if [ -f "$HOME/.dotfiles/opt/tmux/plugins/tpm/bin/update_plugins" ]; then
     "$HOME/.dotfiles/opt/tmux/plugins/tpm/bin/clean_plugins"
-    "$HOME/.dotfiles/opt/tmux/plugins/tpm/bin/update_plugins"
+    "$HOME/.dotfiles/opt/tmux/plugins/tpm/bin/update_plugins" all
   else
     echo "TMUX Updater: Couldn't find: $HOME/.dotfiles/opt/tmux/plugins/tpm/bin/update_plugins"
   fi
