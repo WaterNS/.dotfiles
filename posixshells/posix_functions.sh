@@ -795,3 +795,14 @@ sandboxAppMac() {
   #.command extension enables clickable script
   # copy function into script itself?
 }
+
+clearsshhosts() {
+  # Check if the known_hosts file exists
+  if [ -f "${HOME}/.ssh/known_hosts" ]; then
+      # Empty the known_hosts file
+      echo "" > "${HOME}/.ssh/known_hosts"
+      echo "Known SSH hosts cleared."
+  else
+      echo "No known_hosts file found."
+  fi
+}
