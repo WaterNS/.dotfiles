@@ -91,7 +91,7 @@ updateGitRepo() {
     printf "(from %s to " "$($git_eng rev-parse --short "$GITDEFAULTBRANCH")"
     printf "%s)" "$($git_eng rev-parse --short origin/"$GITDEFAULTBRANCH")"
     if [ -n "$depth" ]; then
-      $git_eng pull --depth="$depth" origin "$GITDEFAULTBRANCH" --quiet
+      $git_eng pull --depth="$depth" origin "$GITDEFAULTBRANCH" --quiet --ff-only
     else
       $git_eng pull origin "$GITDEFAULTBRANCH" --quiet
     fi
