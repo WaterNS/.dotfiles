@@ -10,6 +10,7 @@
       "streetsidesoftware.code-spell-checker",
       "EthanSK.restore-terminals",
       "ms-vscode.powershell",
-      "GARAIOAG.garaio-vscode-unwanted-recommendations"
+      "GARAIOAG.garaio-vscode-unwanted-recommendations",
+      "richie5um2.vscode-sort-json"
   ]
 }

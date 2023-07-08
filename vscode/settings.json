@@ -64,6 +64,19 @@
     ]
   },
 
+  "sortJSON.contextMenu": {
+    "sortJSON": false,
+    "sortJSONAlphaNum": true,
+    "sortJSONAlphaNumReverse": false,
+    "sortJSONKeyLength": false,
+    "sortJSONKeyLengthReverse": false,
+    "sortJSONReverse": false,
+    "sortJSONType": false,
+    "sortJSONTypeReverse": false,
+    "sortJSONValues": false,
+    "sortJSONValuesReverse": false
+  },
+
   "git.autofetch": true,
   "git.showActionButton": {
     //"publish": false, // Don't show easy sync button in source control pane (undesirable in most Prod contexts)
