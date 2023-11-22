@@ -70,9 +70,9 @@ if [ -x "$(command -v yt-dlp)" ] &&
   __ytdlSponsersExcludeVideo="sponsor,selfpromo,interaction,music_offtopic"
   __ytdlSponsersExcludeMP3="sponsor,intro,outro,selfpromo,preview,interaction,music_offtopic,poi_highlight"
   ytdl () { ytdl-hq "$@" --compat-options no-live-chat; }
-  ytdl-hq () { while ! yt-dlp --embed-subs --compat-options no-live-chat --embed-metadata --embed-chapters --remux-video "mkv" --merge-output-format "mkv" "$1" -c --socket-timeout 5; do echo DISCONNECTED; sleep 5; done; } #--sponsorblock-mark "all" #--sponsorblock-remove "$__ytdlSponsersExcludeVideo"
-  ytdl-hq-mp4 () { while ! yt-dlp --embed-subs --compat-options no-live-chat --embed-metadata --embed-chapters -f "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4] / bv*+ba/b" "$1" -c --socket-timeout 5; do echo DISCONNECTED; sleep 5; done; }
-  ytdl-mp3 () { while ! yt-dlp --embed-metadata --compat-options no-live-chat --embed-thumbnail --extract-audio --audio-format "mp3" -o "%(title)s.%(ext)s" "$1" -c --socket-timeout 5; do echo DISCONNECTED; sleep 5; done; } #--sponsorblock-remove "$__ytdlSponsersExcludeMP3"
+  ytdl-hq () { while ! yt-dlp --embed-subs --compat-options no-live-chat,multistreams --embed-metadata --embed-subs --embed-thumbnail --embed-chapters --remux-video "mkv" --merge-output-format "mkv" -o "%(title)s.%(ext)s" "$1" -c --socket-timeout 5; do echo DISCONNECTED; sleep 5; done; } #--sponsorblock-mark "all" #--sponsorblock-remove "$__ytdlSponsersExcludeVideo"
+  ytdl-hq-mp4 () { while ! yt-dlp --embed-subs --compat-options no-live-chat,multistreams --embed-metadata --embed-subs --embed-thumbnail --embed-chapters -f "bv*[ext=mp4][vcodec^=avc]+ba[ext=m4a]/b[ext=mp4] / bv*+ba/b" -o "%(title)s.%(ext)s" "$1" -c --socket-timeout 5; do echo DISCONNECTED; sleep 5; done; }
+  ytdl-mp3 () { while ! yt-dlp --embed-metadata --compat-options no-live-chat,multistreams --embed-thumbnail --extract-audio --audio-format "mp3" -o "%(title)s.%(ext)s" "$1" -c --socket-timeout 5; do echo DISCONNECTED; sleep 5; done; } #--sponsorblock-remove "$__ytdlSponsersExcludeMP3"
 else
   ytdl () { youtube-dlp "$@" ; }
   ytdl-hq () { youtube-dlp "$@" ; }
