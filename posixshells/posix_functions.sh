@@ -703,9 +703,30 @@ authedRebootShortcut() {
     return 5
   fi
 
-  cat << EOF > ~/Desktop/AuthedReboot.command
+  command cat << EOF > ~/Desktop/AuthedReboot.command
 #!/bin/sh
-sudo fdesetup authrestart -user "$USER"
+
+# Prompt for username and password
+read -s -p "UserPass (second prompt can ignore): " __password
+echo
+
+# Helper for fdesetup (passes auth)
+PLIST_CONTENT="<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
+<plist version=\"1.0\">
+<dict>
+    <key>Username</key>
+    <string>\$USER</string>
+    <key>Password</key>
+    <string>\$__password</string>
+</dict>
+</plist>"
+
+# Attempt handling sudo prompt
+sudo -k # remove previous sudo timestamp
+sudo -v -S <<< "\$__password" # create a new one
+
+sudo fdesetup authrestart -inputplist <<< "\$PLIST_CONTENT"
 EOF
 
   chmod +x ~/Desktop/AuthedReboot.command
