@@ -21,7 +21,7 @@
     "docs", "objs", "devs",
     "fatals",
     "noopener", "noreferrer", "noindex",
-    "readonly", "mixins", "vuex", "axios", "pathify",
+    "readonly", "mixins", "vuex", "axios", "pathify", "querystring",
     "chocolatey", "Monitorian", "prettyping", "shellcheck",
     "ggml", "subpattern", "neox"
   ],
