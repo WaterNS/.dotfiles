@@ -701,7 +701,7 @@ install_bat () {
   if [ ! -x "$(command -v bat)" ]; then
     install_less
     if [ "$OS_FAMILY" = "Darwin" ]; then
-      install_generic_homebrew "bat"
+      brew install "bat"
     elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
       install_generic_apk "bat"
     elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
