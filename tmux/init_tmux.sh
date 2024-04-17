@@ -12,9 +12,9 @@ fi
 
 #TMUX Plugin Loader: TPM
 if [ ! -d "$HOME/.dotfiles/opt/tmux/plugins/tpm" ]; then
-  githubCloneByCurl https://github.com/tmux-plugins/tpm ~/.dotfiles/opt/tmux/plugins/tpm --depth 1 &&
+  githubCloneByCurl https://github.com/tmux-plugins/tpm ~/.dotfiles/opt/tmux/plugins/tpm &&
       ~/.dotfiles/opt/tmux/plugins/tpm/bin/install_plugins; echo ""
-# elif [ "$u" = true ]; then updateGitRepo "TMUX TPM" "TMUX Plugin Manager" ~/.dotfiles/opt/tmux/plugins/tpm --depth 1;
+# elif [ "$u" = true ]; then updateGitRepo "TMUX TPM" "TMUX Plugin Manager" ~/.dotfiles/opt/tmux/plugins/tpm;
 fi
 
 if [ "$u" = true ]; then
