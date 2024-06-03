@@ -11,6 +11,7 @@
       "EthanSK.restore-terminals",
       "ms-vscode.powershell",
       "soulcode.vscode-unwanted-extensions",
-      "richie5um2.vscode-sort-json"
+      "richie5um2.vscode-sort-json",
+      "foxundermoon.shell-format"
   ]
 }
