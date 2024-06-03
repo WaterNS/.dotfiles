@@ -165,3 +165,8 @@ fi
 if [ -n "$TMUX" ] && [ "$NOT_SECONDARY_SESSION" ]; then
   alias exit='tmux kill-session'
 fi
+
+# tree: Use treeBASH, if nothing else available
+if [ -x "$(command -v treeBASH)" ] && [ ! -x "$(command -v tree)" ]; then
+  alias tree='treeBASH'
+fi

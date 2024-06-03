@@ -1015,3 +1015,20 @@ install_tmux() {
     . ~/.dotfiles/tmux/init_tmux.sh
   fi
 }
+
+install_tree () {
+  if [ ! -x "$(command -v tree)" ]; then
+    if [ "$OS_FAMILY" = "Darwin" ]; then
+      brew install "tree"
+    elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
+      install_generic_apk "tree"
+    # elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
+    #   install_generic_github "sharkdp/bat" "bat" "x86_64-unknown-linux-musl"
+    # elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x32" ]; then
+    #   install_generic_github "sharkdp/bat" "bat" "i686-unknown-linux-musl"
+    else
+      echo "";
+      echo "install_bat: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
+    fi
+  fi
+}

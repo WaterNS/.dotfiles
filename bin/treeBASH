@@ -1,0 +1,16 @@
+#!/bin/bash
+
+#REF: https://superuser.com/a/359728
+
+#SEDMAGIC='s;[^/]*/;|____;g;s;____|; |;g'
+SEDMAGIC='s;[^/]*/;|-- ;g;s;-- |;   |;g'
+
+if [ "$#" -gt 0 ] ; then
+   dirlist="$@"
+else
+   dirlist="."
+fi
+
+for x in $dirlist; do
+     find "$x" -print | sed -e "$SEDMAGIC"
+done
