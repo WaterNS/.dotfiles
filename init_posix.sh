@@ -138,6 +138,7 @@ install_lsd
 install_blesh
 install_whereis
 install_tmux
+install_trash
 
 # Install VIM items
 . "$HOMEREPO/vim/init_vim.sh"

@@ -170,3 +170,8 @@ fi
 if [ -x "$(command -v treeBASH)" ] && [ ! -x "$(command -v tree)" ]; then
   alias tree='treeBASH'
 fi
+
+# tree: Use trashOSX, if nothing else available
+if [ -x "$(command -v trashOSX)" ] && [ ! -x "$(command -v trash)" ]; then
+  alias trash='trashOSX'
+fi
