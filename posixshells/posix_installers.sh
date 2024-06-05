@@ -701,6 +701,7 @@ install_bat () {
   if [ ! -x "$(command -v bat)" ]; then
     install_less
     if [ "$OS_FAMILY" = "Darwin" ]; then
+      install_homebrew
       brew install "bat"
     elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
       install_generic_apk "bat"
@@ -1019,6 +1020,7 @@ install_tmux() {
 install_tree () {
   if [ ! -x "$(command -v tree)" ]; then
     if [ "$OS_FAMILY" = "Darwin" ]; then
+      install_homebrew
       brew install "tree"
     elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
       install_generic_apk "tree"
@@ -1036,6 +1038,7 @@ install_tree () {
 install_trash () {
   if [ ! -x "$(command -v trash)" ]; then
     if [ "$OS_FAMILY" = "Darwin" ]; then
+      install_homebrew
       brew install "trash"
     # elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
     #   install_generic_apk "tree"
