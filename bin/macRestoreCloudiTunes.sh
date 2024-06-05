@@ -41,11 +41,27 @@ function MigrateItunes {
   declare -a known_files=() # Known Files
   declare -a ignored_items=(".DS_Store") # Ignored files and folders
 
+  echo "--------------------"
+  echo "- Running check on -"
+  echo "    *  $libNick  *"
+  echo "--------------------"
+
   if [ ! -L "$localBaseDIR" ] && [ -d "$localBaseDIR" ] && [ -d "$cloudBaseDIR" ]; then
     echo "ERROR: Both local and cloud copies appear to exist. Remove/Backup one and try again"
     echo "  Local: $localBaseDIR"
     echo "  Cloud: $cloudBaseDIR"
-    exit 1
+
+    echo ""
+    printf "Do you want to overwrite existing library and use cloud version? [Y/n]: " >&2
+    read -r overwriteLocal
+
+    if [ "$overwriteLocal" == 'Y' ]; then
+      if [ -f "$localBaseDIRlib" ]; then
+        trashOSX "$localBaseDIRlib" || exit 1
+      fi
+    else
+      exit 1
+    fi
   fi
 
   if [ ! -e "$localBaseDIR" ] && [ -d "$cloudBaseDIR" ]; then
@@ -152,6 +168,7 @@ fi
 libNick="TV"
 cloudBaseDIR="$CLOUDDIR/AppleTV"
 localBaseDIR=$baseTVDIR
+localBaseDIRlib="$localBaseDIR/TV Library.tvlibrary"
 MigrateItunes
 
 #
@@ -160,4 +177,5 @@ MigrateItunes
 libNick="Music"
 cloudBaseDIR="$CLOUDDIR/AppleMusic"
 localBaseDIR=$baseMusicDIR
+localBaseDIRlib="$localBaseDIR/Music Library.musiclibrary"
 MigrateItunes
