@@ -6,6 +6,10 @@
 
 # It uses iCloud by default, but can likely work with other providers
 
+CLOUDDIR="$HOME/Library/Mobile Documents/com~apple~CloudDocs/.CustomiTunesSync"
+baseTVDIR="$HOME/Movies/TV"
+baseMusicDIR="$HOME/Music/Music"
+
 function arrayContains {
   local e match="$1"
   shift
@@ -46,7 +50,7 @@ function MigrateItunes {
 
   if [ ! -e "$localBaseDIR" ] && [ -d "$cloudBaseDIR" ]; then
     echo "WARNING: Local [$localBaseDIR] doesn't appear to exist, attempting to create and link existing found Library from Cloud"
-    mkdir "$localBaseDIR" || echo "Failed?  -- Exiting" && exit 1
+    mkdir "$localBaseDIR" || echo "Failed?  -- Should exit"
   fi
 
   if [ -e "$localBaseDIR" ]; then
@@ -119,9 +123,6 @@ function MigrateItunes {
   fi
 }
 
-CLOUDDIR="$HOME/Library/Mobile Documents/com~apple~CloudDocs/CustomiTunesSync"
-baseTVDIR="$HOME/Movies/TV"
-baseMusicDIR="$HOME/Music/Music"
 
 osascript -e 'quit app "TV"' && pkill -x TV
 osascript -e 'quit app "Music"' && pkill -x Music
@@ -135,12 +136,10 @@ if [ -d "$HOME/Library/Mobile Documents/com~apple~CloudDocs" ]; then
   if [ ! -d "$CLOUDDIR/AppleTV" ]; then
     echo "NOTE: $CLOUDDIR/AppleTV not found, creating!"
     mkdir "$CLOUDDIR/AppleTV" || exit 1
-    chflags nohidden "$CLOUDDIR/AppleTV"
   fi
   if [ ! -d "$CLOUDDIR/AppleMusic" ]; then
     echo "NOTE: $CLOUDDIR/AppleMusic not found, creating!"
     mkdir "$CLOUDDIR/AppleMusic" || exit 1
-    chflags nohidden "$CLOUDDIR/AppleMusic"
   fi
 else
   echo "ERROR: Didn't find icloud folder, exiting [$HOME/Library/Mobile Documents/com~apple~CloudDocs/]"
@@ -162,9 +161,3 @@ libNick="Music"
 cloudBaseDIR="$CLOUDDIR/AppleMusic"
 localBaseDIR=$baseMusicDIR
 MigrateItunes
-
-
-# Attempt at nicer folder/file visibility (only prefer parent folder hidden, subfolders not hidden)
-chflags hidden "$CLOUDDIR"
-chflags nohidden "$CLOUDDIR/AppleTV"
-chflags nohidden "$CLOUDDIR/AppleMusic"
