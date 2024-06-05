@@ -172,6 +172,6 @@ if [ -x "$(command -v treeBASH)" ] && [ ! -x "$(command -v tree)" ]; then
 fi
 
 # tree: Use trashOSX, if nothing else available
-if [ -x "$(command -v trashOSX)" ] && [ ! -x "$(command -v trash)" ]; then
+if [ "$OS_FAMILY" = "Darwin" ] && [ -x "$(command -v trashOSX)" ] && [ ! -x "$(command -v trash)" ]; then
   alias trash='trashOSX'
 fi
