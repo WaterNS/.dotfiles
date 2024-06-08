@@ -1,14 +1,28 @@
 #!/bin/bash
 
+# macRestoreCloudiTunes.sh
+
 # This script will migrate/restore your AppleTV and AppleMusic library database to/from Cloud file storage
 # but keep your media storage still local/not cloud synced. Basic principle is symlinks.
 # This should let you retain/restore local/smart playlists [and potentially preferences].
 
 # It uses iCloud by default, but can likely work with other providers
 
+if [ ! "$OS_FAMILY" = "Darwin" ]; then
+  echo "Not Darwin-based OS, exiting"
+  exit 1
+fi
+
 CLOUDDIR="$HOME/Library/Mobile Documents/com~apple~CloudDocs/.CustomiTunesSync"
 baseTVDIR="$HOME/Movies/TV"
 baseMusicDIR="$HOME/Music/Music"
+
+printf "Do you want use Cloud Sync for Apple TV? [Y/n]: " >&2
+read -r optionAppleTV
+
+echo ""
+printf "Do you want use Cloud Sync for Apple Music? [Y/n]: " >&2
+read -r optionAppleMusic
 
 function arrayContains {
   local e match="$1"
@@ -139,43 +153,47 @@ function MigrateItunes {
   fi
 }
 
-
-osascript -e 'quit app "TV"' && pkill -x TV
-osascript -e 'quit app "Music"' && pkill -x Music
-
 # Create iCloud CustomiTunesSync directories if don't exist
-if [ -d "$HOME/Library/Mobile Documents/com~apple~CloudDocs" ]; then
-  if [ ! -d "$CLOUDDIR" ]; then
-    echo "NOTE: $CLOUDDIR not found, creating!"
-    mkdir "$CLOUDDIR" || exit 1
+if [ "$optionAppleTV" == 'Y' ] || [ "$optionAppleMusic" == 'Y' ];then
+  if [ -d "$HOME/Library/Mobile Documents/com~apple~CloudDocs" ]; then
+    if [ ! -d "$CLOUDDIR" ]; then
+      echo "NOTE: $CLOUDDIR not found, creating!"
+      mkdir "$CLOUDDIR" || exit 1
+    fi
+    if [ "$optionAppleTV" == 'Y' ] && [ ! -d "$CLOUDDIR/AppleTV" ]; then
+      echo "NOTE: $CLOUDDIR/AppleTV not found, creating!"
+      mkdir "$CLOUDDIR/AppleTV" || exit 1
+    fi
+    if [ "$optionAppleMusic" == 'Y' ] && [ ! -d "$CLOUDDIR/AppleMusic" ]; then
+      echo "NOTE: $CLOUDDIR/AppleMusic not found, creating!"
+      mkdir "$CLOUDDIR/AppleMusic" || exit 1
+    fi
+  else
+    echo "ERROR: Didn't find icloud folder, exiting [$HOME/Library/Mobile Documents/com~apple~CloudDocs/]"
+    exit 1
   fi
-  if [ ! -d "$CLOUDDIR/AppleTV" ]; then
-    echo "NOTE: $CLOUDDIR/AppleTV not found, creating!"
-    mkdir "$CLOUDDIR/AppleTV" || exit 1
-  fi
-  if [ ! -d "$CLOUDDIR/AppleMusic" ]; then
-    echo "NOTE: $CLOUDDIR/AppleMusic not found, creating!"
-    mkdir "$CLOUDDIR/AppleMusic" || exit 1
-  fi
-else
-  echo "ERROR: Didn't find icloud folder, exiting [$HOME/Library/Mobile Documents/com~apple~CloudDocs/]"
-  exit 1
 fi
 
 #
 # Migrate/Restore AppleTV Library
 #
-libNick="TV"
-cloudBaseDIR="$CLOUDDIR/AppleTV"
-localBaseDIR=$baseTVDIR
-localBaseDIRlib="$localBaseDIR/TV Library.tvlibrary"
-MigrateItunes
+if [ "$optionAppleTV" == 'Y' ]; then
+  osascript -e 'quit app "TV"' && pkill -x TV
+  libNick="TV"
+  cloudBaseDIR="$CLOUDDIR/AppleTV"
+  localBaseDIR=$baseTVDIR
+  localBaseDIRlib="$localBaseDIR/TV Library.tvlibrary"
+  MigrateItunes
+fi
 
 #
 # Migrate/Restore AppleMusic Library
 #
-libNick="Music"
-cloudBaseDIR="$CLOUDDIR/AppleMusic"
-localBaseDIR=$baseMusicDIR
-localBaseDIRlib="$localBaseDIR/Music Library.musiclibrary"
-MigrateItunes
+if [ "$optionAppleMusic" == 'Y' ]; then
+  osascript -e 'quit app "Music"' && pkill -x Music
+  libNick="Music"
+  cloudBaseDIR="$CLOUDDIR/AppleMusic"
+  localBaseDIR=$baseMusicDIR
+  localBaseDIRlib="$localBaseDIR/Music Library.musiclibrary"
+  MigrateItunes
+fi
