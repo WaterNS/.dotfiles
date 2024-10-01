@@ -169,6 +169,10 @@ if [ "$OS_FAMILY" = "Darwin" ]; then
   # Warn about fraudulent websites
   defaults write com.apple.Safari WarnAboutFraudulentWebsites -bool true
 
+  # Preview.app
+  # Show Thumbnails/Sidebar on launch
+  defaults write com.apple.Preview PVPDFSuppressSidebarOnOpening -bool false
+
   # Set Terminal default theme
   # setMacTerminalDefaultTheme ## This is set in the init_posix instead
 
