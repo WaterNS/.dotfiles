@@ -38,11 +38,20 @@
     "package-lock.json": true
   },
 
-  "cSpell.import": ["~/.dotfiles/vscode/cSpell.json"], //Import dotfiles cSpell settings
-  "cSpell.enableFiletypes": ["vue"],
+  "[cSpell]": {
+    "import": ["~/.dotfiles/vscode/cSpell.json"], //Import dotfiles cSpell settings
+    "enableFiletypes": ["vue"]
+  },
 
-  "powershell.codeFormatting.trimWhitespaceAroundPipe": true,
-  "powershell.codeFormatting.whitespaceBetweenParameters": true,
+  "[css]": {
+    "editor.defaultFormatter": "vscode.css-language-features"
+  },
+
+  "[powershell]": {
+    "codeFormatting.trimWhitespaceAroundPipe": true,
+    "codeFormatting.whitespaceBetweenParameters": true
+  },
+
 
   // "peacock.surpriseMeOnStartup": true, // Window Color: Auto adds a colored window theme on startup
   // "peacock.affectStatusBar": false,
