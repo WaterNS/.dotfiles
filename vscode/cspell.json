@@ -10,12 +10,12 @@
   ],
   "userWords": [
     "posix", "pubkey", "symlink", "symlinks", "dotfiles", "mnemonicprefix",
-    "datetime", "blob", "blobstorage",
+    "datetime", "blob", "blobstorage", "ACCOUNTNAME", "ACCOUNTKEY",
     "oauth", "authed", "auth'ed", "connstring",
     "authtoken", "bday",
     "hacky", "hackjob", "smidge", "upto", "hardcoding", "hardcode", "automagically",
     "shortname", "lastname", "fullname", "hostnames", "stackable", "helloworld",
-    "linebreaks", "uniquefield", "hotloads",
+    "linebreaks", "uniquefield", "hotloads", "onclick", "Favorited",
     "formname", "formtitle",
     "docx", "localsettings",
     "docs", "objs", "devs",
@@ -23,6 +23,8 @@
     "noopener", "noreferrer", "noindex",
     "readonly", "mixins", "vuex", "axios", "pathify", "querystring",
     "chocolatey", "Monitorian", "prettyping", "shellcheck",
+    "shortcode", "longcode", "mobilephone", "unformatted",
+    "glyphicon", "Newtonsoft", "Elmah",
     "ggml", "subpattern", "neox"
   ],
   "ignoreWords": [
