@@ -38,7 +38,7 @@
     "package-lock.json": true
   },
 
-  "[cSpell]": {
+  "cSpell": {
     "import": ["~/.dotfiles/vscode/cSpell.json"], //Import dotfiles cSpell settings
     "enableFiletypes": ["vue"]
   },
@@ -47,7 +47,7 @@
     "editor.defaultFormatter": "vscode.css-language-features"
   },
 
-  "[powershell]": {
+  "powershell": {
     "codeFormatting.trimWhitespaceAroundPipe": true,
     "codeFormatting.whitespaceBetweenParameters": true
   },
