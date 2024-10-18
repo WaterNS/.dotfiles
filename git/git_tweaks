@@ -13,3 +13,7 @@
 	customLog = log --stat --find-renames --stat-count=5
   # Ref/Credit: https://stackoverflow.com/questions/1838873/visualizing-branch-topology-in-git/34467298
   logLong = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all
+[safe]
+  # Mark all directories as "safe"
+  # Allows executing commands on a repository owned by another user.
+  directory = *
