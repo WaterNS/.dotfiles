@@ -81,5 +81,5 @@ pubkey WaterNS
 
 4. [Optional] Update local repo with SSH remote:
 ```
-cd ~/.dotfiles && git remote set-url origin git@github.com:WaterNS/.dotfiles.git
+cd ~/.dotfiles; git remote set-url origin git@github.com:WaterNS/.dotfiles.git
 ```
