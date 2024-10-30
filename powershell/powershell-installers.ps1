@@ -261,3 +261,12 @@ Function install-aria2 {
     }
   }
 }
+
+Function install-classicNotepad {
+  if (!(Test-Path "c:\windows\system32\notepad.exe")) {
+    if ((Check-OS) -like "*win*") {
+      dism /Online /add-Capability /CapabilityName:Microsoft.Windows.Notepad.System~~~~0.0.1.0
+      reg import "$HOME/.dotfiles/windows/Win11-RestoreClassicNotepad.reg"
+    }
+  }
+}
