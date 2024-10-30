@@ -200,7 +200,7 @@ Function install-bat {
 Function install-cloc {
   if (!(Check-Command cloc)) {
     if ((Check-OS) -like "*win*") {
-      install-generic-github -repo "AlDanial/cloc" -searchstring "exe"
+      install-generic-github -repo "AlDanial/cloc" -searchstring "winget.exe"
     }
   }
 }
