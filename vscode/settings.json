@@ -7,6 +7,7 @@
     // "Terminate batch job (Y/N)?": "Y\r" // Buggy with concurrent runs
   },
   "terminal.integrated.shellIntegration.decorationsEnabled": "never",
+  "terminal.integrated.scrollback": 9999,
 
   "workbench.colorTheme": "Monokai",
   "workbench.sideBar.location": "right",

@@ -19,7 +19,7 @@
     "formname", "formtitle",
     "docx", "localsettings",
     "docs", "objs", "devs",
-    "fatals",
+    "fatals", "scrollback",
     "noopener", "noreferrer", "noindex",
     "readonly", "mixins", "vuex", "axios", "pathify", "querystring",
     "chocolatey", "Monitorian", "prettyping", "shellcheck",
