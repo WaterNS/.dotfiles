@@ -175,3 +175,12 @@ fi
 if [ "$OS_FAMILY" = "Darwin" ] && [ -x "$(command -v trashOSX)" ] && [ ! -x "$(command -v trash)" ]; then
   alias trash='trashOSX'
 fi
+
+# hostname: Use alternatives if hostname not available
+if [ ! -x "$(command -v hostname)" ]; then
+  if [ -x "$(command -v uname)" ]; then
+    alias hostname='uname -n'
+  elif [ -f "/etc/hostname" ]; then
+    alias hostname='cat /etc/hostname'
+  fi
+fi
