@@ -119,13 +119,13 @@ for __line in $gitstatusoutput; do
   if printf '%s' "$__line" | grep -q ^'##'; then # header line
 
     #Identify number of commits ahead
-    if printf '%s' "$__line" | grep -qo 'ahead\ [0-9]*'; then
-      __git_ahead_count=$(printf '%s' "$__line" | grep -o 'ahead\ [0-9]*' | grep -o '[0-9]\+')
+    if printf '%s' "$__line" | grep -qo 'ahead[ ][0-9]*'; then
+      __git_ahead_count=$(printf '%s' "$__line" | grep -o 'ahead[ ][0-9]*' | grep -o '[0-9]\+')
     fi
 
     #Identify number of commits behind
-    if printf '%s' "$__line" | grep -qo 'behind\ [0-9]*'; then
-      __git_behind_count=$(printf '%s' "$__line" | grep -o 'behind\ [0-9]*' | grep -o '[0-9]\+')
+    if printf '%s' "$__line" | grep -qo 'behind[ ][0-9]*'; then
+      __git_behind_count=$(printf '%s' "$__line" | grep -o 'behind[ ][0-9]*' | grep -o '[0-9]\+')
     fi
 
   #Identify Added/Untracked files
