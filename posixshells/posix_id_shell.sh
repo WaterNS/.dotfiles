@@ -36,7 +36,7 @@ export RUNNINGSHELLVERSION;
 if [ -n "$TMUX_PANE" ]; then
   TMUX_PANE_INDEX=$(tmux list-panes | grep "$TMUX_PANE" | cut -d: -f1 | sed 's/%//')
   export TMUX_PANE_INDEX
-  [ "$TMUX_PANE_INDEX" -eq 1 ] && export TMUX_FIRST_PANE=true
+  [ "$TMUX_PANE_INDEX" -eq 1 ] || [ "$TMUX_PANE_INDEX" -eq 0 ] && export TMUX_FIRST_PANE=true
 fi
 
 # Identify if not TMUX or TMUX + First Window
