@@ -31,12 +31,17 @@ set -f; IFS='
 for dotfile in $files; do
   set +f; unset IFS
 
-  if notcontains "$excludedfiles" "$(basename "$dotfile")";then
+  if notcontains "$excludedfiles" "$(basename "$dotfile")"; then
     target=$HOME/$(basename "$dotfile")
 
     if [ -f "$target" ] && [ ! -L "$target" ]; then
-      echo "NOTE: Found existing $(basename "$dotfile") in HOME, renaming..."
-      mv "$target" "$target.$(date -u +"%Y-%m-%d")"
+      if contains "$(cat "$target")" "amazon-q"; then
+        echo "NOTE: AWS CLOUDSHELL Found existing $(basename "$dotfile") in HOME, renaming..."
+        mv "$target" "$target.awscloudshell"
+      else
+        echo "NOTE: Found existing $(basename "$dotfile") in HOME, renaming..."
+        mv "$target" "$target.$(date -u +"%Y-%m-%d")"
+      fi
     elif [ -L "$target" ] && [ ! "$(readlink "$target")" = "$dotfile" ]; then
       echo "NOTE: Found SYMBOLIC Link with incorrect path $(basename "$dotfile") in HOME, removing..."
       rm "$target"

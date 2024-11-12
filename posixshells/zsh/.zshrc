@@ -1,5 +1,10 @@
 #!/bin/zsh
 
+### INCLUDE: AWS Cloudshell zshrc, if available ##
+if [ -f "$HOME/.zshrc.awscloudshell" ]; then
+  . "$HOME/.zshrc.awscloudshell"
+fi
+
 ## .zshrc: Interactive shell
 ### .zshenv → [.zprofile if login] → [.zshrc if interactive] → [.zlogin if login] → [.zlogout sometimes]
 

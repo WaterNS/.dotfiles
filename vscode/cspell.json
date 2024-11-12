@@ -24,7 +24,7 @@
     "readonly", "mixins", "vuex", "axios", "pathify", "querystring",
     "chocolatey", "Monitorian", "prettyping", "shellcheck",
     "shortcode", "longcode", "mobilephone", "unformatted",
-    "glyphicon", "Newtonsoft", "Elmah",
+    "glyphicon", "Newtonsoft", "Elmah", "cloudshell",
     "ggml", "subpattern", "neox"
   ],
   "ignoreWords": [

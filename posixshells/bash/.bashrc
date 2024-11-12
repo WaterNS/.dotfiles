@@ -1,5 +1,10 @@
 #!/bin/bash
 
+### INCLUDE: AWS Cloudshell bashrc, if available ##
+if [ -f "$HOME/.bashrc.awscloudshell" ]; then
+  . "$HOME/.bashrc.awscloudshell"
+fi
+
 ### INCLUDE: posix base ##
 . ~/.dotfiles/posixshells/.profile
 
