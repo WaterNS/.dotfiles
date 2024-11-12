@@ -30,6 +30,14 @@ else
     export RUNNINGSHELL="$SHELL"
   fi
 fi
+
+if [ "$AWS_EXECUTION_ENV" = "CloudShell" ]; then
+    RUNNINGSHELLVERSION="$RUNNINGSHELLVERSION -- within AWS CloudShell"
+    export AWSCLOUDSHELL=true
+# else
+#     echo "Not running inside AWS CloudShell"
+fi
+
 export RUNNINGSHELLVERSION;
 
 # Identify TMUX pane

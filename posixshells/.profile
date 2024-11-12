@@ -147,6 +147,14 @@ export CONDA_AUTO_ACTIVATE_BASE=false # Don't auto activate Conda on install
     fi
   fi
 
+  # AWS CloudShell: Set path and Desktop folder
+  if [ "$AWSCLOUDSHELL" ]; then
+    if [ ! -d "$HOME/Desktop" ]; then
+      mkdir "$HOME/Desktop"
+    fi
+    cd ~/Desktop || exit
+  fi
+
 
 ## Update, if needed
 if [ "$NOT_SECONDARY_SESSION" ]; then

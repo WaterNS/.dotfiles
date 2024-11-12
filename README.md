@@ -13,6 +13,7 @@ Built for:
 - Various shells:
   - POSIX-like: sh, BusyBox/"ash", bash, zsh (possibly others)
   - Powershell
+  - Cloud environments: AWS CloudShell, Azure Cloud Shell
 - Tools: VS Code, git, vim
 - Installers (try to) support x64 Windows / Linux / MacOS (Intel/Apple Silicon) / iOS (via apps like iSH/aShell)
 
