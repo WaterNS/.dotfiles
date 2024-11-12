@@ -153,4 +153,4 @@ if [ "$NOT_SECONDARY_SESSION" ]; then
   . ~/.dotfiles/posixshells/dotfiles_updater.sh
 fi
 
-tripleSplitTMUX # Split terminal into 3 by default
+#tripleSplitTMUX # Split terminal into 3 by default
