@@ -1,5 +1,14 @@
 #!/bin/sh
 
+# hostname: Use alternatives if hostname not available
+if [ ! -x "$(command -v hostname)" ]; then
+  if [ -x "$(command -v uname)" ]; then
+    alias hostname='uname -n'
+  elif [ -f "/etc/hostname" ]; then
+    alias hostname='cat /etc/hostname'
+  fi
+fi
+
 # Identify hardware
 HW_HOSTNAME="??"
 HW_CPUNAME="??"
