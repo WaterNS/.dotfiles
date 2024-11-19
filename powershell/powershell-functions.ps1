@@ -259,3 +259,55 @@ function foldertotal {
     Write-Error "Path '$Path' not found."
   }
 }
+
+function hash256 {
+  [CmdletBinding()]
+  param(
+      [Parameter(Mandatory = $true)]
+      [string]$Path
+  )
+
+  if (-not (Test-Path -Path $Path)) {
+      Write-Error "The path '$Path' does not exist."
+      return
+  }
+
+  $item = Get-Item -Path $Path -ErrorAction Stop
+
+  if ($item.PSIsContainer) {
+      Write-Error "The path '$Path' is a directory, not a file."
+      return
+  }
+
+  # Calculate the SHA256 hash
+  $hash = Get-FileHash -Path $Path -Algorithm SHA256
+
+  # Output the hash
+  return $hash.Hash
+}
+
+function hashmd5 {
+  [CmdletBinding()]
+  param(
+      [Parameter(Mandatory = $true)]
+      [string]$Path
+  )
+
+  if (-not (Test-Path -Path $Path)) {
+      Write-Error "The path '$Path' does not exist."
+      return
+  }
+
+  $item = Get-Item -Path $Path -ErrorAction Stop
+
+  if ($item.PSIsContainer) {
+      Write-Error "The path '$Path' is a directory, not a file."
+      return
+  }
+
+  # Calculate the MD5 hash
+  $hash = Get-FileHash -Path $Path -Algorithm MD5
+
+  # Output the hash
+  return $hash.Hash
+}

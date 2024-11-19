@@ -827,3 +827,53 @@ clearsshhosts() {
       echo "No known_hosts file found."
   fi
 }
+
+hash256() {
+    filepath="$1"
+
+    # Validate that the file exists and is a regular file
+    if [ ! -f "$filepath" ]; then
+        echo "Error: '$filepath' is not a regular file" >&2
+        return 1
+    fi
+
+    # Try to compute the SHA256 hash using available tools
+    if command -v sha256sum >/dev/null 2>&1; then
+        # Use sha256sum if available
+        sha256sum "$filepath" | awk '{ print $1 }'
+    elif command -v openssl >/dev/null 2>&1; then
+        # Use openssl if available
+        openssl dgst -sha256 "$filepath" | awk '{ print $2 }'
+    elif command -v shasum >/dev/null 2>&1; then
+        # Use shasum if available
+        shasum -a 256 "$filepath" | awk '{ print $1 }'
+    else
+        echo "Error: No SHA256 hash utility found on the system." >&2
+        return 1
+    fi
+}
+
+hashmd5() {
+    filepath="$1"
+
+    # Validate that the file exists and is a regular file
+    if [ ! -f "$filepath" ]; then
+        echo "Error: '$filepath' is not a regular file" >&2
+        return 1
+    fi
+
+    # Try to compute the MD5 hash using available tools
+    if command -v md5sum >/dev/null 2>&1; then
+        # Use md5sum if available
+        md5sum "$filepath" | awk '{ print $1 }'
+    elif command -v openssl >/dev/null 2>&1; then
+        # Use openssl if available
+        openssl dgst -md5 "$filepath" | awk '{ print $2 }'
+    elif command -v md5 >/dev/null 2>&1; then
+        # Use md5 if available (common on macOS)
+        md5 "$filepath" | awk '{ print $4 }'
+    else
+        echo "Error: No MD5 hash utility found on the system." >&2
+        return 1
+    fi
+}
