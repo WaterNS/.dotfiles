@@ -77,10 +77,11 @@ Set-Location $curpath
 
 
 # Create Powershell Profile(s), if they don't exist
-$PowerShellProfileFiles =
+$PowerShellProfileFiles = @(
   "$HOME\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1", # Powershell 5.1 and Prior
-  "$HOME\Documents\PowerShell\Microsoft.VSCode_profile.ps1" # VsCode Powershell Integrated Console
+  "$HOME\Documents\PowerShell\Microsoft.VSCode_profile.ps1", # VsCode Powershell Integrated Console
   "$HOME\Documents\PowerShell\Microsoft.PowerShell_profile.ps1" # Powershell 7+
+)
 
 foreach ($ProfileFile in $PowerShellProfileFiles) {
   If (!(Test-Path (Split-Path $ProfileFile))) {
@@ -145,15 +146,6 @@ If (Test-Path "~\Documents") {
 }
 
 
-#Perl binary: diff-so-fancy (better git diff)
-if (!(Test-Path "$HOMEREPO/opt/bin/diff-so-fancy")) {
-  Write-Output ""; Write-Output "Pulling down: diff-so-fancy (better git diff)"
-  Invoke-WebRequest https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy -UseBasicParsing -OutFile "$HOMEREPO/opt/bin/diff-so-fancy"
-} elseif ($update) {
-  Write-Output ""; Write-Output "--Updating diff-so-fancy"
-  Invoke-WebRequest https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy -UseBasicParsing -OutFile "$HOMEREPO/opt/bin/diff-so-fancy"
-}
-
 # Install some handy dev tools
 install-jq
 install-shellcheck
@@ -161,6 +153,7 @@ install-shfmt
 install-less
 install-cht
 install-delta
+install-diffsofancy
 install-bat
 install-cloc
 install-ntop
