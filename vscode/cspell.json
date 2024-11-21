@@ -11,21 +11,22 @@
   "userWords": [
     "posix", "pubkey", "symlink", "symlinks", "dotfiles", "mnemonicprefix",
     "datetime", "blob", "blobstorage", "ACCOUNTNAME", "ACCOUNTKEY",
-    "oauth", "authed", "auth'ed", "connstring",
+    "oauth", "authed", "auth'ed", "connstring", "pkgname", "pkgrepo",
     "authtoken", "bday",
     "hacky", "hackjob", "smidge", "upto", "hardcoding", "hardcode", "automagically",
     "shortname", "lastname", "fullname", "hostnames", "stackable", "helloworld",
-    "linebreaks", "uniquefield", "hotloads", "onclick", "Favorited",
+    "linebreaks", "uniquefield", "hotloads", "onclick", "Favorited", "searchstring",
     "formname", "formtitle", "hashmd5",
-    "docx", "localsettings",
+    "docx", "localsettings", "executablename", "msixbundle",
     "docs", "objs", "devs",
     "fatals", "scrollback",
     "noopener", "noreferrer", "noindex",
     "readonly", "mixins", "vuex", "axios", "pathify", "querystring",
-    "chocolatey", "Monitorian", "prettyping", "shellcheck",
+    "chocolatey", "Monitorian", "prettyping", "shellcheck", "shfmt", "cloc", "ntop",
     "shortcode", "longcode", "mobilephone", "unformatted",
-    "glyphicon", "Newtonsoft", "Elmah", "cloudshell",
-    "ggml", "subpattern", "neox"
+    "glyphicon", "Newtonsoft", "Elmah", "cloudshell", "winget",
+    "ggml", "subpattern", "neox", "jqlang", "koalaman", "mvdan", "dandavison", "sharkdp",
+    "gsass", "msvc", "dism", "diffsofancy", "HOMEREPO"
   ],
   "ignoreWords": [
     "ify", "sify", // Word-'ify' hacks
