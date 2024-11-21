@@ -86,8 +86,7 @@ Function install-generic-github {
       $local:pkgrepo="https://api.github.com/repos/$repo/releases/latest"
       $local:assetsURL = $(Invoke-WebRequest $pkgrepo -UseBasicParsing | ConvertFrom-Json | Select-Object assets_url)[0].assets_url;
       $local:latest = $(
-        Invoke-WebRequest $assetsURL -UseBasicParsing | ConvertFrom-Json | ForEach-Object { $_.browser_download_url } | Select-String $searchstring
-        | Out-String
+        Invoke-WebRequest $assetsURL -UseBasicParsing | ConvertFrom-Json | ForEach-Object { $_.browser_download_url } | Select-String $searchstring | Out-String
       ).Trim();
       $local:ext = $null
       if ($latest.Split("/")[-1] -match "\.") {$ext = $latest.Split("/")[-1].Split(".")[-1]}
