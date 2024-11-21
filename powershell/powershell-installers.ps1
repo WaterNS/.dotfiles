@@ -84,15 +84,17 @@ Function install-generic-github {
       "------------------------------------------------"
       [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
       $local:pkgrepo="https://api.github.com/repos/$repo/releases/latest"
-      $local:latest=$(Invoke-WebRequest $pkgrepo -UseBasicParsing | Select-Object content | Get-URLs | Select-String $searchstring | Select-Object -ExpandProperty line)
-      $local:ext=$latest.Split("/")[-1].Split(".")[-1]
+      $local:assetsURL = $(Invoke-WebRequest $pkgrepo -UseBasicParsing | ConvertFrom-Json | Select-Object assets_url)[0].assets_url
+      $local:latest=$(Invoke-WebRequest $assetsURL -UseBasicParsing | ConvertFrom-Json).browser_download_url
+      $local:ext = $null
+      if ($ext -match "\.") {$ext = $latest.Split("/")[-1].Split(".")[-1]}
 
       "Downloading $executablename..."
-      if ($ext -eq "exe") {
-        Powershell-FileDownload "$latest" -o "$HOME/.dotfiles/opt/bin/$executablename.$ext"
+      if ($ext -eq "exe" -or $null -eq $ext) {
+        Powershell-FileDownload "$latest" -o "$HOME/.dotfiles/opt/bin/$executablename$(If ($ext) {".$ext"})"
       } else {
         mkdir -p "$HOME/.dotfiles/opt/tmp" | Out-Null
-        Powershell-FileDownload "$latest" -o "$HOME/.dotfiles/opt/tmp/$pkgname.$ext"
+        Powershell-FileDownload "$latest" -o "$HOME/.dotfiles/opt/tmp/$pkgname$(If ($ext) {".$ext"})"
 
         if ($ext -like "zip") {
           Expand-Archive -LiteralPath "$HOME/.dotfiles/opt/tmp/$pkgname.$ext" -DestinationPath "$HOME/.dotfiles/opt/tmp/$pkgname"
@@ -104,9 +106,9 @@ Function install-generic-github {
             Move-Item $binary.FullName "$HOME/.dotfiles/opt/bin/$executablename.exe"
           }
         } elseif ($ext -like "msixbundle") {
-          Add-AppPackage -path "$HOME/.dotfiles/opt/tmp/$pkgname.$ext"
+          Add-AppPackage -path "$HOME/.dotfiles/opt/tmp/$pkgname$(If ($ext) {".$ext"})"
         } else {
-          Write-Warning "Don't know what to do with extension ($ext) from $pkgname.$ext"
+          Write-Warning "Don't know what to do with extension ($ext) from $pkgname$(If ($ext) {".$ext"})"
         }
 
         Remove-Item -Path "$HOME/.dotfiles/opt/tmp" -Recurse
@@ -268,5 +270,11 @@ Function install-classicNotepad {
       dism /Online /add-Capability /CapabilityName:Microsoft.Windows.Notepad.System~~~~0.0.1.0
       reg import "$HOME/.dotfiles/windows/Win11-RestoreClassicNotepad.reg"
     }
+  }
+}
+
+Function install-diffsofancy {
+  if (!(Test-Path "$HOMEREPO/opt/bin/diff-so-fancy")) {
+    install-generic-github -repo "so-fancy/diff-so-fancy" -searchstring "diff-so-fancy"
   }
 }
