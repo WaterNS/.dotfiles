@@ -85,9 +85,13 @@ Function install-generic-github {
       [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
       $local:pkgrepo="https://api.github.com/repos/$repo/releases/latest"
       $local:assetsURL = $(Invoke-WebRequest $pkgrepo -UseBasicParsing | ConvertFrom-Json | Select-Object assets_url)[0].assets_url;
-      $local:latest = $(Invoke-WebRequest $assetsURL -UseBasicParsing | ConvertFrom-Json | ForEach-Object { $_.browser_download_url } | Select-String $searchstring)
+      $local:latest = $(
+        Invoke-WebRequest $assetsURL -UseBasicParsing | ConvertFrom-Json | ForEach-Object { $_.browser_download_url } | Select-String $searchstring
+        | Out-String
+      ).Trim();
       $local:ext = $null
-      if ($ext -match "\.") {$ext = $latest.Split("/")[-1].Split(".")[-1]}
+      if ($latest.Split("/")[-1] -match "\.") {$ext = $latest.Split("/")[-1].Split(".")[-1]}
+
 
       "Downloading $executablename..."
       if ($ext -eq "exe" -or $null -eq $ext) {
