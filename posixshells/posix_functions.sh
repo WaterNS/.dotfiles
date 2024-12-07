@@ -877,3 +877,11 @@ hashmd5() {
         return 1
     fi
 }
+
+recentlyModifedTree() {
+  find . -type f -print0 | xargs -0 stat -f "%m %Sp %l %-8Su %-8Sg %8z %Sm %N" | sort | cut -f 2- -d' '
+}
+
+clearDSStoreFilesinDir() {
+  find . -name ".DS_Store" -delete
+}
