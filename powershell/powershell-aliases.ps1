@@ -79,3 +79,13 @@ if (!(Check-Command "download")) {
     Set-Alias download AliasAria2
   }
 }
+
+if ((Check-Command "Get-Uptime")) {
+  Function uptimefunc {Get-Uptime}
+  Set-Alias up uptimefunc
+  Set-Alias uptime uptimefunc
+} else {
+  Function uptimefunc {Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object LastBootUpTime}
+  Set-Alias up uptimefunc
+  Set-Alias uptime uptimefunc
+}
