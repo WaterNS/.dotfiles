@@ -4,7 +4,7 @@
   mnemonicprefix = true
   algorithm = patience
 [pull]
-    commit = no
+  commit = no
 [push]
   default = simple
 [log]
