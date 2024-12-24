@@ -1,4 +1,4 @@
-$HOMEREPO="$HOME\.dotfiles"
+﻿$HOMEREPO="$HOME\.dotfiles"
 
 # Source my powershell polyfills
 . "$HOMEREPO\powershell\powershell-polyfills.ps1"
@@ -67,3 +67,6 @@ If (!($env:PATH -like "*$HOME/.dotfiles/opt/bin*")) {
 if ((Test-Path "C:\Python27\python2.exe") -and !($env:PATH -like "*C:\Python27\*")) {
   $env:PATH += ";C:\Python27\"
 }
+
+# Source Powershell Logout Script
+. "$HOMEREPO\powershell\powershell-logout.ps1"
