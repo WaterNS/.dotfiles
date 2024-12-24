@@ -1,4 +1,4 @@
-﻿$HOMEREPO="$HOME\.dotfiles"
+$HOMEREPO="$HOME\.dotfiles"
 
 # Source my powershell polyfills
 . "$HOMEREPO\powershell\powershell-polyfills.ps1"
@@ -15,6 +15,9 @@
 
 # Source Powershell Aliases
 . "$HOMEREPO\powershell\powershell-aliases.ps1"
+
+### History Stuffs
+. "$HOMEREPO\powershell\powershell-history.ps1"
 
 ################
 # Git Settings #
