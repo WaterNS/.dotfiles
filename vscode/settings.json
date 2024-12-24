@@ -20,6 +20,7 @@
   "files.trimTrailingWhitespace": true,
 
   "diffEditor.ignoreTrimWhitespace": false,
+  "editor.minimap.showSlider": "always",
   "editor.renderWhitespace": "boundary",
   "editor.tabSize": 2,
   "editor.insertspaces": true,
