@@ -1,4 +1,6 @@
 {
+  "telemetry.telemetryLevel": "off",
+
   "terminal.integrated.rendererType": "experimentalWebgl",
   "telemetry.enableTelemetry": false,
   "restoreTerminals.keepExistingTerminalsOpen": true,
