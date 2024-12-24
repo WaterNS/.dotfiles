@@ -40,7 +40,7 @@ fi
 [ "$NOT_SECONDARY_SESSION" ] && echo "$HW_STRING";
 
 ### History Stuffs
-. "$HOME/.dotfiles/posixshells/posix_history.sh"
+. ~/.dotfiles/posixshells/posix_history.sh
 
 # VIM: Create backup, swap, and undo folders if don't exist
 if [ ! -d ~/.vim/backups ]; then mkdir -p ~/.vim/backups; fi
@@ -96,7 +96,7 @@ export CONDA_AUTO_ACTIVATE_BASE=false # Don't auto activate Conda on install
       # Set GIT Config Settings
       if [ -x "$(command -v git)" ]; then
         git config --global --remove-section include
-        #shellcheck disable=2088 # Exception: Want to explictly write the tidle to config
+        #shellcheck disable=2088 # Exception: Want to explicitly write the tilde to config
         git config --global --add include.path '~/.dotfiles/git/git_tweaks'
 
         if compare_versions "$(git --version | cut -f3 -d " ")" '>' 2.21;then
@@ -111,7 +111,7 @@ export CONDA_AUTO_ACTIVATE_BASE=false # Don't auto activate Conda on install
       # Use diff-so-fancy (if available)
       if [ -x "$(command -v delta)" ]; then
         export GIT_PAGER='delta'
-        #shellcheck disable=2088 # Exception: Want to explictly write the tidle to config
+        #shellcheck disable=2088 # Exception: Want to explicitly write the tilde to config
         git config --global --add include.path '~/.dotfiles/git/git_deltadiff'
       elif [ -x "$(command -v diff-so-fancy)" ]; then
         # Set Git Pager and LESS settings for session
@@ -119,15 +119,15 @@ export CONDA_AUTO_ACTIVATE_BASE=false # Don't auto activate Conda on install
         export LESS="-x2 -RFX $LESS"
 
         # Include diff-so-fancy colors
-        #shellcheck disable=2088 # Exception: Want to explictly write the tidle to config
+        #shellcheck disable=2088 # Exception: Want to explicitly write the tilde to config
         git config --global --add include.path '~/.dotfiles/git/git_diffsofancy'
       else # Set to use LESS as fallback and undo gitconfig change
         export GIT_PAGER='less'
         export LESS="-x2 -RFX $LESS"
 
-        #shellcheck disable=2088 # Exception: Want to explictly write the tidle to config
+        #shellcheck disable=2088 # Exception: Want to explicitly write the tilde to config
         git config --global --unset-all include.path '~/.dotfiles/git/git_diffsofancy'
-        #shellcheck disable=2088 # Exception: Want to explictly write the tidle to config
+        #shellcheck disable=2088 # Exception: Want to explicitly write the tilde to config
         git config --global --unset-all include.path '~/.dotfiles/git/git_deltadiff'
       fi
     fi

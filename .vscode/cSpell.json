@@ -1,0 +1,9 @@
+//cSpell Workspace-specific Settings
+
+// These are for .dotfiles folder specifically, not the user config
+{
+  "words": [
+    "PYTHONPATH", "posixshells", "devicehw", "LESSOPEN", "lesspipe", "deltadiff", "fixsshperms", "dotfilesupdater",
+    "AWSCLOUDSHELL", "zcompdump", "lesshst", "SAVEHIST", "LESSHISTFILE", "viminfo", "netrwhist", "gitprompt"
+  ]
+}
