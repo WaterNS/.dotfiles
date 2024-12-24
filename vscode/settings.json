@@ -1,8 +1,9 @@
 {
   "telemetry.telemetryLevel": "off",
+  "telemetry.enableTelemetry": false,
 
   "terminal.integrated.rendererType": "experimentalWebgl",
-  "telemetry.enableTelemetry": false,
+  "terminal.integrated.enablePersistentSessions": false,
   "restoreTerminals.keepExistingTerminalsOpen": true,
   "terminal.integrated.autoReplies": {
     "exited with code 1": "\r"
