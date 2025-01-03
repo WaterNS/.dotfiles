@@ -38,6 +38,8 @@
   "editor.guides.bracketPairs": true, // Bracket guides: false/true/"active"
   //"editor.codeLens": false, //Not ideal, but https://github.com/Microsoft/vscode/issues/26204
 
+  "github.copilot.editor.enableAutoCompletions": false,
+
   "search.exclude": {
     "<node_modules>/**": true,
     "package-lock.json": true
