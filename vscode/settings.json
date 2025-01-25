@@ -47,7 +47,9 @@
 
   "cSpell": {
     "import": ["~/.dotfiles/vscode/cSpell.json"], //Import dotfiles cSpell settings
-    "enableFiletypes": ["vue"]
+    "enableFiletypes": ["vue"],
+    "diagnosticLevel": "Hint",
+    "useCustomDecorations": true
   },
 
   "[css]": {
