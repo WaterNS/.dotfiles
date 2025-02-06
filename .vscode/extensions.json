@@ -12,6 +12,7 @@
       "ms-vscode.powershell",
       "soulcode.vscode-unwanted-extensions",
       "richie5um2.vscode-sort-json",
-      "foxundermoon.shell-format"
+      "foxundermoon.shell-format",
+      "sysoev.vscode-open-in-github"
   ]
 }
