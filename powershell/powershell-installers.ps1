@@ -281,3 +281,49 @@ Function install-diffsofancy {
     install-generic-github -repo "so-fancy/diff-so-fancy" -searchstring "diff-so-fancy"
   }
 }
+
+Function install-vswhere {
+  if (!(Test-Path "$HOMEREPO/opt/bin/vswhere.exe")) {
+    install-generic-github -repo "microsoft/vswhere" -searchstring "vswhere"
+  }
+}
+
+Function install-nuget {
+  if (!(Check-Command nuget)) {
+    if ((Check-OS) -like "*win*") {
+      "NOTE: Nuget not found, availing into dotfiles bin"
+      "------------------------------------------------"
+      $local:latest="https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
+
+      "Downloading Nuget ..."
+      mkdir -p "$HOME/.dotfiles/opt/tmp" | Out-Null
+      Powershell-FileDownload "$latest" -o "$HOME/.dotfiles/opt/bin/nuget.exe"
+
+      if (Check-Command nuget) {
+        "GOOD - nuget is now available"
+      } else {
+        "BAD - nuget doesn't seem to be available"
+      }
+    }
+  }
+}
+
+Function install-vsBuildTools {
+  param (
+    [Alias("u")][Switch]$Uninstall
+  )
+  $local:winGetID = "Microsoft.VisualStudio.2022.BuildTools"
+
+    if ($Uninstall) {
+      if (winget list --id "$winGetID" | Select-String "$winGetID") {
+        winget uninstall --id "$winGetID"
+      }
+    }
+
+    if (!$Uninstall) {
+      if (!(winget list --id "$winGetID" | Select-String "$winGetID")) {
+        install-winget
+        winget install --id "$winGetID" --silent
+      }
+    }
+}

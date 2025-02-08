@@ -1,4 +1,4 @@
-Param (
+﻿Param (
   [switch][Alias('u')]$update,
   [switch][Alias('r')]$reInit
 )
@@ -159,6 +159,8 @@ install-cloc
 install-ntop
 install-monitorian
 install-classicNotepad
+install-vswhere
+install-nuget
 
 #Write update/init file
 $shaInitUpdated=$(git --git-dir "$HOME/.dotfiles/.git" log -n 1 --pretty=format:%H -- init_powershell.ps1)

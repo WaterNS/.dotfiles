@@ -16,6 +16,9 @@
 # Source Powershell Aliases
 . "$HOMEREPO\powershell\powershell-aliases.ps1"
 
+# Source Visual Studio helpers
+. "$HOMEREPO\powershell\powershell-visualstudio.ps1"
+
 ### History Stuffs
 . "$HOMEREPO\powershell\powershell-history.ps1"
 
