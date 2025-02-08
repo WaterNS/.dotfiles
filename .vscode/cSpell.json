@@ -4,6 +4,7 @@
 {
   "words": [
     "PYTHONPATH", "posixshells", "devicehw", "LESSOPEN", "lesspipe", "deltadiff", "fixsshperms", "dotfilesupdater",
-    "AWSCLOUDSHELL", "zcompdump", "lesshst", "SAVEHIST", "LESSHISTFILE", "viminfo", "netrwhist", "gitprompt"
+    "AWSCLOUDSHELL", "zcompdump", "lesshst", "SAVEHIST", "LESSHISTFILE", "viminfo", "netrwhist", "gitprompt", "vswhere",
+    "SCRIPTDIR", "SCRIPTPATH", "SCRIPTARGS", "vstest", "vsdevcmd", "RUNNINGSHELL", "NOSYSTEM", "RUNNINGSHELLVERSION"
   ]
 }

@@ -16,7 +16,7 @@
     "hacky", "hackjob", "smidge", "upto", "hardcoding", "hardcode", "automagically",
     "shortname", "lastname", "fullname", "hostnames", "stackable", "helloworld",
     "linebreaks", "uniquefield", "hotloads", "onclick", "Favorited", "searchstring",
-    "formname", "formtitle", "hashmd5",
+    "formname", "formtitle", "hashmd5", "keygen",
     "docx", "localsettings", "executablename", "msixbundle",
     "docs", "objs", "devs",
     "fatals", "scrollback",
@@ -26,7 +26,7 @@
     "shortcode", "longcode", "mobilephone", "unformatted",
     "glyphicon", "Newtonsoft", "Elmah", "cloudshell", "winget",
     "ggml", "subpattern", "neox", "jqlang", "koalaman", "mvdan", "dandavison", "sharkdp",
-    "gsass", "msvc", "dism", "diffsofancy", "HOMEREPO"
+    "gsass", "msvc", "vswhere", "dism", "diffsofancy", "HOMEREPO"
   ],
   "ignoreWords": [
     "ify", "sify", // Word-'ify' hacks

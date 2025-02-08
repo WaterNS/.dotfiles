@@ -107,7 +107,7 @@ fi
 #fi
 
 # Set .dotfiles git repo setting
-curpath=$PWD
+currentPath=$PWD
 cd "$HOMEREPO" || exit
 git config user.name "User"
 git config user.email waterns@users.noreply.github.com
@@ -121,7 +121,7 @@ fi
 if [ -f ~/.ssh/WaterNS ]; then
 	git config core.sshCommand "ssh -i $HOME/.ssh/WaterNS" # Use expanding $HOME value to hardcode
 fi
-cd "$curpath" || exit
+cd "$currentPath" || exit
 
 # Make dev tools available in dotfiles bin
 install_opensshkeygen

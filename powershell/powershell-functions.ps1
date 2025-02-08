@@ -31,7 +31,7 @@ Function updateGitRepo {
       cd $olddir
       ""
       ""
-      Invoke-Expression -Command ("$SCRIPTPATH $cmdargs")
+      Invoke-Expression -Command ("$SCRIPTPATH $cmdArgs")
     }
   }
 

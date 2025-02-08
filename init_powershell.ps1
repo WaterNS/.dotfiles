@@ -1,6 +1,6 @@
-﻿Param (
+Param (
   [switch][Alias('u')]$update,
-  [switch][Alias('r')]$reinit
+  [switch][Alias('r')]$reInit
 )
 
 $SCRIPTDIR=$PSScriptRoot
@@ -9,9 +9,9 @@ $SCRIPTARGS=$PSBoundParameters
 
 $HOMEREPO="$HOME\.dotfiles"
 
-$cmdargs=""
+$cmdArgs=""
 foreach ($arg in $SCRIPTARGS.GetEnumerator()) {
-  $cmdargs+="-"+$arg.key
+  $cmdArgs+="-"+$arg.key
 }
 
 #Source our powershell polyfills & functions & installers
@@ -33,7 +33,7 @@ if (! ($(git config --global --get-all include.path) -like "*.dotfiles/git/git_t
 }
 
 
-if ($reinit) {
+if ($reInit) {
   Write-Output "Reinitializing..."
   $update = $true
 } elseif ($update) {
@@ -44,7 +44,7 @@ if ($update) {
   updateGitRepo "dotfiles" "profile configs" "$HOMEREPO"
 }
 
-if ($reinit) {Remove-Item "$HOMEREPO/opt" -Recurse}
+if ($reInit) {Remove-Item "$HOMEREPO/opt" -Recurse}
 
 # Create dir for installation of packages for dotfiles
 If (!(Test-Path $HOMEREPO/opt)) {New-Item $HOMEREPO/opt/bin -ItemType Directory > $null}
@@ -60,7 +60,7 @@ If (!($ExistingUserPath -like "*$HOME/.dotfiles/opt/bin*")) {
 }
 
 # Set .dotfiles repo setting
-$curpath=$PWD
+$currentPath=$PWD
 Set-Location $HOMEREPO
 git config user.name "User"
 git config user.email waterns@users.noreply.github.com
@@ -73,7 +73,7 @@ if (!(Test-Path "$HOME/.ssh/WaterNS")) {
 if (Test-Path ~/.ssh/WaterNS) {
   git config core.sshCommand "ssh -i ~/.ssh/WaterNS"
 }
-Set-Location $curpath
+Set-Location $currentPath
 
 
 # Create Powershell Profile(s), if they don't exist
@@ -119,8 +119,8 @@ If (Test-Path "~\Documents") {
   }
 
   # VS Code env config files: settings.json, and perhaps others
-  $VScodeEnvFiles = 'settings.json'
-  foreach ($envFile in $VScodeEnvFiles) {
+  $vsCodeEnvFiles = 'settings.json'
+  foreach ($envFile in $vsCodeEnvFiles) {
     $RepoVSCodeEnvFile="$HOME\.dotfiles\vscode\$envFile"
     $VSCodeEnvDir="$env:APPDATA\Code\User"
     $VSCodeEnvFile="$VSCodeEnvDir\$envFile"
@@ -161,37 +161,37 @@ install-monitorian
 install-classicNotepad
 
 #Write update/init file
-$SHAinitupdated=$(git --git-dir "$HOME/.dotfiles/.git" log -n 1 --pretty=format:%H -- init_powershell.ps1)
-if ((!(Test-Path $HOMEREPO\opt\lastupdate -Type Leaf)) -OR (!(Test-Path $HOMEREPO\opt\lastinit -Type Leaf))) {
-  if (!(Test-Path $HOMEREPO\opt\lastupdate -Type Leaf)) {
-    [int](Get-Date (Get-Date).ToUniversalTime() -UFormat %s) > $HOMEREPO\opt\lastupdate
-    ((Get-Date -UFormat '%A %Y-%m-%d %I:%M:%S %p ')+(Get-TimeZone).ID) >> $HOMEREPO\opt\lastupdate
+$shaInitUpdated=$(git --git-dir "$HOME/.dotfiles/.git" log -n 1 --pretty=format:%H -- init_powershell.ps1)
+if ((!(Test-Path $HOMEREPO\opt\lastUpdate -Type Leaf)) -OR (!(Test-Path $HOMEREPO\opt\lastInit -Type Leaf))) {
+  if (!(Test-Path $HOMEREPO\opt\lastUpdate -Type Leaf)) {
+    [int](Get-Date (Get-Date).ToUniversalTime() -UFormat %s) > $HOMEREPO\opt\lastUpdate
+    ((Get-Date -UFormat '%A %Y-%m-%d %I:%M:%S %p ')+(Get-TimeZone).ID) >> $HOMEREPO\opt\lastUpdate
   }
 
-  if (!(Test-Path $HOMEREPO\opt\lastinit -Type Leaf)) {
-    "Last commit at which init_powershell.ps1 initialization ran:" > $HOMEREPO\opt\lastinit
-    "$SHAinitupdated" >> $HOMEREPO\opt\lastinit
+  if (!(Test-Path $HOMEREPO\opt\lastInit -Type Leaf)) {
+    "Last commit at which init_powershell.ps1 initialization ran:" > $HOMEREPO\opt\lastInit
+    "$shaInitUpdated" >> $HOMEREPO\opt\lastInit
   }
 }
-elseif (($update) -OR ($reinit)) {
+elseif (($update) -OR ($reInit)) {
   if ($update) {
     Write-Output ""
     Write-Output "Updating last update time file with current date"
-    [int](Get-Date (Get-Date).ToUniversalTime() -UFormat %s) > $HOMEREPO\opt\lastupdate
-    ((Get-Date -UFormat '%A %Y-%m-%d %I:%M:%S %p ')+(Get-TimeZone).ID) >> $HOMEREPO\opt\lastupdate
+    [int](Get-Date (Get-Date).ToUniversalTime() -UFormat %s) > $HOMEREPO\opt\lastUpdate
+    ((Get-Date -UFormat '%A %Y-%m-%d %I:%M:%S %p ')+(Get-TimeZone).ID) >> $HOMEREPO\opt\lastUpdate
   }
 
-  if ($reinit) {
+  if ($reInit) {
     Write-Output ""
-    Write-Output "Updating lastinit time with current SHA: $SHAinitupdated"
-    "Last commit at which init_powershell.ps1 initialization ran:" > $HOMEREPO\opt\lastinit
-    "$SHAinitupdated" >> $HOMEREPO\opt\lastinit
+    Write-Output "Updating lastInit time with current SHA: $shaInitUpdated"
+    "Last commit at which init_powershell.ps1 initialization ran:" > $HOMEREPO\opt\lastInit
+    "$shaInitUpdated" >> $HOMEREPO\opt\lastInit
   }
 }
 
-if ($reinit) {
+if ($reInit) {
 	Write-Output ""
-	Write-Output "ReInitilization Completed!"
+	Write-Output "ReInitialization Completed!"
 } elseif ($update) {
 	Write-Output ""
 	Write-Output "UPDATING Completed!"
