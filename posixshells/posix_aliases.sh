@@ -151,6 +151,12 @@ if [ -x "$(command -v aria2c)" ]; then
   alias download='aria2c'
 fi
 
+# downloadTorrent: Use aria2c, if available
+if [ -x "$(command -v aria2c)" ]; then
+  alias downloadTorrent='aria2c --file-allocation=none --seed-time=0'
+fi
+
+
 # pip: Use pip3, if nothing else available
 if [ -x "$(command -v pip3)" ] && [ ! -x "$(command -v pip)" ]; then
   alias pip='pip3'
