@@ -76,6 +76,7 @@ if [ -x "$(command -v yt-dlp)" ] &&
 else
   ytdl () { youtube-dlp "$@" ; }
   ytdl-hq () { youtube-dlp "$@" ; }
+  ytdl-hq-mp4 () { youtube-dlp "$@" ; }
   ytdl-mp3 () { youtube-dlp "$@" ; }
 
   youtube-dlp () {
