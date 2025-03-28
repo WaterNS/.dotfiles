@@ -42,6 +42,7 @@ if [ "$OS_FAMILY" = "Darwin" ]; then
   defaults write com.apple.mail DisableInlineAttachmentViewing -bool true # Disable inline attachments (just show the icons)
   # Copy email addresses as `foo@example.com` instead of `Foo Bar <foo@example.com>` in Mail.app
   defaults write com.apple.mail AddressesIncludeNameOnPasteboard -bool false
+  sudo defaults write com.apple.mail SuppressAddressHistory -bool true # Disable "Previous Recipients" 'feature'
 
   # macOS: Disable Window Tints based on background
   defaults write -g AppleReduceDesktopTinting -bool yes
