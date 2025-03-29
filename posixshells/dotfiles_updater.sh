@@ -20,10 +20,11 @@ if [ ! -f "$HOME/.dotfiles/opt/lastInit" ] || [ "$shaInitScript" != "$(head -2 "
 	else
 	 echo "Init script has been updated since last run, Executing init_posix.sh with ReInitialization flag"
 	fi
-	"$HOME/.dotfiles/init_posix.sh" -r
-	echo "Restarting shell..."
-	echo "------------------"
-	exec "$RUNNINGSHELL"
+  if "$HOME/.dotfiles/init_posix.sh" -r; then
+    echo "Restarting shell..."
+    echo "------------------"
+    exec "$RUNNINGSHELL"
+  fi
 elif [ "$diffTime" -gt "$maxTime" ] || [ ! -f "$HOME/.dotfiles/opt/lastUpdate" ]; then
 	if [ ! -f "$HOME/.dotfiles/opt/lastUpdate" ]; then
 		echo "No update time file found, running update now"
