@@ -684,7 +684,8 @@ install_git_delta () {
   if [ ! -x "$(command -v delta)" ]; then
     install_less
     if [ "$OS_FAMILY" = "Darwin" ]; then
-      install_generic_homebrew "git-delta" "delta"
+      #install_generic_homebrew "git-delta" "delta"
+      brew install "delta"
     elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
       install_generic_github "dandavison/delta" "delta" "x86_64-unknown-linux-musl"
     # Doesn't appear to be a 32bit pkg available on github releases
