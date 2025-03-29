@@ -33,6 +33,22 @@ if [ -f "$HOME/.dotfiles/posixshells/posix_installers.sh" ]; then
   . "$HOME/.dotfiles/posixshells/posix_installers.sh"
 fi
 
+# Mac: Check if Full Disk Access is available -- if not prompt and exit
+if [ "$OS_FAMILY" = "Darwin" ]; then
+  if ! plutil -lint /Library/Preferences/com.apple.TimeMachine.plist >/dev/null; then
+    echo "This script requires your terminal app to have Full Disk Access."
+    echo "Add this terminal to the Full Disk Access list in System Preferences > Security & Privacy, quit the app, and re-run this script."
+
+    osascript <<EOF
+      display dialog "This script requires Full Disk Access for Terminal. Please enable it in System Settings → Privacy & Security → Full Disk Access." buttons {"OK"} default button 1
+EOF
+
+    open "x-apple.systempreferences:com.apple.preference.security?Privacy_All"
+
+    exit 1
+  fi
+fi
+
 # Preload Rosetta (lot of utils aren't compiled for ARM in macOS space)
 if [ "$OS_FAMILY" = "Darwin" ]; then
   setMacTerminalDefaultTheme

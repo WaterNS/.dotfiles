@@ -13,6 +13,8 @@ if [ -f "$HOME/.dotfiles/posixshells/posix_installers.sh" ]; then
 fi
 
 if [ "$OS_FAMILY" = "Darwin" ]; then
+  ## Some defaults write require Full Disk Access (FDA)
+
   install_macRosetta2 # Install Rosetta (lot of utils aren't compiled for ARM in macOS space)
 
   # macOS: Disable .DSStore on network shares and USB
@@ -39,10 +41,9 @@ if [ "$OS_FAMILY" = "Darwin" ]; then
   defaults write com.apple.TextEdit PlainTextEncodingForWrite -int 4 # Open and save files as UTF-8 in TextEdit
 
   # macOS Mail:
-  sudo defaults write com.apple.mail DisableInlineAttachmentViewing -bool true # Disable inline attachments (just show the icons)
-  # Copy email addresses as `foo@example.com` instead of `Foo Bar <foo@example.com>` in Mail.app
-  sudo defaults write com.apple.mail AddressesIncludeNameOnPasteboard -bool false
-  sudo defaults write com.apple.mail SuppressAddressHistory -bool true # Disable "Previous Recipients" 'feature'
+  defaults write com.apple.mail DisableInlineAttachmentViewing -bool true # FDA required - Disable inline attachments (just show the icons)
+  defaults write com.apple.mail AddressesIncludeNameOnPasteboard -bool false # FDA required - Copy email addresses as `foo@example.com` instead of `Foo Bar <foo@example.com>` in Mail.app
+  defaults write com.apple.mail SuppressAddressHistory -bool true # FDA required - Disable "Previous Recipients" 'feature'
 
   # macOS: Disable Window Tints based on background
   defaults write -g AppleReduceDesktopTinting -bool yes
@@ -133,42 +134,37 @@ if [ "$OS_FAMILY" = "Darwin" ]; then
   defaults write com.apple.commerce AutoUpdate -bool true # Turn on app auto-update
 
   # Safari & WebKit:
-  sudo defaults write com.apple.Safari UniversalSearchEnabled -bool false # Privacy: don’t send search queries to Apple
-  sudo defaults write com.apple.Safari SuppressSearchSuggestions -bool true # Privacy: don’t send search queries to Apple
-  # Block pop-up windows
-  sudo defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically -bool false
-  sudo defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaScriptCanOpenWindowsAutomatically -bool false
-  sudo defaults write com.apple.Safari SendDoNotTrackHTTPHeader -bool true # Enable “Do Not Track”
-  sudo defaults write com.apple.Safari InstallExtensionUpdatesAutomatically -bool true # Update extensions automatically
-  # Press Tab to highlight each item on a web page
-  sudo defaults write com.apple.Safari WebKitTabToLinksPreferenceKey -bool true
-  sudo defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2TabsToLinks -bool true
-  sudo defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true # Show the full URL in the address bar (note: this still hides the scheme)
-  sudo defaults write com.apple.Safari HomePage -string "about:blank" # Set Safari’s home page to `about:blank` for faster loading
-  sudo defaults write com.apple.Safari AutoOpenSafeDownloads -bool false # Prevent Safari from opening ‘safe’ files automatically after downloading
-  # Allow hitting the Backspace key to go to the previous page in history
-  sudo defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2BackspaceKeyNavigationEnabled -bool true
-  sudo defaults write com.apple.Safari ShowSidebarInTopSites -bool false # Hide Safari’s sidebar in Top Sites
-  sudo defaults write com.apple.Safari DebugSnapshotsUpdatePolicy -int 2 # Disable Safari’s thumbnail cache for History and Top Sites
-  sudo defaults write com.apple.Safari IncludeInternalDebugMenu -bool true # Enable Safari’s debug menu
-  sudo defaults write com.apple.Safari FindOnPageMatchesWordStartsOnly -bool false # Make Safari’s search banners default to Contains instead of Starts With
-  sudo defaults write com.apple.Safari ProxiesInBookmarksBar "()" # Remove useless icons from Safari’s bookmarks bar
-  # Enable the Develop menu and the Web Inspector in Safari
-  sudo defaults write com.apple.Safari IncludeDevelopMenu -bool true
-  sudo defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true
-  sudo defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled -bool true
-  sudo defaults write NSGlobalDomain WebKitDeveloperExtras -bool true # Add a context menu item for showing the Web Inspector in web views
-  # Enable continuous spellchecking
-  sudo defaults write com.apple.Safari WebContinuousSpellCheckingEnabled -bool true
-  # Disable auto-correct
-  sudo defaults write com.apple.Safari WebAutomaticSpellingCorrectionEnabled -bool false
-  # Disable AutoFill
-  sudo defaults write com.apple.Safari AutoFillFromAddressBook -bool false
-  sudo defaults write com.apple.Safari AutoFillPasswords -bool false
-  sudo defaults write com.apple.Safari AutoFillCreditCardData -bool false
-  sudo defaults write com.apple.Safari AutoFillMiscellaneousForms -bool false
-  # Warn about fraudulent websites
-  sudo defaults write com.apple.Safari WarnAboutFraudulentWebsites -bool true
+  defaults write com.apple.Safari UniversalSearchEnabled -bool false # FDA required - Privacy: don’t send search queries to Apple
+  defaults write com.apple.Safari SuppressSearchSuggestions -bool true # FDA required - Privacy: don’t send search queries to Apple
+  defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically -bool false # FDA required - Block pop-up windows
+  defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaScriptCanOpenWindowsAutomatically -bool false # FDA required
+  defaults write com.apple.Safari SendDoNotTrackHTTPHeader -bool true # Enable “Do Not Track”
+  defaults write com.apple.Safari InstallExtensionUpdatesAutomatically -bool true # Update extensions automatically
+  defaults write com.apple.Safari WebKitTabToLinksPreferenceKey -bool true # FDA required
+  defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2TabsToLinks -bool true # FDA required - Press Tab to highlight each item on a web page
+  defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true # FDA required - Show the full URL in the address bar (note: this still hides the scheme)
+  defaults write com.apple.Safari HomePage -string "about:blank" # FDA required - Set Safari’s home page to `about:blank` for faster loading
+  defaults write com.apple.Safari AutoOpenSafeDownloads -bool false # FDA required - Prevent Safari from opening ‘safe’ files automatically after downloading
+  defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2BackspaceKeyNavigationEnabled -bool true # FDA required - Allow hitting the Backspace key to go to the previous page in history
+  defaults write com.apple.Safari ShowSidebarInTopSites -bool false # FDA required - Hide Safari’s sidebar in Top Sites
+  defaults write com.apple.Safari DebugSnapshotsUpdatePolicy -int 2 # FDA required - Disable Safari’s thumbnail cache for History and Top Sites
+  defaults write com.apple.Safari IncludeInternalDebugMenu -bool true # FDA required - Enable Safari’s debug menu
+  defaults write com.apple.Safari FindOnPageMatchesWordStartsOnly -bool false # FDA required - Make Safari’s search banners default to Contains instead of Starts With
+  defaults write com.apple.Safari ProxiesInBookmarksBar "()" # FDA required - Remove useless icons from Safari’s bookmarks bar
+  defaults write com.apple.Safari IncludeDevelopMenu -bool true  # FDA required - Enable the Develop menu and the Web Inspector in Safari
+  defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true # FDA required
+  defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled -bool true # FDA required
+  defaults write NSGlobalDomain WebKitDeveloperExtras -bool true # FDA required - Add a context menu item for showing the Web Inspector in web views
+
+  defaults write com.apple.Safari WebContinuousSpellCheckingEnabled -bool true # FDA required - Enable continuous spellchecking
+  defaults write com.apple.Safari WebAutomaticSpellingCorrectionEnabled -bool false  # FDA required - Disable auto-correct
+
+  defaults write com.apple.Safari AutoFillFromAddressBook -bool false  # FDA required - Disable AutoFill
+  defaults write com.apple.Safari AutoFillPasswords -bool false  # FDA required - Disable AutoFill
+  defaults write com.apple.Safari AutoFillCreditCardData -bool false  # FDA required - Disable AutoFill
+  defaults write com.apple.Safari AutoFillMiscellaneousForms -bool false  # FDA required - Disable AutoFill
+
+  defaults write com.apple.Safari WarnAboutFraudulentWebsites -bool true  # FDA required - Warn about fraudulent websites
 
   # Preview.app
   # Show Thumbnails/Sidebar on launch
