@@ -685,6 +685,7 @@ install_git_delta () {
     install_less
     if [ "$OS_FAMILY" = "Darwin" ]; then
       #install_generic_homebrew "git-delta" "delta"
+      install_homebrew
       brew install "delta"
     elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
       install_generic_github "dandavison/delta" "delta" "x86_64-unknown-linux-musl"
