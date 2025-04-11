@@ -100,5 +100,9 @@
     //"publish": false, // Don't show easy sync button in source control pane (undesirable in most Prod contexts)
     "sync": false // Don't show easy sync button in source control pane (undesirable in most Prod contexts)
   },
-  "git.suggestSmartCommit": false
+  "git.suggestSmartCommit": false,
+
+  "data-size-count.statusBar.position": "left",
+  "data-size-count.statusBar.selectionCountFormat": "Lines: ${linesCount} Words: ${wordsCount}",
+  "data-size-count.statusBar.dataCountFormat": " Objects: ${dataCount}"
 }
