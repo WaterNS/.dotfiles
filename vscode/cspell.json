@@ -9,7 +9,7 @@
     }
   ],
   "userWords": [
-    "posix", "pubkey", "symlink", "symlinks", "dotfiles", "mnemonicprefix",
+    "posix", "drwx", "pubkey", "symlink", "symlinks", "dotfiles", "mnemonicprefix",
     "datetime", "blob", "blobstorage", "ACCOUNTNAME", "ACCOUNTKEY",
     "oauth", "authed", "auth'ed", "connstring", "pkgname", "pkgrepo",
     "authtoken", "bday",
@@ -26,7 +26,8 @@
     "shortcode", "longcode", "mobilephone", "unformatted",
     "glyphicon", "Newtonsoft", "Elmah", "cloudshell", "winget",
     "ggml", "subpattern", "neox", "jqlang", "koalaman", "mvdan", "dandavison", "sharkdp",
-    "gsass", "msvc", "vswhere", "dism", "diffsofancy", "HOMEREPO"
+    "gsass", "msvc", "vswhere", "dism", "diffsofancy", "HOMEREPO", "killall",
+    "Spacebar", "prefs", "sandboxed"
   ],
   "ignoreWords": [
     "ify", "sify", // Word-'ify' hacks

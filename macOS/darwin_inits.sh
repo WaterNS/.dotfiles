@@ -173,5 +173,29 @@ if [ "$OS_FAMILY" = "Darwin" ]; then
   # Set Terminal default theme
   # setMacTerminalDefaultTheme ## This is set in the init_posix instead
 
+  #Photos.app
+  # Note: Sandbox apps keep their prefs in their container ("~/Library/Containers/**AppID**/Data/Library/Preferences/**AppID**.plist")
+  # Non‑sandboxed apps keep their prefs in ~/Library/Preferences
+  defaults write "$HOME/Library/Containers/com.apple.Photos/Data/Library/Preferences/com.apple.Photos" NSUserKeyEquivalents -dict-add "Close Viewer" "@$\U0020" # Remap 'Close Viewer' to Cmd+Shift+Space
+  defaults write "$HOME/Library/Containers/com.apple.Photos/Data/Library/Preferences/com.apple.Photos" NSUserKeyEquivalents -dict-add "Start Playback" "\U0020" # Remap 'Start Playback' to Spacebar
+  defaults write "$HOME/Library/Containers/com.apple.Photos/Data/Library/Preferences/com.apple.Photos" NSUserKeyEquivalents -dict-add "Stop Playback" "\U0020" # Remap 'Stop Playback' to Spacebar
+  defaults write com.apple.Photos NSUserKeyEquivalents -dict-add "Close Viewer" "@$\U0020" # Remap 'Close Viewer' to Cmd+Shift+Space
+  defaults write com.apple.Photos NSUserKeyEquivalents -dict-add "Start Playback" "\U0020" # Remap 'Start Playback' to Spacebar
+  defaults write com.apple.Photos NSUserKeyEquivalents -dict-add "Stop Playback"  "\U0020" # Remap 'Stop Playback' to Spacebar
+  defaults read com.apple.universalaccess com.apple.custommenu.apps 2>/dev/null \
+        | grep -q "com.apple.Photos" \
+        || defaults write com.apple.universalaccess com.apple.custommenu.apps -array-add "com.apple.Photos" # Add app entry into System Settings › Keyboard › App Shortcuts
+
+  #Windows App Beta / Remote Desktop App  -  osascript -e 'id of app "Windows App Beta"'
+  defaults write "$HOME/Library/Preferences/com.microsoft.rdc.osx.beta.plist" NSUserKeyEquivalents -dict-add "Close" "@~w" # Remap 'Close' to Cmd-Option-W
+  defaults write "$HOME/Library/Preferences/com.microsoft.rdc.osx.beta.plist" NSUserKeyEquivalents -dict-add "Search" "@~f" # Remap 'Search' to Cmd+Option+F
+  defaults write "$HOME/Library/Preferences/com.microsoft.rdc.osx.beta.plist" NSUserKeyEquivalents -dict-add "Add PC" "@~n" # Remap 'Add PC' to Cmd-Option-N
+  defaults write "$HOME/Library/Preferences/com.microsoft.rdc.osx.beta.plist" NSUserKeyEquivalents -dict-add "Add Workspace" "@~s" # Remap 'Add Workspace' to Cmd-Option-S
+  defaults read com.apple.universalaccess com.apple.custommenu.apps 2>/dev/null \
+        | grep -Fq "com.microsoft.rdc.osx.beta" \
+        || defaults write com.apple.universalaccess com.apple.custommenu.apps -array-add "com.microsoft.rdc.osx.beta" # Add app entry into System Settings › Keyboard › App Shortcuts
+
+
+  killall cfprefsd #flush the preferences daemon so the pane refreshes immediately
   echo "** Darwin Init Done ** Note that some of these changes require a logout/restart to take effect."
 fi
