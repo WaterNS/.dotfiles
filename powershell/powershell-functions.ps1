@@ -311,3 +311,80 @@ function hashmd5 {
   # Output the hash
   return $hash.Hash
 }
+
+function ForceDelete {
+  <#
+      .SYNOPSIS
+          Force-deletes a folder even when normal “access denied” errors occur.
+
+      .DESCRIPTION
+          • Tries a normal Remove-Item first.
+          • If that fails, takes ownership, grants Administrators full control,
+            clears read-only/hidden/system attributes, and tries again.
+          • As a last resort, mirrors an empty temp folder over the target
+            with ROBOCOPY /MIR (obliterates contents regardless of ACL),
+            then removes the now-empty folder.
+
+      .PARAMETER Path
+          The folder you want to remove.
+
+      .EXAMPLE
+          Remove-FolderForce -Path "C:\LockedFolder"
+  #>
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+    [Alias('FullName')]
+    [string]$Path
+  )
+
+  process {
+    if (-not (Test-Path -LiteralPath $Path)) {
+      Write-Verbose "Path '$Path' does not exist—nothing to delete."
+      return
+    }
+
+    try {
+      # ---------- First, the easy way ----------
+      Remove-Item -LiteralPath $Path -Recurse -Force -ErrorAction Stop
+      Write-Verbose "Successfully removed '$Path' via Remove-Item."
+      return
+    }
+    catch {
+      Write-Warning "Standard removal failed: $($_.Exception.Message)"
+    }
+
+    # ---------- Escalation path ----------
+    Write-Verbose "Taking ownership of '$Path' and resetting ACLs…"
+    & takeown.exe /F $Path /A /R /D Y  | Out-Null   # /A = Administrators group owner
+    & icacls.exe $Path /grant Administrators:F /T /C | Out-Null
+
+    Write-Verbose "Clearing read-only/hidden/system attributes…"
+    Get-ChildItem -LiteralPath $Path -Recurse -Force -ErrorAction SilentlyContinue |
+    ForEach-Object { $_.Attributes = 'Normal' }
+      (Get-Item -LiteralPath $Path).Attributes = 'Normal'
+
+    try {
+      Remove-Item -LiteralPath $Path -Recurse -Force -ErrorAction Stop
+      Write-Verbose "Removed '$Path' after ownership reset."
+      return
+    }
+    catch {
+      Write-Warning "Removal still failing—invoking ROBOCOPY wipe."
+    }
+
+    # ---------- Last-ditch: ROBOCOPY mirror trick ----------
+    $temp = Join-Path ([IO.Path]::GetTempPath()) ([guid]::NewGuid())
+    New-Item -ItemType Directory -Path $temp | Out-Null
+    & robocopy.exe $temp $Path /MIR /NJH /NJS /R:1 /W:0 | Out-Null
+    Remove-Item -LiteralPath $temp -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item -LiteralPath $Path -Recurse -Force -ErrorAction SilentlyContinue
+
+    if (Test-Path -LiteralPath $Path) {
+      throw "Unable to delete folder '$Path' even after escalated attempts."
+    }
+    else {
+      Write-Verbose "Folder '$Path' successfully deleted via ROBOCOPY method."
+    }
+  }
+}
