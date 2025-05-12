@@ -11,8 +11,8 @@ if (Check-Command vswhere) {
 
   if (!(Check-Command vstest)) {
     $vsTestPath = vswhere -latest -products * -requiresAny -property installationPath
-    $vsTestPath = join-path $vsTestPath 'Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe'
     if ($vsTestPath) {
+      $vsTestPath = join-path $vsTestPath 'Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe'
       Function AliasVSTest {& $vsTestPath $args}
       Set-Alias vstest AliasVSTest
     }
