@@ -1,0 +1,53 @@
+#!/usr/bin/env zsh
+# Disable the Mac keyboard Do-Not-Disturb keyboard button (half-moon icon on F6 key)
+
+# src ↔ dst you want to add
+src=0x10000009B   # the key you press
+srcBinary=4294967451
+dst=0x700000000   # where you want it to go
+dstBinary="30064771072"
+
+#Key:
+# 0x70000003F = F6 Button
+# 0x10000009B = Do-Not-Disturb button
+# 0x700000000 = No Key
+
+# 1. Read the current list ---------------------------------------------------
+plist=$(hidutil property --get "UserKeyMapping")
+if [[ "$plist" == "(null)" ]]; then
+  current_json="[]"
+else
+  current_json=$(echo "$plist" | plutil -convert json -o - - 2>/dev/null)
+fi
+
+# 2. Exit early if mapping already present -----------------------------------
+# Uses plain grep to look for "HIDKeyboardModifierMappingSrc":<hex>
+testString="\"HIDKeyboardModifierMappingSrc\":\"$srcBinary\""
+if echo "$current_json" | grep -q "$testString"; then
+  #echo "Mapping already present — nothing to do."
+else
+  # 3. Build a new array + push it back ----------------------------------------
+  # If current_json isn’t empty (i.e. not []), strip the surrounding [ ]
+  # and add a trailing comma so we can append our new object cleanly.
+  prefix=""
+  if [[ "$current_json" != "[]" ]]; then
+    prefix="${current_json:1:-1},"
+  fi
+
+  new_json=$(cat <<EOF
+  {"UserKeyMapping":[
+  ${prefix}{"HIDKeyboardModifierMappingSrc":$src,
+            "HIDKeyboardModifierMappingDst":$dst}
+  ]}
+EOF
+  )
+
+  echo "⚠️  Remapping: Do-Not-Disturb (F6) button -> No Key/No Action \n"
+  hidutil property --set "$new_json"
+fi
+
+## Check the mappings:
+#hidutil property --get "UserKeyMapping"
+
+## Clear the mappings:
+#hidutil property --set '{"UserKeyMapping":[]}'
