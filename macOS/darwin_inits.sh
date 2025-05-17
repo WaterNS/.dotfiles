@@ -196,6 +196,30 @@ if [ "$OS_FAMILY" = "Darwin" ]; then
         || defaults write com.apple.universalaccess com.apple.custommenu.apps -array-add "com.microsoft.rdc.osx.beta" # Add app entry into System Settings › Keyboard › App Shortcuts
 
 
+  # mac-KbDisableDndButton - Add to login:
+  command cat <<EOF > "$HOME/Library/LaunchAgents/com.dotfiles.mac-KbDisableDndButton.plist"
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.dotfiles.mac-KbDisableDndButton</string>
+  <key>Program</key>
+  <string>$HOME/.dotfiles/bin/mac-KbDisableDndButton</string>
+
+  <!-- Troubleshooting:
+  launchctl print gui/$(id -u)/com.dotfiles.mac-KbDisableDndButton
+  launchctl bootout "gui/$(id -u)" ~/Library/LaunchAgents/com.dotfiles.mac-KbDisableDndButton.plist
+  launchctl print gui/$(id -u)/com.dotfiles.mac-KbDisableDndButton
+  launchctl bootstrap "gui/$(id -u)" ~/Library/LaunchAgents/com.dotfiles.mac-KbDisableDndButton.plist
+  launchctl print gui/$(id -u)/com.dotfiles.mac-KbDisableDndButton -->
+
+  <key>RunAtLoad</key><true/>
+</dict>
+</plist>
+EOF
+  launchctl bootstrap "gui/$(id -u)" ~/Library/LaunchAgents/com.dotfiles.mac-KbDisableDndButton.plist
+
   killall cfprefsd #flush the preferences daemon so the pane refreshes immediately
   echo "** Darwin Init Done ** Note that some of these changes require a logout/restart to take effect."
 fi
