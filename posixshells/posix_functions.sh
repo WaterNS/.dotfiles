@@ -878,7 +878,7 @@ hashmd5() {
     fi
 }
 
-recentlyModifedTree() {
+recentlyModifiedTree() {
   find . -type f -print0 | xargs -0 stat -f "%m %Sp %l %-8Su %-8Sg %8z %Sm %N" | sort | cut -f 2- -d' '
 }
 
