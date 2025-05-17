@@ -885,3 +885,22 @@ recentlyModifedTree() {
 clearDSStoreFilesinDir() {
   find . -name ".DS_Store" -delete
 }
+
+# POSIX symlink: symlink $src $dst ($dst is symlinked to $src)
+symlink() {
+  src="$1"
+  dst="$2"
+  if [ -L "$dst" ]; then                  # already a symlink …
+      current=$(readlink "$dst")
+      if [ "$current" = "$src" ]; then
+          return 0
+      else                                # …but pointing elsewhere
+          ln -sf "$src" "$dst" && printf "⚠️ Symlink updated to new target: %s → %s\n" "$dst" "$src"
+      fi
+  elif [ -e "$dst" ]; then                # exists but isn't a symlink
+      echo "❌  $dst exists and is not a symlink — refusing to overwrite" >&2
+      return 1
+  else                                    # missing
+      ln -s "$src" "$dst" && printf "✅  Symlink created: %s → %s\n" "$dst" "$src"
+  fi
+}
