@@ -8,6 +8,6 @@
     "SCRIPTDIR", "SCRIPTPATH", "SCRIPTARGS", "vstest", "vsdevcmd", "RUNNINGSHELL", "NOSYSTEM", "RUNNINGSHELLVERSION",
     "universalaccess", "custommenu", "cfprefsd", "wvous", "libexec", "messageshelper", "desktopservices", "Dont",
     "iokit", "recents", "unidecode", "autohide", "chflags", "nohidden", "Pathbar", "PVPDF", "icnv", "clmv", "glyv",
-    "Nlsv", "osascript", "hidutil", "plutil", "bootout", "powerstat", "swiftc"
+    "Nlsv", "osascript", "hidutil", "plutil", "bootout", "powerstat", "swiftc", "btop", "htop"
   ]
 }
