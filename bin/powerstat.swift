@@ -4,27 +4,38 @@
 //  Live battery and AC power read‑out (Intel & Apple‑Silicon) with colors & spinner
 //
 //  Compile:  swiftc bin/powerstat.swift -framework IOKit -o bin/powerstat
-//  Run:      ./powerstat [intervalSeconds]   # Ctrl‑C / ⌘‑C to stop
+//  Run:      powerstat   # Ctrl‑C / "q" / Escape to stop
 // -----------------------------------------------------------------------------
 //  Features
 //  • Queries the AppleSmartBattery service for Voltage, Amperage, SOC, ETA, etc.
 //  • Shows rated adapter watts **and** live charge watts while charging.
 //  • ANSI colors highlight charging (green), discharging (yellow) and errors (red).
 //  • A Unicode spinner proves the loop is actively re‑polling every interval.
+//  • Press Ctrl+C or Escape or **q** (lower or uppercase) to exit gracefully.
 // -----------------------------------------------------------------------------
 
 import Foundation
 import IOKit
+import Darwin.POSIX.termios
+import Darwin
 
-// MARK: - Runtime configuration
-/// Polling interval in seconds (pass custom value as first CLI argument).
-let refreshInterval: TimeInterval = {
-    if CommandLine.arguments.count > 1,
-       let v = Double(CommandLine.arguments[1]), v > 0 {
-        return v
-    }
-    return 0.3 // default 300 ms
-}()
+// MARK: - Fixed refresh interval
+let refreshInterval: TimeInterval = 0.3   // 300 ms
+
+// MARK: – Put the terminal in raw, non‑blocking mode
+var originalTerm = termios()
+if tcgetattr(STDIN_FILENO, &originalTerm) == 0 {
+    var raw = originalTerm
+    raw.c_lflag &= ~(UInt(ECHO | ICANON))          // no echo, char‑by‑char
+    raw.c_cc.6 /* VMIN */  = 0                    // 0 = return immediately
+    raw.c_cc.5 /* VTIME */ = 0
+    tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw)
+
+    // Make stdin non‑blocking so read() never stalls the loop
+    let flags = fcntl(STDIN_FILENO, F_GETFL)
+    _ = fcntl(STDIN_FILENO, F_SETFL, flags | O_NONBLOCK)   // discard (or inspect) result
+}
+func restoreTerminal() { tcsetattr(STDIN_FILENO, TCSAFLUSH, &originalTerm) }
 
 // MARK: - ANSI helper
 struct Ansi {
@@ -117,6 +128,20 @@ signal(SIGINT) {
 
 // MARK: – Main loop
 while true {
+    // Non-blocking key-check; exits on bare Esc, q, Q (Ctrl-C is handled by signal).
+    var kb = [UInt8](repeating: 0, count: 3)          // room for Esc+[+code
+    let n = read(STDIN_FILENO, &kb, kb.count)         // n = bytes actually read
+    if n > 0 {
+        let first = kb[0]
+        let isBareEsc = (first == 27 && n == 1)       // Esc with no followers
+        if isBareEsc ||
+          first == UInt8(ascii: "q") ||
+          first == UInt8(ascii: "Q") {
+            clr(); restoreTerminal(); exit(EXIT_SUCCESS)
+        }
+    }
+
+
     if let s = fetch() {
         clr()
         let spin = spinnerFrames[spinnerIndex % spinnerFrames.count]; spinnerIndex += 1
