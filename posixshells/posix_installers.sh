@@ -1054,3 +1054,57 @@ install_trash () {
     fi
   fi
 }
+
+install_btop () {
+  if [ ! -x "$(command -v btop)" ]; then
+    if [ "$OS_FAMILY" = "Darwin" ]; then
+      install_homebrew
+      brew install "btop"
+    # elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
+    #   install_generic_apk "tree"
+    # elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
+    #   install_generic_github "sharkdp/bat" "bat" "x86_64-unknown-linux-musl"
+    # elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x32" ]; then
+    #   install_generic_github "sharkdp/bat" "bat" "i686-unknown-linux-musl"
+    else
+      echo "";
+      echo "install_btop: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
+    fi
+  fi
+}
+
+install_htop () {
+  if [ ! -x "$(command -v htop)" ]; then
+    if [ "$OS_FAMILY" = "Darwin" ]; then
+      install_homebrew
+      brew install "htop"
+    # elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
+    #   install_generic_apk "tree"
+    # elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
+    #   install_generic_github "sharkdp/bat" "bat" "x86_64-unknown-linux-musl"
+    # elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x32" ]; then
+    #   install_generic_github "sharkdp/bat" "bat" "i686-unknown-linux-musl"
+    else
+      echo "";
+      echo "install_htop: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
+    fi
+  fi
+}
+
+install_glances () {
+  if [ ! -x "$(command -v glances)" ]; then
+    if [ "$OS_FAMILY" = "Darwin" ]; then
+      install_homebrew
+      brew install "glances"
+    # elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
+    #   install_generic_apk "tree"
+    # elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
+    #   install_generic_github "sharkdp/bat" "bat" "x86_64-unknown-linux-musl"
+    # elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x32" ]; then
+    #   install_generic_github "sharkdp/bat" "bat" "i686-unknown-linux-musl"
+    else
+      echo "";
+      echo "install_glances: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
+    fi
+  fi
+}
