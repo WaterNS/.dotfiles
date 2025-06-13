@@ -44,6 +44,7 @@
     "<node_modules>/**": true,
     "package-lock.json": true
   },
+  "search.useIgnoreFiles": false,
 
   "cSpell": {
     "import": ["~/.dotfiles/vscode/cSpell.json"], //Import dotfiles cSpell settings
