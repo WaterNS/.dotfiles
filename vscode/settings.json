@@ -39,6 +39,13 @@
   //"editor.codeLens": false, //Not ideal, but https://github.com/Microsoft/vscode/issues/26204
 
   "github.copilot.editor.enableAutoCompletions": false,
+  "github.copilot.enable": {
+    "*": false,
+    "plaintext": false,
+    "markdown": false,
+    "scminput": false,
+    "javascript": false
+  },
 
   "search.exclude": {
     "<node_modules>/**": true,
