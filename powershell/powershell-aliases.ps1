@@ -68,8 +68,11 @@ if (!(Check-Command top)) {
 
 if (!(Check-Command "downloadTorrent")) {
   if (Check-Command "aria2") {
-    Function AliasAria2bt {aria2 --file-allocation=none --seed-time=0 $args}
+    Function AliasAria2bt {aria2 --file-allocation=none --seed-time=0 --bt-save-metadata=true --listen-port=7070-7075 --dht-listen-port=7076-7080 $args}
+    Function AliasAria2btNoUp {AliasAria2bt --max-upload-limit=0k $args}
+
     Set-Alias downloadTorrent AliasAria2bt
+    Set-Alias downloadTorrentNoUp AliasAria2btNoUp
   }
 }
 

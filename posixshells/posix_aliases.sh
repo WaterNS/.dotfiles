@@ -153,7 +153,8 @@ fi
 
 # downloadTorrent: Use aria2c, if available
 if [ -x "$(command -v aria2c)" ]; then
-  alias downloadTorrent='aria2c --file-allocation=none --seed-time=0'
+  alias downloadTorrent='aria2c --file-allocation=none --bt-save-metadata=true --seed-time=0 --listen-port=7070-7075 --dht-listen-port=7076-7080'
+  alias downloadTorrentNoUp='downloadTorrent --max-upload-limit=0k'
 fi
 
 
