@@ -1,16 +1,44 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# treeBASH  –  portable, sorted, proper nesting (mac-compatible)
+# -------------------------------------------------------------------
+# Prints an ASCII directory tree, sorted alphabetically (case-insensitive).
+# Works with the default BSD utilities and Bash 3.2 on macOS.
+#
+# Usage:
+#   ./treeBASH           # current directory
+#   ./treeBASH dir ...   # one or more roots
+# -------------------------------------------------------------------
 
-#REF: https://superuser.com/a/359728
-
-#SEDMAGIC='s;[^/]*/;|____;g;s;____|; |;g'
-SEDMAGIC='s;[^/]*/;|-- ;g;s;-- |;   |;g'
-
-if [ "$#" -gt 0 ] ; then
-   dirlist="$@"
+# decide which roots to list
+if (( $# )); then
+    roots=( "$@" )
 else
-   dirlist="."
+    roots=( "." )
 fi
 
-for x in $dirlist; do
-     find "$x" -print | sed -e "$SEDMAGIC"
+for root in "${roots[@]}"; do
+    printf '%s\n' "$root"                      # root itself
+
+    root_noslash=${root%/}                     # strip trailing slash
+
+    find "$root" -mindepth 1 -print            \
+      | LC_ALL=C sort -f                       \
+      | while IFS= read -r fullpath; do
+            # relative path
+            rel=${fullpath#"$root_noslash"/}
+            rel=${rel#./}                      # covers the case root == "."
+
+            # split on /
+            IFS='/' read -r -a parts <<< "$rel"
+            depth=$(( ${#parts[@]} - 1 ))      # how many directories deep
+            name=${parts[$depth]}              # last path component
+
+            # build indent: "|   " repeated $depth times
+            indent=""
+            for (( i=0; i<depth; i++ )); do
+                indent+='|   '
+            done
+
+            printf '%s|-- %s\n' "$indent" "$name"
+        done
 done
