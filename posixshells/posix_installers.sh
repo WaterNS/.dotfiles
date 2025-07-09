@@ -150,7 +150,7 @@ install_generic_homebrew () {
 
         __fileName=${latest##*/}
         # shellcheck disable=SC2086
-        # curl has a hard time with the URL when doulbe quoted (probably due to colons)
+        # curl has a hard time with the URL when double quoted (probably due to colons)
         curl -H "Authorization: Bearer QQ==" -L -S -s $latest > "$HOME/.dotfiles/opt/tmp/$__fileName"; echo ""
 
         mkdir "$HOME/.dotfiles/opt/tmp/$__pkgName"
@@ -215,7 +215,7 @@ install_generic_github () {
 
   if [ ! -x "$(command -v "$__executableName")" ]; then
     if [ "$OS_FAMILY" = "Darwin" ] || [ "$OS_FAMILY" = "Linux" ]; then
-      echo "NOTE: $__executableName not found, downlading into dotfiles bin"
+      echo "NOTE: $__executableName not found, downloading into dotfiles bin"
       echo "------------------------------------------------"
       # shellcheck disable=SC2086
       __pkgRelease=$(identify_github_pkg $__originalArgs)
@@ -326,7 +326,7 @@ install_generic_binary () {
             mv "$HOME"/.dotfiles/opt/tmp/"$__pkgName"/"$__pkgName"/*/bin/"$__executableName" ~/.dotfiles/opt/bin
           fi
 
-          xattr -d com.apple.quarantine ~/.dotfiles/opt/bin/"$__executableName" #unquarrantine file
+          xattr -d com.apple.quarantine ~/.dotfiles/opt/bin/"$__executableName" #un-quarantine file
         fi
       fi
 
