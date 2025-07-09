@@ -1108,3 +1108,21 @@ install_glances () {
     fi
   fi
 }
+
+install_mactop () {
+  if [ ! -x "$(command -v mactop)" ]; then
+    if [ "$OS_FAMILY" = "Darwin" ]; then
+      install_homebrew
+      brew install "mactop"
+    # elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
+    #   install_generic_apk "tree"
+    # elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
+    #   install_generic_github "sharkdp/bat" "bat" "x86_64-unknown-linux-musl"
+    # elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x32" ]; then
+    #   install_generic_github "sharkdp/bat" "bat" "i686-unknown-linux-musl"
+    else
+      echo "";
+      echo "install_mactop: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
+    fi
+  fi
+}
