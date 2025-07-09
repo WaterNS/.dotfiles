@@ -157,6 +157,7 @@ install_tmux
 install_trash
 install_btop
 install_htop
+install_mactop
 
 # Install VIM items
 . "$HOMEREPO/vim/init_vim.sh"
