@@ -131,8 +131,8 @@ git config push.default matching
 if [ ! -f ~/.ssh/id_rsa ] && [ ! -f ~/.ssh/WaterNS ]; then
   install_opensshkeygen # ssh-keygen is required to generate key
   echo "Creating ~/.ssh/WaterNS"
-  ssh-keygen -t rsa -b 4096 -f ~/.ssh/WaterNS -N "";
-  echo ""; #spacer after randoart
+  ssh-keygen -t rsa -b 4096 -f ~/.ssh/WaterNS -N "" -q;
+  echo "";
 fi
 if [ -f ~/.ssh/WaterNS ]; then
 	git config core.sshCommand "ssh -i $HOME/.ssh/WaterNS" # Use expanding $HOME value to hardcode
