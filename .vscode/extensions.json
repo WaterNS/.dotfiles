@@ -16,6 +16,7 @@
       "sysoev.vscode-open-in-github",
       "Thinker.data-size-count",
       "pdconsec.vscode-print",
-      "gebhard.git-fixup"
+      "gebhard.git-fixup",
+      "maxeonyx.better-replace-on-save"
   ]
 }
