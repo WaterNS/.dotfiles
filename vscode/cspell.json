@@ -27,7 +27,7 @@
     "glyphicon", "Newtonsoft", "Elmah", "cloudshell", "winget",
     "ggml", "subpattern", "neox", "jqlang", "koalaman", "mvdan", "dandavison", "sharkdp",
     "gsass", "msvc", "vswhere", "dism", "diffsofancy", "HOMEREPO", "killall",
-    "Spacebar", "prefs", "sandboxed"
+    "Spacebar", "prefs", "sandboxed", "barebones"
   ],
   "ignoreWords": [
     "ify", "sify", // Word-'ify' hacks
