@@ -13,6 +13,17 @@
   "terminal.integrated.scrollback": 9999,
 
   "workbench.colorTheme": "Monokai",
+  "workbench.colorCustomizations": {
+    "[Monokai]": {
+      "commandCenter.background": "#D3D3D3",
+      "commandCenter.activeBackground": "#D3D3D3",
+      "commandCenter.foreground": "#272822",   // dark text for max punch
+      "commandCenter.activeForeground": "#272822",   // dark text for max punch
+      "commandCenter.border":     "#27282266",  // subtle 40 %-alpha outline
+      "commandCenter.debuggingBackground": "#ae2012" // different tint while debugging
+    }
+  },
+
   "workbench.sideBar.location": "right",
   "workbench.tree.renderIndentGuides": "always",
   "workbench.startupEditor": "newUntitledFile",
