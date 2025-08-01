@@ -37,10 +37,16 @@
   "editor.bracketPairColorization.enabled": true, //Native Bracket Colorizer
   "editor.guides.bracketPairs": true, // Bracket guides: false/true/"active"
   //"editor.codeLens": false, //Not ideal, but https://github.com/Microsoft/vscode/issues/26204
+
   "editor.codeActionsOnSave": {
     "source.applyReplacements.nonAscii": "explicit", //Cleans up non-Ascii characters on save
     "source.applyReplacements.UKtoUS": "explicit" //Converts UK words into US words on save
   },
+  "betterReplaceOnSave.replacementsFiles": [ // Load replacements from external file(s)
+    "betterReplaceOnSave.json",
+    ".vscode/betterReplaceOnSave.json",
+    "~/.dotfiles/vscode/betterReplaceOnSave.json"
+  ],
 
   "github.copilot.editor.enableAutoCompletions": false,
   "github.copilot.enable": {
@@ -113,59 +119,6 @@
     "sync": false // Don't show easy sync button in source control pane (undesirable in most Prod contexts)
   },
   "git.suggestSmartCommit": false,
-
-  "betterReplaceOnSave.replacements": [
-    {
-      "id": "nonAscii",
-      "search": "\u2011",
-      "replace": "-"
-    },
-    {
-      "id": "nonAscii",
-      "search": "\u2013",
-      "replace": "-"
-    },
-    {
-      "id": "nonAscii",
-      "search": "\u00A0",
-      "replace": " "
-    },
-    {
-      "id": "nonAscii",
-      "search": "\u202f",
-      "replace": " "
-    },
-    {
-      "id": "UKtoUS",
-      "search": "olo?ur",
-      "replace": "olor"
-    },
-    {
-      "id": "UKtoUS",
-      "search": "nitiali?s",
-      "replace": "nitializ"
-    },
-    {
-      "id": "UKtoUS",
-      "search": "ormali?s",
-      "replace": "ormaliz"
-    },
-    {
-      "id": "UKtoUS",
-      "search": "apitali?s",
-      "replace": "apitaliz"
-    },
-    {
-      "id": "UKtoUS",
-      "search": "ecogni?s",
-      "replace": "ecogniz"
-    },
-    {
-      "id": "UKtoUS",
-      "search": "ehavio?ur",
-      "replace": "ehavior"
-    }
-  ],
 
   "data-size-count.statusBar.position": "left",
   "data-size-count.statusBar.selectionCountFormat": "Lines: ${linesCount} Words: ${wordsCount}",

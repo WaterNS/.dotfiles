@@ -1,0 +1,52 @@
+[
+  {
+    "id": "nonAscii",
+    "search": "\u2011",
+    "replace": "-"
+  },
+  {
+    "id": "nonAscii",
+    "search": "\u2013",
+    "replace": "-"
+  },
+  {
+    "id": "nonAscii",
+    "search": "\u00A0",
+    "replace": " "
+  },
+  {
+    "id": "nonAscii",
+    "search": "\u202f",
+    "replace": " "
+  },
+  {
+    "id": "UKtoUS",
+    "search": "olo?ur",
+    "replace": "olor"
+  },
+  {
+    "id": "UKtoUS",
+    "search": "nitiali?s",
+    "replace": "nitializ"
+  },
+  {
+    "id": "UKtoUS",
+    "search": "ormali?s",
+    "replace": "ormaliz"
+  },
+  {
+    "id": "UKtoUS",
+    "search": "apitali?s",
+    "replace": "apitaliz"
+  },
+  {
+    "id": "UKtoUS",
+    "search": "ecogni?s",
+    "replace": "ecogniz"
+  },
+  {
+    "id": "UKtoUS",
+    "search": "ehavio?ur",
+    "replace": "ehavior"
+  }
+]
