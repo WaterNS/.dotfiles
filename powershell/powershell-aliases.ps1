@@ -54,9 +54,12 @@ if (Check-Command bat) {
   Set-Alias cat AliasBat
 }
 
-if (Check-Command "where.exe") {
-  Function AliasWhereIs {where.exe $args}
-  Set-Alias whereis AliasWhereIs
+if (-not (Get-Command whereis -ErrorAction SilentlyContinue)) {
+    if (Check-Command 'betterWhereIs') {
+        Set-Alias -Name whereis -Value betterWhereIs -Scope Global
+    } elseif (Check-Command 'where.exe') {
+        Set-Alias -Name whereis -Value where.exe    -Scope Global
+    }
 }
 
 if (!(Check-Command tr)) {

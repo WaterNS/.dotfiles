@@ -417,3 +417,109 @@ function ForceDelete {
     }
   }
 }
+
+function betterWhereIs {
+<#
+.SYNOPSIS
+    “Where is … ?”  —  locate a command / executable / function / alias / variable
+.DESCRIPTION
+    For the supplied *name* the function returns one of the following:
+
+      • **Executable**   - all full paths that Windows / PowerShell can launch
+      • **Function**     - file in which the function is declared (or “<In-Memory>”)
+      • **Alias**        - the command the alias expands to
+      • **Variable**     - a preview of the variable’s content (truncated for large values)
+
+    When nothing matches, a warning is emitted.
+
+.PARAMETER Name
+    The symbol to resolve. Accepts pipeline input.
+
+.PARAMETER MaxVariableLength
+    Maximum number of characters to show for variable preview (default = 120).
+
+.EXAMPLE
+    betterWhereIs git, PATH, Get-ChildItem, ls
+#>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory, Position = 0, ValueFromPipeline)]
+        [string]$Name,
+
+        [int]$MaxVariableLength = 120
+    )
+
+    # 1. ---------- VARIABLE -------------------------------------------------
+    if (Test-Path "variable:$Name") {
+        $value = Get-Variable -Name $Name -ValueOnly
+        $str   = if ($value -is [string]) { $value } else { $value | Out-String }
+        if ($str.Length -gt $MaxVariableLength) { $str = $str.Substring(0, $MaxVariableLength) + ' …' }
+
+        [pscustomobject]@{
+            Name = $Name; Type = 'Variable'; Preview = $str.TrimEnd()
+        }
+        return
+    }
+
+    # 2. ---------- ALIAS ----------------------------------------------------
+    $alias = Get-Alias -Name $Name -ErrorAction SilentlyContinue
+    if ($alias) {
+        [pscustomobject]@{
+            Name = $Name; Type = 'Alias'; Definition = $alias.Definition
+        }
+        return
+    }
+
+    # 3. ---------- FUNCTION -------------------------------------------------
+    $func = Get-Command -Name $Name -CommandType Function -ErrorAction SilentlyContinue
+    if ($func) {
+        $file = $func.ScriptBlock.File
+        if ([string]::IsNullOrEmpty($file)) { $file = '<In-Memory>' }
+
+        [pscustomobject]@{
+            Name = $Name; Type = 'Function'; DefinedIn = $file
+        }
+        return
+    }
+
+    # 4. ---------- EXECUTABLE / APPLICATION --------------------------------
+    # Prefer Get-Command (cross-platform) but augment with Windows-specific
+    # look-ups so the result matches what Start-Process / Run-dialogue sees.
+    $paths = @()
+
+    # 4a. On any host, ask the PowerShell resolver
+    $apps = Get-Command -Name $Name -CommandType Application -ErrorAction SilentlyContinue
+    if ($apps) { $paths += $apps.Source }
+
+    if ($IsWindows) {
+        # 4b. If where.exe is present, use it (same result Explorer’s Run box gives)
+        $whereExe = Get-Command where.exe -ErrorAction SilentlyContinue
+        if ($whereExe) {
+            $paths += (& where.exe $Name 2>$null)
+        }
+
+        # 4c. App Paths registry (what ShellExecute consults when not on PATH)
+        $exe = if ($Name -notmatch '\.') { "$Name.exe" } else { $Name }
+        $reg = @(
+            "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\$exe",
+            "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\$exe",
+            "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths\$exe"
+        )
+        foreach ($k in $reg) {
+            if (Test-Path $k) {
+                $default = (Get-ItemProperty $k).'(default)'
+                if ($default) { $paths += $default }
+            }
+        }
+    }
+
+    if ($paths) {
+        [pscustomobject]@{
+            Name = $Name; Type = 'Executable'; Paths = ($paths | Sort-Object -Unique)
+        }
+        return
+    }
+
+    # 5. ---------- Nothing found -------------------------------------------
+    Write-Warning "No variable, function, alias or executable named '$Name' was found."
+}
