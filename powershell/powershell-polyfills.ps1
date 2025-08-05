@@ -161,3 +161,24 @@ Function Powershell-Head
 
 }
 Set-Alias head Powershell-Head
+
+#------------------------------------------------------------------
+# Polyfill: $IsWindows   (for Windows PowerShell 5.1 / PS Core ≤ 6)
+#------------------------------------------------------------------
+if (-not (Test-Path 'variable:\IsWindows')) {
+    # ---------- Detect the platform ----------
+    # Preferred API (available on any system with recent .NET):
+    $isWin = $false
+    try {
+        $isWin = [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform(
+                     [System.Runtime.InteropServices.OSPlatform]::Windows )
+    } catch {
+        # Fallbacks that always work in WinPS 5.1
+        $isWin = ($env:OS -eq 'Windows_NT') -or
+                 ([System.Environment]::OSVersion.Platform -eq [System.PlatformID]::Win32NT)
+    }
+
+    # ---------- Publish the variable ----------
+    # Make it global and read-only so later code can rely on it.
+    Set-Variable -Name IsWindows -Value $isWin -Scope Global -Option ReadOnly
+}
