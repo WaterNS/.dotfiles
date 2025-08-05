@@ -4,14 +4,14 @@ if (Check-Command cht) {
   if (Test-Path Function:\help) {
     Remove-Item Function:\help
   }
-  function chtpagenated ($cmd) {
+  function chtPaginated ($cmd) {
     if (Check-Command less) {
       cht --query $cmd | less -FX
     } else {
       cht --query $cmd
     }
   }
-  Set-Alias help chtpagenated
+  Set-Alias help chtPaginated
   Set-Alias tldr help
 }
 
@@ -84,11 +84,11 @@ if (!(Check-Command "download")) {
 }
 
 if ((Check-Command "Get-Uptime")) {
-  Function uptimefunc {Get-Uptime}
-  Set-Alias up uptimefunc
-  Set-Alias uptime uptimefunc
+  Function uptimeFunc {Get-Uptime}
+  Set-Alias up uptimeFunc
+  Set-Alias uptime uptimeFunc
 } else {
-  Function uptimefunc {Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object LastBootUpTime}
-  Set-Alias up uptimefunc
-  Set-Alias uptime uptimefunc
+  Function uptimeFunc {Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object LastBootUpTime}
+  Set-Alias up uptimeFunc
+  Set-Alias uptime uptimeFunc
 }

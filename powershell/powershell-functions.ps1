@@ -1,18 +1,18 @@
 Function updateGitRepo {
   param (
-    $reponame=$($args[0]),
+    $repoName=$($args[0]),
     $description=$($args[1]),
-    $repolocation=$($args[2])
+    $repoLocation=$($args[2])
   )
 
-  $olddir=$PWD
+  $oldDir=$PWD
   ""
-  "-Check updates: $reponame ($description)"
-  cd "$repolocation"
+  "-Check updates: $repoName ($description)"
+  cd "$repoLocation"
   git fetch
 
   if ((git rev-list --count master..origin/master) -gt 0) {
-    Write-Host "--Updating $reponame $description repo " -NoNewline
+    Write-Host "--Updating $repoName $description repo " -NoNewline
     Write-Host "(from $(git rev-parse --short master) to " -NoNewline
     Write-Host "$(git rev-parse --short origin/master))" -NoNewline
 
@@ -27,15 +27,15 @@ Function updateGitRepo {
     git pull --quiet
 
     # Restart the init script if it self updated
-    if ("$reponame" -eq "dotfiles") {
-      cd $olddir
+    if ("$repoName" -eq "dotfiles") {
+      cd $oldDir
       ""
       ""
       Invoke-Expression -Command ("$SCRIPTPATH $cmdArgs")
     }
   }
 
-  cd $olddir
+  cd $oldDir
 }
 Function Check-Command($cmdname)
 {
@@ -158,7 +158,7 @@ Function Get-URLs([parameter(ValueFromPipeline)][String]$Content) {
 }
 
 Function Powershell-FileDownload([String]$URL,$output) {
-  $wc = new-object system.net.webclient
+  $wc = new-object system.net.WebClient
   $wc.DownloadFile($URL,$output)
   $wc.Dispose()
 }

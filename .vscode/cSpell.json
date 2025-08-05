@@ -12,6 +12,7 @@
     "RUNNINGINITSCRIPT", "SCRIPTPATHINIT", "INITSCRIPTARGS", "systempreferences", "dotfilelinker", "opensshkeygen",
     "blesh", "whereis", "notcontains", "pkgurl", "unar", "xattr", "youtubedl", "ffprobe", "phantomjs", "nerdfonts",
     "fontname", "Powerline", "Peltoche", "RUNZSH", "pkgsafename", "pkgdesc", "ncdu", "ytdlp", "shellenv",
-    "installondemand", "softwareupdate", "ensurepip", "asitop"
+    "installondemand", "softwareupdate", "ensurepip", "asitop", "devenv", "vstudio", "gitreset", "gitresethard",
+    "HKCU", "HKLM", "foldertotal", "takeown", "HACKFIX"
   ]
 }

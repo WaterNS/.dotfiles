@@ -40,18 +40,18 @@ Function Powershell-VeryBasicGrep
     Write-Warning "---------------------------------------------------------------------------"
   }
 
-  $searchterm = $args[0]
-  $searchfile = $args[1]
+  $searchTerm = $args[0]
+  $searchFile = $args[1]
 
-  if($searchfile -eq $null) {
+  if($searchFile -eq $null) {
       throw "No filename supplied"
   }
 
-  if(Test-Path $searchfile -PathType Leaf)
+  if(Test-Path $searchFile -PathType Leaf)
   {
-    Select-String $searchterm $searchfile -ca | select -exp line
+    Select-String $searchTerm $searchFile -ca | select -exp line
   } else {
-    "File: $searchfile - doesn't exist"
+    "File: $searchFile - doesn't exist"
   }
 
 }
