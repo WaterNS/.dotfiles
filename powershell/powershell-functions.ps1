@@ -37,9 +37,38 @@ Function updateGitRepo {
 
   cd $oldDir
 }
-Function Check-Command($cmdname)
-{
-    return [bool](Get-Command -Name $cmdname -ErrorAction SilentlyContinue)
+function Check-Command {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)][string]$Name
+    )
+
+    # Normal PowerShell resolution
+    if (Get-Command -Name $Name -ErrorAction SilentlyContinue) {
+        return $true
+    }
+
+    # Windows-only: look in the “App Paths” registry
+    if ($IsWindows) {
+
+        # ShellExecute always searches for the full file name (e.g. devenv.exe)
+        $exe = if ($Name -notmatch '\.') { "$Name.exe" } else { $Name }
+
+        $appPaths = @(
+            "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\$exe",
+            "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\$exe",
+            # 32-bit view on 64-bit Windows (protects against WOW64 reflection edge cases)
+            "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths\$exe"
+        )
+
+        foreach ($key in $appPaths) {
+            if (Test-Path $key) {
+                return $true
+            }
+        }
+    }
+
+    return $false
 }
 
 Function Check-Installed($name, $type = "binary", $path) {
