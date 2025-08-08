@@ -48,6 +48,40 @@ install_generic_apk () {
   unset __pkgName; unset __executableName;
 }
 
+install_generic_apt () {
+  __pkgName="$1"
+
+  if [ -n "$2" ]; then
+    __executableName=$2
+  else
+    __executableName=$__pkgName
+  fi
+
+  if isMissingOrFakeCmd "$__executableName"; then
+    if [ -x "$(command -v apt)" ]; then
+      echo "NOTE: $__executableName not found, installing via APT"
+      echo "------------------------------------------------"
+      echo "Updating APT cache..."
+      sudo apt update
+
+      echo "Requesting ${__pkgName} from APT..."
+      sudo apt install "$__pkgName" -y
+
+      if [ -x "$(command -v "$__executableName")" ]; then
+        echo "  ++ GOOD - $__executableName is now available ++"; echo "";
+      else
+        echo "BAD - $__executableName doesn't seem to be available"
+      fi
+    else
+      echo "install_generic_apt (while attempting install $__executableName): APT package manager not found!"
+    fi
+  fi
+
+  # Cleanup variables - can cause unexpected bugs if not done.
+  # Scoped variables (local) not available in base bourne shell.
+  unset __pkgName; unset __executableName;
+}
+
 identify_github_pkg () {
   # Expected args: $__repoName $__executableName $__searchString $__searchExcludeString
 
