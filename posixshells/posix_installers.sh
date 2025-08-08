@@ -62,10 +62,10 @@ install_generic_apt () {
       echo "NOTE: $__executableName not found, installing via APT"
       echo "------------------------------------------------"
       echo "Updating APT cache..."
-      sudo apt update -q
+      sudo apt update -qq
 
       echo "Requesting ${__pkgName} from APT..."
-      sudo apt install "$__pkgName" -qy
+      sudo apt install "$__pkgName" -qqy
 
       if [ -x "$(command -v "$__executableName")" ]; then
         echo "  ++ GOOD - $__executableName is now available ++"; echo "";
