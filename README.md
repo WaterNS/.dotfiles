@@ -47,10 +47,10 @@ Symlinks created for config files found in $HOME, pointing to ones in this repo.
 # POSIX OS bootstrap (OSX/Linux):
 1. Pull & Init dotfiles
 ```
-mkdir "$HOME/.dotfiles" && \
-curl -L -S -s https://github.com/WaterNS/.dotfiles/tarball/master | \
-  tar xz --strip 1 -C "$HOME/.dotfiles" && \
-  cd $HOME/.dotfiles && ./init_posix.sh
+d=~/.dotfiles u=https://github.com/WaterNS/.dotfiles/tarball/master;
+mkdir -p $d && (curl -fsSL $u||wget -qO- $u) | \
+  tar xzC $d --strip 1 && \
+  $d/init_posix.sh
 ```
 
 2. [Optional] Add SSH pubkey to github account:
