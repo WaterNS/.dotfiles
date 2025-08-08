@@ -62,10 +62,10 @@ install_generic_apt () {
       echo "NOTE: $__executableName not found, installing via APT"
       echo "------------------------------------------------"
       echo "Updating APT cache..."
-      sudo apt update
+      sudo apt update -q
 
       echo "Requesting ${__pkgName} from APT..."
-      sudo apt install "$__pkgName" -y
+      sudo apt install "$__pkgName" -qy
 
       if [ -x "$(command -v "$__executableName")" ]; then
         echo "  ++ GOOD - $__executableName is now available ++"; echo "";
@@ -602,6 +602,8 @@ install_lsd () {
   if [ ! -x "$(command -v lsd)" ]; then
     if [ "$OS_FAMILY" = "Darwin" ]; then
       install_generic_homebrew "lsd"
+    elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apt)" ]; then
+      install_generic_apt "lsd"
     elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ] && notcontains "$OS_NAME" "Alpine"; then
       install_generic_github "Peltoche/lsd" "lsd" "x86_64-unknown-linux-musl"
     elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x32" ] && notcontains "$OS_NAME" "Alpine"; then
@@ -1187,6 +1189,16 @@ install_mactop () {
     else
       echo "";
       echo "install_mactop: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
+    fi
+  fi
+}
+
+install_zsh () {
+  if [ ! -x "$(command -v zsh)" ]; then
+    if [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apt)" ]; then
+      install_generic_apt "zsh"
+    else
+      echo "install_zsh: OS version ($OS_STRING) doesn't have supported function"; echo "";
     fi
   fi
 }

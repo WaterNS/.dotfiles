@@ -158,6 +158,7 @@ install_trash
 install_btop
 install_htop
 install_mactop
+install_zsh
 
 # Install VIM items
 . "$HOMEREPO/vim/init_vim.sh"
