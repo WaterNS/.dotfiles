@@ -773,6 +773,8 @@ install_tput () {
   if [ ! -x "$(command -v tput)" ]; then
     if [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
       install_generic_apk "ncurses" "tput"
+    elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apt)" ]; then
+      install_generic_apt "tput"
     else
       echo "";
       echo "install_tput: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
@@ -784,6 +786,8 @@ install_curl () {
   if [ ! -x "$(command -v curl)" ]; then
     if [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
       install_generic_apk "curl"
+    elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apt)" ]; then
+      install_generic_apt "curl"
     else
       echo "";
       echo "install_curl: Unable to install - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
@@ -795,6 +799,8 @@ install_vim () {
   if [ ! -x "$(command -v vim)" ]; then
     if [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
       install_generic_apk "vim"
+    elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apt)" ]; then
+      install_generic_apt "vim"
     else
       echo "";
       echo "install_vim: Unable to install - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
@@ -806,6 +812,8 @@ install_perl () {
   if [ ! -x "$(command -v perl)" ]; then
     if [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
       install_generic_apk "perl"
+    elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apt)" ]; then
+      install_generic_apt "perl"
     else
       echo "";
       echo "install_perl: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
@@ -817,6 +825,8 @@ install_opensshkeygen () {
   if [ ! -x "$(command -v ssh-keygen)" ]; then
     if [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
       install_generic_apk "openssh-keygen" "ssh-keygen"
+    elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apt)" ]; then
+      install_generic_apt "openssh-keygen"
     else
       echo "";
       echo "install_opensshkeygen: Unable to install - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
@@ -828,6 +838,8 @@ install_python3 () {
   if [ ! -x "$(command -v python3)" ]; then
     if [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
       install_generic_apk "python3"
+    elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apt)" ]; then
+      install_generic_apt "python3"
     else
       echo "";
       echo "install_python3: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
@@ -839,6 +851,8 @@ install_whereis () {
   if [ ! -x "$(command -v whereis)" ]; then
     if [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
       install_generic_apk "util-linux" "whereis"
+    elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apt)" ]; then
+      install_generic_apt "whereis"
     else
       echo "";
       echo "install_whereis: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
@@ -850,6 +864,8 @@ install_less () {
   if isMissingOrFakeCmd "less"; then
     if [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
       install_generic_apk "less"
+    elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apt)" ]; then
+      install_generic_apt "less"
     else
       echo "";
       echo "install_less: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
@@ -950,6 +966,8 @@ install_git () {
       fi
     elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
       install_generic_apk "git"
+    elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apt)" ]; then
+      install_generic_apt "git"
     else
       echo "";
       echo "Unable to install git - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
@@ -974,6 +992,8 @@ install_git_lfs() {
       fi
     elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
       install_generic_apk "git-lfs"
+    elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apt)" ]; then
+      install_generic_apt "git-lfs"
     else
       echo "";
       echo "Unable to install git-lfs - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
@@ -1041,6 +1061,8 @@ install_tmux() {
       fi
     elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
       install_generic_apk "tmux"
+    elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apt)" ]; then
+      install_generic_apt "tmux"
     else
       echo "";
       echo "Unable to install tmux - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
@@ -1060,6 +1082,8 @@ install_tree () {
       brew install "tree"
     elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
       install_generic_apk "tree"
+    elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apt)" ]; then
+      install_generic_apt "tree"
     # elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
     #   install_generic_github "sharkdp/bat" "bat" "x86_64-unknown-linux-musl"
     # elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x32" ]; then
@@ -1094,6 +1118,8 @@ install_btop () {
     if [ "$OS_FAMILY" = "Darwin" ]; then
       install_homebrew
       brew install "btop"
+    elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apt)" ]; then
+      install_generic_apt "btop"
     # elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
     #   install_generic_apk "tree"
     # elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
@@ -1112,6 +1138,8 @@ install_htop () {
     if [ "$OS_FAMILY" = "Darwin" ]; then
       install_homebrew
       brew install "htop"
+    elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apt)" ]; then
+      install_generic_apt "htop"
     # elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
     #   install_generic_apk "tree"
     # elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
@@ -1130,6 +1158,8 @@ install_glances () {
     if [ "$OS_FAMILY" = "Darwin" ]; then
       install_homebrew
       brew install "glances"
+    elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apt)" ]; then
+      install_generic_apt "glances"
     # elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
     #   install_generic_apk "tree"
     # elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
