@@ -1,5 +1,13 @@
 #!/bin/zsh
 
+# Non-Interactive Guard Check -- No-op when running in non-interactive shells
+# Short-circuit if the guard says to skip
+if [ -f "$HOME/.dotfiles/posixshells/nonInteractiveGuardCheck.sh" ] && \
+          . "$HOME/.dotfiles/posixshells/nonInteractiveGuardCheck.sh"; \
+then
+  return # Exit RC script in non-interactive shells
+fi
+
 ### INCLUDE: AWS Cloudshell zshrc, if available ##
 if [ -f "$HOME/.zshrc.awscloudshell" ]; then
   . "$HOME/.zshrc.awscloudshell"
