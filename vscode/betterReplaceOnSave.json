@@ -20,6 +20,11 @@
     "replace": " "
   },
   {
+    "id": "nonAscii",
+    "search": "\u2019",
+    "replace": "'"
+  },
+  {
     "id": "UKtoUS",
     "search": "olo?ur",
     "replace": "olor"
