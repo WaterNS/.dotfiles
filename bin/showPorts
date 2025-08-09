@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+# showPorts - List which PIDs/processes are using which ports (Linux & macOS)
+# Usage:
+#   showPorts                # listening only (for TCP); UDP always shown
+#   showPorts --all          # all TCP/UDP sockets
+#   showPorts 8080           # filter by port or text
+#   showPorts --all nginx    # all sockets, filter "nginx"
+
+set -euo pipefail
+
+include_all=0
+filter=""
+for arg in "$@"; do
+  case "$arg" in
+    --all|-a) include_all=1 ;;
+    *) filter="${filter} ${arg}" ;;
+  esac
+done
+filter="${filter#" "}"
+
+print_header() {
+  printf "%-7s %-18s %-6s %-23s %-23s %-11s\n" PID PROCESS PROTO LOCAL REMOTE STATE
+  printf "%-7s %-18s %-6s %-23s %-23s %-11s\n" "-------" "------------------" "------" "-----------------------" "-----------------------" "-----------"
+}
+
+emit_line() {
+  # args: pid proc proto local remote state
+  local pid="$1" proc="$2" proto="$3" localaddr="$4" remoteaddr="$5" state="$6"
+  [ -z "$state" ] && state="-"
+  [ -z "$remoteaddr" ] && remoteaddr="-"
+  local line="${pid} ${proc} ${proto} ${localaddr} ${remoteaddr} ${state}"
+  if [ -z "$filter" ] || [[ "$line" == *"$filter"* ]]; then
+    printf "%-7s %-18s %-6s %-23s %-23s %-11s\n" "$pid" "$proc" "$proto" "$localaddr" "$remoteaddr" "$state"
+  fi
+}
+
+use_lsof() {
+  local base=(lsof -nP -iTCP -iUDP -FpcnPT)
+  if [ "$include_all" -eq 0 ]; then
+    base=(lsof -nP -iTCP -sTCP:LISTEN -iUDP -FpcnPT)
+  fi
+
+  # Fields:
+  # p<PID> c<COMMAND> P<PROTO> n<NAME> TST=<STATE>
+  local pid="" proc="" proto="" name="" state=""
+  "${base[@]}" 2>/dev/null | while IFS= read -r line; do
+    case "$line" in
+      p*) pid="${line#p}" ;;
+      c*) proc="${line#c}" ;;
+      P*) proto="${line#P}" ;;               # TCP or UDP
+      TST=*) state="${line#TST=}" ;;         # e.g. LISTEN, ESTABLISHED
+      n*)
+        name="${line#n}"
+        # name can be "127.0.0.1:5432" or "127.0.0.1:51234->93.184.216.34:443"
+        local localaddr="$name" remoteaddr=""
+        if [[ "$name" == *"->"* ]]; then
+          localaddr="${name%%->*}"
+          remoteaddr="${name#*->}"
+        fi
+        emit_line "$pid" "$proc" "$proto" "$localaddr" "$remoteaddr" "$state"
+        # reset per-socket fields that may drift between records
+        state=""
+        ;;
+    esac
+  done
+}
+
+use_ss_linux() {
+  # Linux fallback if lsof is missing. Parse with shell+sed (no awk).
+  local ss_args=(-H -tupan)
+  [ "$include_all" -eq 0 ] && ss_args=(-H -ltupan)
+  ss "${ss_args[@]}" 2>/dev/null | while IFS= read -r line; do
+    # Expected: proto STATE ... local remote users:(("name",pid=1234,fd=...))
+    # Split into fields safely
+    set -- $line
+    local proto="$1" state="$2" localaddr="${5:-}" remoteaddr="${6:-}"
+    # Extract "name" and pid using sed (portable on Ubuntu/macOS with -E)
+    local meta name pid
+    meta="$(printf '%s\n' "$line" | sed -n -E 's/.*users:\(\("([^"]+)",pid=([0-9]+).*/\1 \2/p')"
+    name="${meta%% *}"; [ "$name" = "$meta" ] && name="-"
+    pid="${meta##* }";  [ "$pid" = "$meta" ] && pid="-"
+    [ -z "$name" ] && name="-"
+    [ -z "$pid" ] && pid="-"
+    # Normalize proto
+    case "$proto" in tcp|TCP) proto="TCP" ;; udp|UDP) proto="UDP" ;; esac
+    emit_line "$pid" "$name" "$proto" "$localaddr" "$remoteaddr" "$state"
+  done
+}
+
+print_header
+if command -v lsof >/dev/null 2>&1; then
+  use_lsof
+elif command -v ss >/dev/null 2>&1; then
+  use_ss_linux
+else
+  echo "No suitable tool found. Install 'lsof' (recommended) or 'ss'." >&2
+  exit 1
+fi
