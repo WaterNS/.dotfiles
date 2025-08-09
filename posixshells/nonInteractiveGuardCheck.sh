@@ -7,7 +7,9 @@
 case $- in *i*) : ;; *) return 0 ;; esac
 
 # 2) Fast path: Codex already marked the env
-if [ "${CODEX_CLI:-}" = "1" ]; then
+if [ "${CODEX_CLI:-}" = "1" ] \
+   || [ -n "${CODEX_MANAGED_BY_NPM+x}" ] \
+   || [ -n "${CODEX_SANDBOX_NETWORK_DISABLED+x}" ]; then
   return 0
 fi
 

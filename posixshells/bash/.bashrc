@@ -1,13 +1,5 @@
 #!/bin/bash
 
-# Non-Interactive Guard Check -- No-op when running in non-interactive shells
-# Short-circuit if the guard says to skip
-if [ -f "$HOME/.dotfiles/posixshells/nonInteractiveGuard.sh" ] && \
-          . "$HOME/.dotfiles/posixshells/nonInteractiveGuard.sh"; \
-then
-  return # Exit RC script in non-interactive shells
-fi
-
 ### INCLUDE: AWS Cloudshell bashrc, if available ##
 if [ -f "$HOME/.bashrc.awscloudshell" ]; then
   . "$HOME/.bashrc.awscloudshell"
