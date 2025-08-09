@@ -28,6 +28,7 @@ ZSH_THEME="robbyrussell"
 # Which plugins would you like to load?
 # Standard plugins can be found in $ZSH/plugins/
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
+# Manual plugins are referenced at end of this file, not this array. E.g. installed in zsh-extras and sourced at file end
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(git safe-paste)
@@ -102,6 +103,16 @@ fi
 # ZSH Auto Suggestions
 if [ -f ~/.dotfiles/opt/zsh-extras/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
 	. ~/.dotfiles/opt/zsh-extras/zsh-autosuggestions/zsh-autosuggestions.zsh
+fi
+
+# ZSH NVM Helper
+if [ -f ~/.dotfiles/opt/zsh-extras/zsh-nvm/zsh-nvm.plugin.zsh ]; then
+	. ~/.dotfiles/opt/zsh-extras/zsh-nvm/zsh-nvm.plugin.zsh
+fi
+
+# ZSH Better NPM Completion
+if [ -f ~/.dotfiles/opt/zsh-extras/zsh-better-npm-completion/zsh-better-npm-completion.zsh ]; then
+	. ~/.dotfiles/opt/zsh-extras/zsh-better-npm-completion/zsh-better-npm-completion.zsh
 fi
 
 # load bashcompinit for some old bash completions

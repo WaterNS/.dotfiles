@@ -1,5 +1,9 @@
 #!/bin/sh
 
+if [ -f ~/.dotfiles/posixshells/posix_functions.sh ]; then
+  . ~/.dotfiles/posixshells/posix_functions.sh
+fi
+
 # shellcheck disable=SC2154 # $ri/$u sourced from upstream script
 if [ "$r" = true ]; then
   echo "  ReInitializing ZSH addons:";
@@ -31,6 +35,22 @@ if [ ! -d "$HOME/.dotfiles/opt/zsh-extras/zsh-syntax-highlighting" ]; then
   githubCloneByCurl https://github.com/zsh-users/zsh-syntax-highlighting ~/.dotfiles/opt/zsh-extras/zsh-syntax-highlighting;
   echo ""
 elif [ "$u" = true  ]; then updateGitRepo "ZSH Syntax Highlighting" "ZSH extra" ~/.dotfiles/opt/zsh-extras/zsh-syntax-highlighting;
+fi
+
+#ZSH extra: zsh-nvm -- helper for Node Version Manager
+if [ ! -d "$HOME/.dotfiles/opt/zsh-extras/zsh-nvm" ]; then
+	# git clone https://github.com/lukechilds/zsh-nvm ~/.dotfiles/opt/zsh-extras/zsh-nvm;
+  githubCloneByCurl https://github.com/lukechilds/zsh-nvm ~/.dotfiles/opt/zsh-extras/zsh-nvm;
+  echo ""
+elif [ "$u" = true  ]; then updateGitRepo "ZSH Syntax Highlighting" "ZSH extra" ~/.dotfiles/opt/zsh-extras/zsh-nvm;
+fi
+
+#ZSH extra: zsh-better-npm-completion
+if [ ! -d "$HOME/.dotfiles/opt/zsh-extras/zsh-better-npm-completion" ]; then
+	# git clone https://github.com/lukechilds/zsh-better-npm-completion ~/.dotfiles/opt/zsh-extras/zsh-better-npm-completion;
+  githubCloneByCurl https://github.com/lukechilds/zsh-better-npm-completion ~/.dotfiles/opt/zsh-extras/zsh-better-npm-completion;
+  echo ""
+elif [ "$u" = true  ]; then updateGitRepo "ZSH Syntax Highlighting" "ZSH extra" ~/.dotfiles/opt/zsh-extras/zsh-better-npm-completion;
 fi
 
 

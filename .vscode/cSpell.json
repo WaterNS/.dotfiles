@@ -13,6 +13,7 @@
     "blesh", "whereis", "notcontains", "pkgurl", "unar", "xattr", "youtubedl", "ffprobe", "phantomjs", "nerdfonts",
     "fontname", "Powerline", "Peltoche", "RUNZSH", "pkgsafename", "pkgdesc", "ncdu", "ytdlp", "shellenv",
     "installondemand", "softwareupdate", "ensurepip", "asitop", "devenv", "vstudio", "gitreset", "gitresethard",
-    "HKCU", "HKLM", "foldertotal", "takeown", "HACKFIX", "pscustomobject"
+    "HKCU", "HKLM", "foldertotal", "takeown", "HACKFIX", "pscustomobject", "MYEOF", "noattach", "modernshell",
+    "checkwinsize", "powerlevel", "COMPDUMP", "nomatch", "autopkg", "robbyrussell"
   ]
 }
