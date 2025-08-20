@@ -147,10 +147,11 @@ If (Test-Path "~\Documents") {
 
 
 # Install some handy dev tools
+install-less
+install-sed
 install-jq
 install-shellcheck
 install-shfmt
-install-less
 install-cht
 install-delta
 install-diffsofancy

@@ -328,3 +328,11 @@ Function install-vsBuildTools {
       }
     }
 }
+
+Function install-sed {
+  if (!(Check-Command "sed")) {
+    if ((Check-OS) -like "*win*") {
+      install-generic-github -repo "mbuilov/sed-windows" -executablename "sed" -searchstring "x64.exe"
+    }
+  }
+}
