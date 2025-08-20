@@ -150,6 +150,7 @@ If (Test-Path "~\Documents") {
 install-less
 install-sed
 install-jq
+install-grep
 install-shellcheck
 install-shfmt
 install-cht

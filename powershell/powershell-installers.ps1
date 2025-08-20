@@ -336,3 +336,24 @@ Function install-sed {
     }
   }
 }
+
+Function install-grep {
+  if (!(Check-Command grep)) {
+    if ((Check-OS) -like "*win*") {
+      "NOTE: Grep not found, availing into dotfiles bin"
+      "------------------------------------------------"
+      $local:latest="https://github.com/mbuilov/grep-windows/raw/refs/heads/master/grep-3.11-x64.exe"
+      # Alt: https://github.com/Genivia/ugrep
+
+      "Downloading Grep ..."
+      mkdir -p "$HOME/.dotfiles/opt/tmp" | Out-Null
+      Powershell-FileDownload "$latest" -o "$HOME/.dotfiles/opt/bin/grep.exe"
+
+      if (Check-Command grep) {
+        "GOOD - grep is now available"
+      } else {
+        "BAD - grep doesn't seem to be available"
+      }
+    }
+  }
+}

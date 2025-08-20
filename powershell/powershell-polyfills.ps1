@@ -55,7 +55,7 @@ Function Powershell-VeryBasicGrep
   }
 
 }
-Set-Alias grep Powershell-VeryBasicGrep
+#Set-Alias grep Powershell-VeryBasicGrep
 
 Function Powershell-Tail {
 <#
