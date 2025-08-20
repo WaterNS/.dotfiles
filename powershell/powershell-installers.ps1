@@ -92,7 +92,8 @@ Function install-generic-github {
       if ($latest.Split("/")[-1] -match "\.") {$ext = $latest.Split("/")[-1].Split(".")[-1]}
 
 
-      "Downloading $executablename..."
+      "Downloading $executablename...";
+      "$latest";
       if ($ext -eq "exe" -or $null -eq $ext) {
         Powershell-FileDownload "$latest" -o "$HOME/.dotfiles/opt/bin/$executablename$(If ($ext) {".$ext"})"
       } else {
@@ -205,7 +206,7 @@ Function install-bat {
 Function install-cloc {
   if (!(Check-Command cloc)) {
     if ((Check-OS) -like "*win*") {
-      install-generic-github -repo "AlDanial/cloc" -searchstring "winget.exe"
+      install-generic-github -repo "AlDanial/cloc" -searchstring ".exe"
     }
   }
 }
