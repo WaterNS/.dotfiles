@@ -133,5 +133,14 @@
 
   "data-size-count.statusBar.position": "left",
   "data-size-count.statusBar.selectionCountFormat": "Lines: ${linesCount} Words: ${wordsCount}",
-  "data-size-count.statusBar.dataCountFormat": " Objects: ${dataCount}"
+  "data-size-count.statusBar.dataCountFormat": " Objects: ${dataCount}",
+
+  "date-hover-preview.primaryPreview.format": "YYYY-MM-DD h:mm.ss A ZZ  [[]dddd]",
+  "date-hover-preview.additionalPreviews": [
+    {
+      "name": "UTC ISO-8601",
+      "format": "YYYY-MM-DD[T]HH:mm:ss.SSSZ",
+      "timezone": "UTC"
+    }
+  ]
 }
