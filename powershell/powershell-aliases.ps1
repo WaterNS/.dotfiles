@@ -1,3 +1,5 @@
+Remove-Item Alias:ls # Remove built-in `ls` alias, we replace it with a binary or fancier alias mapping
+
 Set-Alias vscode code
 
 if (!(Check-Command "vstudio")) {

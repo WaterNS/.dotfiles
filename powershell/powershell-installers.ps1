@@ -346,7 +346,7 @@ Function install-grep {
       # Alt: https://github.com/Genivia/ugrep
 
       "Downloading Grep ..."
-      mkdir -p "$HOME/.dotfiles/opt/tmp" | Out-Null
+      #mkdir -p "$HOME/.dotfiles/opt/tmp" | Out-Null
       Powershell-FileDownload "$latest" -o "$HOME/.dotfiles/opt/bin/grep.exe"
 
       if (Check-Command grep) {
@@ -356,4 +356,33 @@ Function install-grep {
       }
     }
   }
+}
+
+Function install-msls {
+  if (!(Check-Command ls)) {
+    if ((Check-OS) -like "*win*") {
+      "NOTE: ls not found, availing into dotfiles bin"
+      "------------------------------------------------"
+      $local:latest="https://u-tools.com/files/msls350.exe"
+
+      "Downloading ls ..."
+      mkdir -p "$HOME/.dotfiles/opt/tmp" | Out-Null
+      Powershell-FileDownload "$latest" -o "$HOME/.dotfiles/opt/tmp/mslsArchive.exe"
+      Expand-Archive -LiteralPath "$HOME/.dotfiles/opt/tmp/mslsArchive.exe" -DestinationPath "$HOME/.dotfiles/opt/tmp/msls"
+      Move-Item "$HOME/.dotfiles/opt/tmp/msls/ls.exe" "$HOME/.dotfiles/opt/bin/"
+      Move-Item "$HOME/.dotfiles/opt/tmp/msls/dircolors.exe" "$HOME/.dotfiles/opt/bin/"
+
+      Remove-Item -Path "$HOME/.dotfiles/opt/tmp" -Recurse
+
+      if (Check-Command ls) {
+        "GOOD - ls is now available"
+      } else {
+        "BAD - ls doesn't seem to be available"
+      }
+    }
+  }
+}
+
+Function install-ls {
+  install-msls
 }
