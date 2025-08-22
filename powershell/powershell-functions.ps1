@@ -423,12 +423,16 @@ function betterWhereIs {
 .SYNOPSIS
     “Where is … ?”  —  locate a command / executable / function / alias / variable
 .DESCRIPTION
-    For the supplied *name* the function returns one of the following:
+    For the supplied *name* the function returns **all** of the following that match:
 
       • **Executable**   - all full paths that Windows / PowerShell can launch
       • **Function**     - file in which the function is declared (or “<In-Memory>”)
       • **Alias**        - the command the alias expands to
-      • **Variable**     - a preview of the variable’s content (truncated for large values)
+      • **Variable**     - a preview of the variable's content (truncated for large values)
+
+    Output is shaped for predictable default display:
+      - Stable columns: **Name**, **Type**, **Info**
+      - Category details are also included in: **Definition**, **DefinedIn**, **Paths**, **Preview**
 
     When nothing matches, a warning is emitted.
 
@@ -449,77 +453,125 @@ function betterWhereIs {
         [int]$MaxVariableLength = 120
     )
 
-    # 1. ---------- VARIABLE -------------------------------------------------
-    if (Test-Path "variable:$Name") {
-        $value = Get-Variable -Name $Name -ValueOnly
-        $str   = if ($value -is [string]) { $value } else { $value | Out-String }
-        if ($str.Length -gt $MaxVariableLength) { $str = $str.Substring(0, $MaxVariableLength) + ' …' }
+    begin {
+        # Small helper to build a result object with a stable default view (Name,Type,Info)
+        function New-BWIRecord {
+            param(
+                [string]$Name,
+                [string]$Type,
+                [string]$Info,
+                [string]$Definition = $null,
+                [string]$DefinedIn  = $null,
+                [string[]]$Paths    = $null,
+                [string]$Preview    = $null
+            )
 
-        [pscustomobject]@{
-            Name = $Name; Type = 'Variable'; Preview = $str.TrimEnd()
+            $props = [ordered]@{
+                Name       = $Name
+                Type       = $Type
+                Info       = $Info
+                Definition = $Definition
+                DefinedIn  = $DefinedIn
+                Paths      = $Paths
+                Preview    = $Preview
+            }
+            $obj = [pscustomobject]$props
+
+            # Attach a per-object default display (Name, Type, Info) so mixed rows line up.
+            try {
+                $ddps   = New-Object System.Management.Automation.PSPropertySet `
+                           'DefaultDisplayPropertySet', ([string[]]@('Name','Type','Info'))
+                $coll   = New-Object 'System.Collections.ObjectModel.Collection[System.Management.Automation.PSMemberInfo]'
+                $null   = $coll.Add($ddps)
+                $psstd  = New-Object System.Management.Automation.PSMemberSet 'PSStandardMembers', $coll
+                $null   = $obj.PSObject.Members.Add($psstd, $true)
+            } catch {
+                # Best-effort: safe to ignore in constrained environments
+            }
+
+            # Give it a friendly type name (useful if you later add format data)
+            $null = $obj.PSObject.TypeNames.Insert(0, 'BetterWhereIs.Record')
+            return $obj
         }
-        return
     }
 
-    # 2. ---------- ALIAS ----------------------------------------------------
-    $alias = Get-Alias -Name $Name -ErrorAction SilentlyContinue
-    if ($alias) {
-        [pscustomobject]@{
-            Name = $Name; Type = 'Alias'; Definition = $alias.Definition
-        }
-        return
-    }
+    process {
+        $foundAny = $false
 
-    # 3. ---------- FUNCTION -------------------------------------------------
-    $func = Get-Command -Name $Name -CommandType Function -ErrorAction SilentlyContinue
-    if ($func) {
-        $file = $func.ScriptBlock.File
-        if ([string]::IsNullOrEmpty($file)) { $file = '<In-Memory>' }
+        # 1. ---------- VARIABLE -------------------------------------------------
+        if (Test-Path "variable:$Name") {
+            $value = Get-Variable -Name $Name -ValueOnly
+            $str   = if ($value -is [string]) { $value } else { $value | Out-String }
+            if ($str.Length -gt $MaxVariableLength) { $str = $str.Substring(0, $MaxVariableLength) + ' …' }
+            $str = $str.TrimEnd()
 
-        [pscustomobject]@{
-            Name = $Name; Type = 'Function'; DefinedIn = $file
-        }
-        return
-    }
-
-    # 4. ---------- EXECUTABLE / APPLICATION --------------------------------
-    # Prefer Get-Command (cross-platform) but augment with Windows-specific
-    # look-ups so the result matches what Start-Process / Run-dialogue sees.
-    $paths = @()
-
-    # 4a. On any host, ask the PowerShell resolver
-    $apps = Get-Command -Name $Name -CommandType Application -ErrorAction SilentlyContinue
-    if ($apps) { $paths += $apps.Source }
-
-    if ($IsWindows) {
-        # 4b. If where.exe is present, use it (same result Explorer’s Run box gives)
-        $whereExe = Get-Command where.exe -ErrorAction SilentlyContinue
-        if ($whereExe) {
-            $paths += (& where.exe $Name 2>$null)
+            New-BWIRecord -Name $Name -Type 'Variable' -Info $str -Preview $str
+            $foundAny = $true
         }
 
-        # 4c. App Paths registry (what ShellExecute consults when not on PATH)
-        $exe = if ($Name -notmatch '\.') { "$Name.exe" } else { $Name }
-        $reg = @(
-            "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\$exe",
-            "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\$exe",
-            "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths\$exe"
-        )
-        foreach ($k in $reg) {
-            if (Test-Path $k) {
-                $default = (Get-ItemProperty $k).'(default)'
-                if ($default) { $paths += $default }
+        # 2. ---------- ALIAS ----------------------------------------------------
+        $alias = Get-Alias -Name $Name -ErrorAction SilentlyContinue
+        if ($alias) {
+            New-BWIRecord -Name $Name -Type 'Alias' -Info $alias.Definition -Definition $alias.Definition
+            $foundAny = $true
+        }
+
+        # 3. ---------- FUNCTION -------------------------------------------------
+        $func = Get-Command -Name $Name -CommandType Function -ErrorAction SilentlyContinue
+        if ($func) {
+            $file = $func.ScriptBlock.File
+            if ([string]::IsNullOrEmpty($file)) { $file = '<In-Memory>' }
+
+            New-BWIRecord -Name $Name -Type 'Function' -Info $file -DefinedIn $file
+            $foundAny = $true
+        }
+
+        # 4. ---------- EXECUTABLE / APPLICATION --------------------------------
+        # Prefer Get-Command (cross-platform) but augment with Windows-specific
+        # look-ups so the result matches what Start-Process / Run-dialogue sees.
+        $paths = @()
+
+        # 4a. On any host, ask the PowerShell resolver (include *all* matches)
+        $apps = Get-Command -Name $Name -CommandType Application -All -ErrorAction SilentlyContinue
+        if ($apps) { $paths += $apps.Source }
+
+        if ($IsWindows) {
+            # 4b. If where.exe is present, use it (same result Explorer's Run box gives)
+            $whereExe = Get-Command where.exe -ErrorAction SilentlyContinue
+            if ($whereExe) {
+                $wOut = & where.exe $Name 2>$null
+                if ($LASTEXITCODE -eq 0 -and $wOut) {
+                    # filter out the "INFO: Could not find..." line if emitted
+                    $paths += $wOut | Where-Object { $_ -and ($_ -notmatch '^\s*INFO:') }
+                }
+            }
+
+            # 4c. App Paths registry (what ShellExecute consults when not on PATH)
+            $exe = if ($Name -notmatch '\.') { "$Name.exe" } else { $Name }
+            $reg = @(
+                "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\$exe",
+                "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\$exe",
+                "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths\$exe"
+            )
+            foreach ($k in $reg) {
+                if (Test-Path $k) {
+                    $default = (Get-ItemProperty $k).'(default)'
+                    if ($default) { $paths += $default }
+                }
             }
         }
-    }
 
-    if ($paths) {
-        [pscustomobject]@{
-            Name = $Name; Type = 'Executable'; Paths = ($paths | Sort-Object -Unique)
+        $paths = $paths | Where-Object { $_ } | Sort-Object -Unique
+        if ($paths) {
+            # Join for human-friendly Info; keep full array in Paths for scripting
+            $info = ($paths -join [Environment]::NewLine)
+            New-BWIRecord -Name $Name -Type 'Executable' -Info $info -Paths $paths
+            $foundAny = $true
         }
-        return
-    }
 
-    # 5. ---------- Nothing found -------------------------------------------
-    Write-Warning "No variable, function, alias or executable named '$Name' was found."
+        # 5. ---------- Nothing found -------------------------------------------
+        if (-not $foundAny) {
+            Write-Warning "No variable, function, alias or executable named '$Name' was found."
+        }
+    }
 }
