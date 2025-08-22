@@ -104,3 +104,7 @@ if ((Check-Command "Get-Uptime")) {
   Set-Alias up uptimeFunc
   Set-Alias uptime uptimeFunc
 }
+
+if (Test-Path "C:\Program Files\Git\usr\bin\bash.exe") {
+  Set-Alias bash "C:\Program Files\Git\usr\bin\bash.exe"
+}
