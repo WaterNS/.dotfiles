@@ -382,7 +382,4 @@ Function install-msls {
     }
   }
 }
-
-Function install-ls {
-  install-msls
-}
+New-Alias -Name install-ls -Value install-msls
