@@ -147,7 +147,7 @@ If (Test-Path "~\Documents") {
 
 
 # Install some handy dev tools
-install-ls
+install-msls
 install-less
 install-sed
 install-jq

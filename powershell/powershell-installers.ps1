@@ -366,7 +366,6 @@ Function install-ripgrep {
     }
   }
 }
-New-Alias -Name install-rg -Value install-ripgrep
 
 Function install-msls {
   if (!(Check-Command ls)) {
@@ -392,4 +391,3 @@ Function install-msls {
     }
   }
 }
-New-Alias -Name install-ls -Value install-msls
