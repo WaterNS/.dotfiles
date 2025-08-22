@@ -152,6 +152,7 @@ install-less
 install-sed
 install-jq
 install-grep
+install-ripgrep
 install-shellcheck
 install-shfmt
 install-cht

@@ -69,6 +69,7 @@ Function install-generic-github {
     [string] $path,
 
     [string] $searchstring = "windows",
+    [string] $excludeString,
 
     [Switch] $folderInstall
   )
@@ -86,7 +87,7 @@ Function install-generic-github {
       $local:pkgrepo="https://api.github.com/repos/$repo/releases/latest"
       $local:assetsURL = $(Invoke-WebRequest $pkgrepo -UseBasicParsing | ConvertFrom-Json | Select-Object assets_url)[0].assets_url;
       $local:latest = $(
-        Invoke-WebRequest $assetsURL -UseBasicParsing | ConvertFrom-Json | ForEach-Object { $_.browser_download_url } | Select-String $searchstring | Out-String
+        Invoke-WebRequest $assetsURL -UseBasicParsing | ConvertFrom-Json | ForEach-Object { $_.browser_download_url } | Select-String $searchstring | Where-Object { -not ($excludeString -and ($_ -match $excludeString)) } | Out-String
       ).Trim();
       $local:ext = $null
       if ($latest.Split("/")[-1] -match "\.") {$ext = $latest.Split("/")[-1].Split(".")[-1]}
@@ -357,6 +358,15 @@ Function install-grep {
     }
   }
 }
+
+Function install-ripgrep {
+  if (!(Check-Command "rg")) {
+    if ((Check-OS) -like "*win*") {
+      install-generic-github -repo "BurntSushi/ripgrep" -executablename "rg" -searchstring "64-pc-windows-msvc.zip" -excludeString "sha256"
+    }
+  }
+}
+New-Alias -Name install-rg -Value install-ripgrep
 
 Function install-msls {
   if (!(Check-Command ls)) {
