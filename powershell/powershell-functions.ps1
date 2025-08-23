@@ -40,17 +40,28 @@ Function updateGitRepo {
 function Check-Command {
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory)][string]$Name
+        [Parameter(Mandatory)][string]$Name,
+        [switch]$Binary
     )
 
     # Normal PowerShell resolution
-    if (Get-Command -Name $Name -ErrorAction SilentlyContinue) {
-        return $true
+    $cmd = Get-Command -Name $Name -ErrorAction SilentlyContinue
+
+    if ($cmd) {
+        if ($Binary) {
+            # Only return true if it's an Application or ExternalScript
+            if ($cmd.CommandType -in 'Application','ExternalScript') {
+                return $true
+            }
+        }
+        else {
+            # Accept anything PowerShell resolves (Alias, Function, Cmdlet, Application, etc.)
+            return $true
+        }
     }
 
     # Windows-only: look in the “App Paths” registry
     if ($IsWindows) {
-
         # ShellExecute always searches for the full file name (e.g. devenv.exe)
         $exe = if ($Name -notmatch '\.') { "$Name.exe" } else { $Name }
 

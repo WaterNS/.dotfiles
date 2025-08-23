@@ -368,7 +368,7 @@ Function install-ripgrep {
 }
 
 Function install-msls {
-  if (!(Check-Installed ls)) {
+  if (!(Check-Command -Binary ls)) {
     if ((Check-OS) -like "*win*") {
       "NOTE: ls not found, availing into dotfiles bin"
       "------------------------------------------------"
@@ -379,6 +379,7 @@ Function install-msls {
       Powershell-FileDownload "$latest" -o "$HOME/.dotfiles/opt/tmp/mslsArchive.zip"
       Expand-Archive -LiteralPath "$HOME/.dotfiles/opt/tmp/mslsArchive.zip" -DestinationPath "$HOME/.dotfiles/opt/tmp/msls"
       Move-Item "$HOME/.dotfiles/opt/tmp/msls/ls.exe" "$HOME/.dotfiles/opt/bin/"
+      Copy-Item "$HOME/.dotfiles/opt/bin/ls.exe" "$HOME/.dotfiles/opt/bin/msls.exe"
       Move-Item "$HOME/.dotfiles/opt/tmp/msls/dircolors.exe" "$HOME/.dotfiles/opt/bin/"
 
       Remove-Item -Path "$HOME/.dotfiles/opt/tmp" -Recurse
