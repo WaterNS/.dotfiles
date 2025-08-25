@@ -392,3 +392,79 @@ Function install-msls {
     }
   }
 }
+
+Function install-coreutils-uutils {
+  if (!(Check-Command "coreutils" -Binary)) {
+    if ((Check-OS) -like "*win*") {
+      install-generic-github -repo "uutils/coreutils" -executablename "coreutils" -searchstring "64-pc-windows-msvc.zip" -excludeString "aarch64"
+    }
+  }
+}
+
+Function install-tail-uutils {
+  if (!(Check-Command "tail" -Binary)) {
+    if ((Check-OS) -like "*win*") {
+      install-coreutils-uutils
+
+      "Copying coreutils-uutils as tail.exe ..."
+      Copy-Item "~/.dotfiles/opt/bin/coreutils.exe" "~/.dotfiles/opt/bin/tail.exe"
+
+      if (Check-Command "tail" -Binary) {
+        "GOOD - tail is now available"
+      } else {
+        "BAD - tail doesn't seem to be available"
+      }
+    }
+  }
+}
+
+Function install-head-uutils {
+  if (!(Check-Command "head" -Binary)) {
+    if ((Check-OS) -like "*win*") {
+      install-coreutils-uutils
+
+      "Copying coreutils-uutils as head.exe ..."
+      Copy-Item "~/.dotfiles/opt/bin/coreutils.exe" "~/.dotfiles/opt/bin/head.exe"
+
+      if (Check-Command "head" -Binary) {
+        "GOOD - head is now available"
+      } else {
+        "BAD - head doesn't seem to be available"
+      }
+    }
+  }
+}
+
+Function install-ls-uutils {
+  if (!(Check-Command "ls" -Binary)) {
+    if ((Check-OS) -like "*win*") {
+      install-coreutils-uutils
+
+      "Copying coreutils-uutils as ls.exe ..."
+      Copy-Item "~/.dotfiles/opt/bin/coreutils.exe" "~/.dotfiles/opt/bin/ls.exe"
+
+      if (Check-Command "ls" -Binary) {
+        "GOOD - ls is now available"
+      } else {
+        "BAD - ls doesn't seem to be available"
+      }
+    }
+  }
+}
+
+Function install-less-uutils {
+  if (!(Check-Command "less" -Binary)) {
+    if ((Check-OS) -like "*win*") {
+      install-coreutils-uutils
+
+      "Copying coreutils-uutils as less.exe ..."
+      Copy-Item "~/.dotfiles/opt/bin/coreutils.exe" "~/.dotfiles/opt/bin/less.exe"
+
+      if (Check-Command "less" -Binary) {
+        "GOOD - less is now available"
+      } else {
+        "BAD - less doesn't seem to be available"
+      }
+    }
+  }
+}

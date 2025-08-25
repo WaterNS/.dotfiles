@@ -29,7 +29,7 @@
     "gsass", "msvc", "vswhere", "dism", "diffsofancy", "HOMEREPO", "killall",
     "Spacebar", "prefs", "sandboxed", "barebones", "Entra", "unshallow",
     "shopt", "extglob", "pwsh", "msbuild", "msdeploy", "elif", "notmatch",
-    "vstest", "creds"
+    "vstest", "creds", "coreutils"
   ],
   "ignoreWords": [
     "ify", "sify", // Word-'ify' hacks

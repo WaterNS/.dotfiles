@@ -125,7 +125,7 @@ if ($PSBoundParameters.ContainsKey('Follow')){
  throw "Unable to get the last x lines of a text file....."
  }
  }
-Set-Alias tail Powershell-Tail
+#Set-Alias tail Powershell-Tail
 
 Function Powershell-Head
 {
@@ -160,7 +160,7 @@ Function Powershell-Head
   }
 
 }
-Set-Alias head Powershell-Head
+#Set-Alias head Powershell-Head
 
 #------------------------------------------------------------------
 # Polyfill: $IsWindows   (for Windows PowerShell 5.1 / PS Core ≤ 6)
