@@ -586,3 +586,127 @@ function betterWhereIs {
         }
     }
 }
+
+function findAll {
+<#
+.SYNOPSIS
+  Search all filesystem drives for files whose names contain a given string.
+
+.DESCRIPTION
+  Recursively searches every FileSystem PSDrive (e.g., C:, D:, network mappings)
+  and returns matches. By default, the function outputs a custom table with:
+  Mode, LastWriteTime, Length, Name, FullPath.
+
+  If you include wildcards (* or ?), they are used as-is; otherwise the function
+  searches "*<text>*". Case-insensitive.
+
+.PARAMETER Search
+  The text to look for in file names. If you include wildcards (* or ?),
+  they are used as-is; otherwise the function searches "*<text>*".
+
+.PARAMETER IncludeDirectories
+  Also return directories whose names match the search pattern.
+
+.PARAMETER Extensions
+  Optional list of file extensions (without dot) to restrict the results to.
+  Example: -Extensions exe dll
+
+.PARAMETER AsObjects
+  Return full objects (FileInfo/DirectoryInfo) instead of the default table.
+  Alias: -ShowDetails (back-compat with the earlier version).
+
+.PARAMETER PathsOnly
+  Return just the full path strings, one per line.
+
+.EXAMPLE
+  findAll msbuild
+  # -> table with Mode, LastWriteTime, Length, Name, FullPath across all drives
+
+.EXAMPLE
+  findAll msbuild -Extensions exe
+  # -> only files like MSBuild.exe
+
+.EXAMPLE
+  findAll log -IncludeDirectories
+  # -> include folders named like "log"; Length will be blank for directories
+
+.EXAMPLE
+  findAll node -AsObjects
+  # -> return FileInfo/DirectoryInfo objects for scripting/piping
+
+.EXAMPLE
+  findAll "*.config" -PathsOnly
+  # -> return only full paths, one per line
+#>
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true, Position = 0)]
+        [Alias('Name','Pattern')]
+        [string]$Search,
+
+        [switch]$IncludeDirectories,
+
+        [string[]]$Extensions,
+
+        [switch]$AsObjects,
+
+        [switch]$PathsOnly
+    )
+
+    # If no wildcard provided, search for "*<Search>*"
+    $pattern = if ($Search -match '[\*\?\[\]]') { $Search } else { "*$Search*" }
+
+    # Normalize extension filter (e.g., 'exe', 'dll'); compare case-insensitively
+    $extSet = @()
+    if ($Extensions) {
+        $extSet = $Extensions | ForEach-Object { ($_ -replace '^\.', '').ToLowerInvariant() }
+    }
+
+    # Get all filesystem drives that are available
+    $drives = Get-PSDrive -PSProvider FileSystem | Where-Object { Test-Path $_.Root }
+
+    $items = foreach ($drive in $drives) {
+        try {
+            # Files first
+            $files = Get-ChildItem -LiteralPath $drive.Root -Recurse -Force -ErrorAction SilentlyContinue -File -Filter $pattern
+
+            if ($extSet.Count -gt 0) {
+                $files = $files | Where-Object {
+                    $ext = $_.Extension.TrimStart('.').ToLowerInvariant()
+                    $extSet -contains $ext
+                }
+            }
+
+            $files
+
+            # Optionally include directories
+            if ($IncludeDirectories) {
+                Get-ChildItem -LiteralPath $drive.Root -Recurse -Force -ErrorAction SilentlyContinue -Directory -Filter $pattern
+            }
+        }
+        catch {
+            # Ignore access/IO errors and continue scanning other drives
+        }
+    }
+
+    # De-duplicate and return in a consistent order
+    $items = $items | Sort-Object FullName -Unique
+
+    if ($AsObjects) {
+        # Return the actual FileInfo/DirectoryInfo objects (for scripting / further processing). Useful for piping
+        return $items
+    }
+    elseif ($PathsOnly) {
+        # Return just the full paths (compact, easy to pipe into other commands)
+        return $items | Select-Object -ExpandProperty FullName
+    }
+    else {
+        # Default: output shaped objects so the console renders a table with the requested columns.
+        return $items | Select-Object `
+            Mode, `
+            LastWriteTime, `
+            Length, `
+            Name, `
+            @{Name='FullPath';Expression={$_.FullName}} | Format-Table
+    }
+}
