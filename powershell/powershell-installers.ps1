@@ -301,6 +301,8 @@ Function install-nuget {
       mkdir -p "$HOME/.dotfiles/opt/tmp" | Out-Null
       Powershell-FileDownload "$latest" -o "$HOME/.dotfiles/opt/bin/nuget.exe"
 
+      Remove-Item -Path "$HOME/.dotfiles/opt/tmp" -Recurse
+
       if (Check-Command nuget) {
         "GOOD - nuget is now available"
       } else {
