@@ -172,12 +172,12 @@ install-nuget
 $shaInitUpdated=$(git --git-dir "$HOME/.dotfiles/.git" log -n 1 --pretty=format:%H -- init_powershell.ps1)
 if ((!(Test-Path $HOMEREPO\opt\lastUpdate -Type Leaf)) -OR (!(Test-Path $HOMEREPO\opt\lastInit -Type Leaf))) {
   if (!(Test-Path $HOMEREPO\opt\lastUpdate -Type Leaf)) {
-    [int](Get-Date (Get-Date).ToUniversalTime() -UFormat %s) | Out-File $HOMEREPO\opt\lastUpdate -Encoding UTF8
+    [int](Get-Date (Get-Date).ToUniversalTime() -UFormat %s) | Out-File $HOMEREPO\opt\lastUpdate -Encoding UTF8 -Force
     ((Get-Date -UFormat '%A %Y-%m-%d %I:%M:%S %p ')+(Get-TimeZone).ID) | Out-File $HOMEREPO\opt\lastUpdate -Append -Encoding UTF8
   }
 
   if (!(Test-Path $HOMEREPO\opt\lastInit -Type Leaf)) {
-    "Last commit at which init_powershell.ps1 initialization ran:" | Out-File $HOMEREPO\opt\lastUpdate -Encoding UTF8 -Force
+    "Last commit at which init_powershell.ps1 initialization ran:" | Out-File $HOMEREPO\opt\lastInit -Encoding UTF8 -Force
     "$shaInitUpdated" | Out-File $HOMEREPO\opt\lastInit -Append -Encoding UTF8
   }
 }
