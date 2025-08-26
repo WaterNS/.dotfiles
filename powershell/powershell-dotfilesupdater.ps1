@@ -8,7 +8,7 @@ else{ #Presumed interactive or otherwise shell
 	$maxTime=$((5*24*60*60))
 
 	if (Test-Path $HOME\.dotfiles\opt\lastUpdate -PathType Leaf) {
-		$oldTime=$(head -n 1 $HOME/.dotfiles/opt/lastUpdate)
+		$oldTime=$(Powershell-Head -n 1 $HOME/.dotfiles/opt/lastUpdate)
 		$newTime=[int](Get-Date (Get-Date).ToUniversalTime() -UFormat %s)
 		$diffTime=$(($newTime-$oldTime))
 	}
