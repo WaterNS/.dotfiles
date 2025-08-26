@@ -61,9 +61,13 @@ if (Check-Command delta) {
 # Enable Tab Expansion using `MenuComplete` style
 Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete
 
-# Add dotfiles bin to PATH
+# Add dotfiles bin to PATH - Dynamically downloaded binaries
 If (!($env:PATH -like "*$HOME/.dotfiles/opt/bin*")) {
   $env:PATH += ";$HOME/.dotfiles/opt/bin"
+}
+# Add dotfiles bin-win to PATH - Statically provided binaries
+If (!($env:PATH -like "*$HOME/.dotfiles/bin-win*")) {
+  $env:PATH += ";$HOME/.dotfiles/bin-win"
 }
 
 # Python2 helper for Windows

@@ -51,10 +51,19 @@ If (!(Test-Path $HOMEREPO/opt)) {New-Item $HOMEREPO/opt/bin -ItemType Directory 
 
 # Add dotfiles bin to user environment variable (permanently)
 $ExistingUserPath = [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User)
+# Dynamically downloaded bin files
 If (!($ExistingUserPath -like "*$HOME/.dotfiles/opt/bin*")) {
   [Environment]::SetEnvironmentVariable(
     "Path",
     $ExistingUserPath + ";$HOME/.dotfiles/opt/bin",
+    [EnvironmentVariableTarget]::User
+  )
+}
+# Statically provided bin files
+If (!($ExistingUserPath -like "*$HOME/.dotfiles/bin-win*")) {
+  [Environment]::SetEnvironmentVariable(
+    "Path",
+    $ExistingUserPath + ";$HOME/.dotfiles/bin-win",
     [EnvironmentVariableTarget]::User
   )
 }
