@@ -98,7 +98,7 @@ foreach ($ProfileFile in $PowerShellProfileFiles) {
   $ProfileDotFile='$HOME\.dotfiles\powershell\profile-powershell.ps1'
   if (!(Get-Content "$ProfileFile" | Where-Object {$_ -like "*$ProfileDotFile*"})) {
     Write-Output 'NOTE: Powershell Profile found, but missing reference to our dotfiles repo, adding!'
-    Write-Output ". $ProfileDotFile" >> $ProfileFile
+    Write-Output ". $ProfileDotFile" | Out-File $ProfileFile -Encoding UTF8 -Append
   }
 }
 
@@ -115,7 +115,7 @@ If (Test-Path "~\Documents") {
   }
   if (!(Get-Content "$VSCodeProfileFile" | Where-Object {$_ -like "*$ProfileDotFile*"})) {
     Write-Output 'NOTE: VSCode Powershell Profile found, but missing reference to our dotfiles repo, adding!'
-    Write-Output ". $ProfileDotFile" >> $VSCodeProfileFile
+    Write-Output ". $ProfileDotFile" | Out-File $VSCodeProfileFile -Append -Encoding UTF8
   }
 
   # VS Code env config files: settings.json, and perhaps others
@@ -172,28 +172,28 @@ install-nuget
 $shaInitUpdated=$(git --git-dir "$HOME/.dotfiles/.git" log -n 1 --pretty=format:%H -- init_powershell.ps1)
 if ((!(Test-Path $HOMEREPO\opt\lastUpdate -Type Leaf)) -OR (!(Test-Path $HOMEREPO\opt\lastInit -Type Leaf))) {
   if (!(Test-Path $HOMEREPO\opt\lastUpdate -Type Leaf)) {
-    [int](Get-Date (Get-Date).ToUniversalTime() -UFormat %s) > $HOMEREPO\opt\lastUpdate
-    ((Get-Date -UFormat '%A %Y-%m-%d %I:%M:%S %p ')+(Get-TimeZone).ID) >> $HOMEREPO\opt\lastUpdate
+    [int](Get-Date (Get-Date).ToUniversalTime() -UFormat %s) | Out-File $HOMEREPO\opt\lastUpdate -Encoding UTF8
+    ((Get-Date -UFormat '%A %Y-%m-%d %I:%M:%S %p ')+(Get-TimeZone).ID) | Out-File $HOMEREPO\opt\lastUpdate -Append -Encoding UTF8
   }
 
   if (!(Test-Path $HOMEREPO\opt\lastInit -Type Leaf)) {
-    "Last commit at which init_powershell.ps1 initialization ran:" > $HOMEREPO\opt\lastInit
-    "$shaInitUpdated" >> $HOMEREPO\opt\lastInit
+    "Last commit at which init_powershell.ps1 initialization ran:" | Out-File $HOMEREPO\opt\lastUpdate -Encoding UTF8 -Force
+    "$shaInitUpdated" | Out-File $HOMEREPO\opt\lastInit -Append -Encoding UTF8
   }
 }
 elseif (($update) -OR ($reInit)) {
   if ($update) {
     Write-Output ""
     Write-Output "Updating last update time file with current date"
-    [int](Get-Date (Get-Date).ToUniversalTime() -UFormat %s) > $HOMEREPO\opt\lastUpdate
-    ((Get-Date -UFormat '%A %Y-%m-%d %I:%M:%S %p ')+(Get-TimeZone).ID) >> $HOMEREPO\opt\lastUpdate
+    [int](Get-Date (Get-Date).ToUniversalTime() -UFormat %s) | Out-File $HOMEREPO\opt\lastUpdate -Encoding UTF8 -Force
+    ((Get-Date -UFormat '%A %Y-%m-%d %I:%M:%S %p ')+(Get-TimeZone).ID) | Out-File $HOMEREPO\opt\lastUpdate -Append -Encoding UTF8
   }
 
   if ($reInit) {
     Write-Output ""
     Write-Output "Updating lastInit time with current SHA: $shaInitUpdated"
-    "Last commit at which init_powershell.ps1 initialization ran:" > $HOMEREPO\opt\lastInit
-    "$shaInitUpdated" >> $HOMEREPO\opt\lastInit
+    "Last commit at which init_powershell.ps1 initialization ran:" | Out-File $HOMEREPO\opt\lastInit -Encoding UTF8 -Force
+    "$shaInitUpdated" | Out-File $HOMEREPO\opt\lastInit -Append -Encoding UTF8
   }
 }
 
