@@ -148,8 +148,8 @@ If (Test-Path "~\Documents") {
 
 # Install some handy dev tools
 install-msls
-install-tail-uutils
-install-head-uutils
+install-tail-busybox
+install-head-busybox
 install-less
 install-sed
 install-jq

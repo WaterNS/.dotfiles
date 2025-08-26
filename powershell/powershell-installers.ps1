@@ -468,3 +468,57 @@ Function install-less-uutils {
     }
   }
 }
+
+Function install-busybox {
+  if (!(Check-Command "busybox" -Binary)) {
+    if ((Check-OS) -like "*win*") {
+      "NOTE: busybox not found, availing into dotfiles bin"
+      "------------------------------------------------"
+      $local:latest="https://frippery.org/files/busybox/busybox64u.exe" # x64 + Unicode support
+
+      "Downloading busybox ..."
+      #mkdir -p "$HOME/.dotfiles/opt/tmp" | Out-Null
+      Powershell-FileDownload "$latest" -o "$HOME/.dotfiles/opt/bin/busybox.exe"
+
+      if (Check-Command busybox -Binary) {
+        "GOOD - busybox is now available"
+      } else {
+        "BAD - busybox doesn't seem to be available"
+      }
+    }
+  }
+}
+
+Function install-tail-busybox {
+  if (!(Check-Command "tail" -Binary)) {
+    if ((Check-OS) -like "*win*") {
+      install-busybox
+
+      "Copying busybox as tail.exe ..."
+      Copy-Item "~/.dotfiles/opt/bin/busybox.exe" "~/.dotfiles/opt/bin/tail.exe"
+
+      if (Check-Command "tail" -Binary) {
+        "GOOD - tail is now available"
+      } else {
+        "BAD - tail doesn't seem to be available"
+      }
+    }
+  }
+}
+
+Function install-head-busybox {
+  if (!(Check-Command "head" -Binary)) {
+    if ((Check-OS) -like "*win*") {
+      install-busybox
+
+      "Copying busybox as head.exe ..."
+      Copy-Item "~/.dotfiles/opt/bin/busybox.exe" "~/.dotfiles/opt/bin/head.exe"
+
+      if (Check-Command "head" -Binary) {
+        "GOOD - head is now available"
+      } else {
+        "BAD - head doesn't seem to be available"
+      }
+    }
+  }
+}
