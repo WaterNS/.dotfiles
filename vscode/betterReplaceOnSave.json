@@ -31,22 +31,22 @@
   },
   {
     "id": "UKtoUS",
-    "search": "nitiali?s",
+    "search": "nitiali[s]",
     "replace": "nitializ"
   },
   {
     "id": "UKtoUS",
-    "search": "ormali?s",
+    "search": "[Nn]ormali[s]",
     "replace": "ormaliz"
   },
   {
     "id": "UKtoUS",
-    "search": "apitali?s",
+    "search": "apitali[s]",
     "replace": "apitaliz"
   },
   {
     "id": "UKtoUS",
-    "search": "ecogni?s",
+    "search": "ecogni[s]",
     "replace": "ecogniz"
   },
   {
