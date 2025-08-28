@@ -710,3 +710,25 @@ function findAll {
             @{Name='FullPath';Expression={$_.FullName}} | Format-Table
     }
 }
+
+function myIP {
+    Write-Host "=== Public IP Address ===" -ForegroundColor Cyan
+    try {
+        # Query an external service to fetch public IP
+        $publicIP = (Invoke-RestMethod -Uri "https://api.ipify.org?format=json").ip
+        Write-Host $publicIP -ForegroundColor Green
+    }
+    catch {
+        Write-Host "Unable to retrieve public IP." -ForegroundColor Red
+    }
+
+    Write-Host "`n=== Private IP Addresses by Network Adapter ===" -ForegroundColor Cyan
+    # Get all IP-enabled adapters and their IPv4 addresses
+    Get-NetIPAddress -AddressFamily IPv4 -PrefixOrigin Dhcp,Manual |
+        Where-Object { $_.IPAddress -notlike "169.254.*" } | # Exclude link-local
+        ForEach-Object {
+            $adapter = Get-NetAdapter -InterfaceIndex $_.InterfaceIndex
+            Write-Host ("Adapter: {0}" -f $adapter.Name) -ForegroundColor Yellow
+            Write-Host ("  IP: {0}" -f $_.IPAddress) -ForegroundColor White
+        }
+}
