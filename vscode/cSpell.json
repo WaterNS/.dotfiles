@@ -12,7 +12,7 @@
     "posix", "drwx", "pubkey", "symlink", "symlinks", "dotfiles", "mnemonicprefix",
     "datetime", "blob", "blobstorage", "ACCOUNTNAME", "ACCOUNTKEY",
     "oauth", "authed", "auth'ed", "connstring", "pkgname", "pkgrepo",
-    "authtoken", "bday",
+    "authtoken", "bday", "iisexpress", "procs",
     "hacky", "hackjob", "smidge", "upto", "hardcoding", "hardcode", "automagically",
     "shortname", "lastname", "fullname", "hostnames", "stackable", "helloworld",
     "linebreaks", "uniquefield", "hotloads", "onclick", "Favorited", "searchstring",

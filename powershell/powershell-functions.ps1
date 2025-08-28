@@ -732,3 +732,30 @@ function myIP {
             Write-Host ("  IP: {0}" -f $_.IPAddress) -ForegroundColor White
         }
 }
+
+function killProcessByName {
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$ProcessName
+    )
+
+    try {
+        # Strip extension if provided (e.g., iisexpress.exe -> iisexpress)
+        $baseName = [System.IO.Path]::GetFileNameWithoutExtension($ProcessName)
+
+        # Get all processes with this name
+        $procs = Get-Process -Name $baseName -ErrorAction SilentlyContinue
+
+        if ($procs) {
+            $procs | ForEach-Object {
+                Write-Host "Killing process $($_.ProcessName) (Id: $($_.Id))"
+                Stop-Process -Id $_.Id -Force
+            }
+        } else {
+            Write-Host "No processes found matching '$ProcessName'."
+        }
+    }
+    catch {
+        Write-Error "Failed to kill process '$ProcessName': $_"
+    }
+}
