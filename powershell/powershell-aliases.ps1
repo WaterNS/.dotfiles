@@ -8,6 +8,11 @@ if (Check-Command cmd) {
   }
   Function dir { cmd /r dir $args }
 }
+if (betterWhereIs curl | Where-Object {$_.Type -eq "Executable"}) {
+  if (Test-Path Alias:\curl) {
+    Remove-Item Alias:curl # Remove built-in `curl` alias, prefer curl binary if available
+  }
+}
 
 
 Set-Alias vscode code

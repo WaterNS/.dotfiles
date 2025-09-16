@@ -524,3 +524,23 @@ Function install-head-busybox {
     }
   }
 }
+
+Function install-wget {
+  if (!(betterWhereIs wget | Where-Object {$_.Type -eq "Executable"})) {
+    if ((Check-OS) -like "*win*") {
+      "NOTE: wget not found, availing into dotfiles bin"
+      "------------------------------------------------"
+      $local:latest="https://eternallybored.org/misc/wget/1.21.4/64/wget.exe" # x64
+
+      "Downloading wget ..."
+      #mkdir -p "$HOME/.dotfiles/opt/tmp" | Out-Null
+      Powershell-FileDownload "$latest" -o "$HOME/.dotfiles/opt/bin/wget.exe"
+
+      if (betterWhereIs wget | Where-Object {$_.Type -eq "Executable"}) {
+        "GOOD - wget is now available"
+      } else {
+        "BAD - wget doesn't seem to be available"
+      }
+    }
+  }
+}

@@ -176,6 +176,7 @@ install-monitorian
 install-classicNotepad
 install-vswhere
 install-nuget
+install-wget
 
 #Write update/init file
 $shaInitUpdated=$(git --git-dir "$HOME/.dotfiles/.git" log -n 1 --pretty=format:%H -- init_powershell.ps1)
