@@ -370,13 +370,13 @@ Function install-ripgrep {
 }
 
 Function install-msls {
-  if (!(Check-Command -Binary ls)) {
+  if (!(Check-Command -Binary msls)) {
     if ((Check-OS) -like "*win*") {
-      "NOTE: ls not found, availing into dotfiles bin"
+      "NOTE: msls not found, availing into dotfiles bin"
       "------------------------------------------------"
       $local:latest="https://u-tools.com/files/msls350.exe"
 
-      "Downloading ls ..."
+      "Downloading msls ..."
       mkdir -p "$HOME/.dotfiles/opt/tmp" | Out-Null
       Powershell-FileDownload "$latest" -o "$HOME/.dotfiles/opt/tmp/mslsArchive.zip"
       Expand-Archive -LiteralPath "$HOME/.dotfiles/opt/tmp/mslsArchive.zip" -DestinationPath "$HOME/.dotfiles/opt/tmp/msls"
@@ -386,10 +386,10 @@ Function install-msls {
 
       Remove-Item -Path "$HOME/.dotfiles/opt/tmp" -Recurse
 
-      if (Check-Command ls) {
-        "GOOD - ls is now available"
+      if (Check-Command -Binary msls) {
+        "GOOD - msls is now available"
       } else {
-        "BAD - ls doesn't seem to be available"
+        "BAD - msls doesn't seem to be available"
       }
     }
   }

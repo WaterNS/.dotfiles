@@ -1,7 +1,11 @@
-Remove-Item Alias:ls # Remove built-in `ls` alias, we replace it with a shim (`ls.cmd`) that automatically routes to correct command
+if (Test-Path Alias:\ls) {
+  Remove-Item Alias:ls # Remove built-in `ls` alias, we replace it with a shim (`ls.cmd`) that automatically routes to correct command
+}
 
 if (Check-Command cmd) {
-  Remove-Item Alias:dir # Remove built-in `dir` alias, use cmd `dir` function
+  if (Test-Path Alias:\dir) {
+    Remove-Item Alias:dir # Remove built-in `dir` alias, use cmd `dir` function
+  }
   Function dir { cmd /r dir $args }
 }
 
