@@ -769,6 +769,7 @@ install_ytdlp() {
   install_ffmpeg
   install_ffprobe
   install_phantomjs
+  install_deno
 }
 
 install_tput () {
@@ -1199,6 +1200,25 @@ install_zsh () {
       install_generic_apt "zsh"
     else
       echo "install_zsh: OS version ($OS_STRING) doesn't have supported function"; echo "";
+    fi
+  fi
+}
+
+install_deno () {
+  if [ ! -x "$(command -v deno)" ]; then
+    if [ "$OS_FAMILY" = "Darwin" ]; then
+      # install_homebrew
+      # brew install "deno"
+      install_generic_github "denoland/deno" "deno" "deno-aarch64-apple-darwin" "sha256"
+    # elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
+    #   install_generic_apk "tree"
+    elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
+      install_generic_github "denoland/deno" "deno" "deno-x86_64-unknown-linux-gnu" "sha256"
+    # elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x32" ]; then
+    #   install_generic_github "sharkdp/bat" "bat" "i686-unknown-linux-musl"
+    else
+      echo "";
+      echo "install_deno: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
     fi
   fi
 }

@@ -15,6 +15,6 @@
     "installondemand", "softwareupdate", "ensurepip", "asitop", "devenv", "vstudio", "gitreset", "gitresethard",
     "HKCU", "HKLM", "foldertotal", "takeown", "HACKFIX", "pscustomobject", "MYEOF", "noattach", "modernshell",
     "checkwinsize", "powerlevel", "COMPDUMP", "nomatch", "autopkg", "robbyrussell", "mbuilov", "msls", "dircolors",
-    "uutils", "ARCHPAT", "outvar", "ddps", "psstd"
+    "uutils", "ARCHPAT", "outvar", "ddps", "psstd", "denoland"
   ]
 }
