@@ -60,7 +60,7 @@ function Check-Command {
         }
     }
 
-    # Windows-only: look in the “App Paths” registry
+    # Windows-only: look in the "App Paths" registry
     if ($IsWindows) {
         # ShellExecute always searches for the full file name (e.g. devenv.exe)
         $exe = if ($Name -notmatch '\.') { "$Name.exe" } else { $Name }
@@ -355,7 +355,7 @@ function hashmd5 {
 function ForceDelete {
   <#
       .SYNOPSIS
-          Force-deletes a folder even when normal “access denied” errors occur.
+          Force-deletes a folder even when normal "access denied" errors occur.
 
       .DESCRIPTION
           • Tries a normal Remove-Item first.
@@ -432,12 +432,12 @@ function ForceDelete {
 function betterWhereIs {
 <#
 .SYNOPSIS
-    “Where is … ?”  —  locate a command / executable / function / alias / variable
+    "Where is … ?"  —  locate a command / executable / function / alias / variable
 .DESCRIPTION
     For the supplied *name* the function returns **all** of the following that match:
 
       • **Executable**   - all full paths that Windows / PowerShell can launch
-      • **Function**     - file in which the function is declared (or “<In-Memory>”)
+      • **Function**     - file in which the function is declared (or "<In-Memory>")
       • **Alias**        - the command the alias expands to
       • **Variable**     - a preview of the variable's content (truncated for large values)
 
@@ -759,3 +759,72 @@ function killProcessByName {
         Write-Error "Failed to kill process '$ProcessName': $_"
     }
 }
+
+function showPorts {
+<#
+.SYNOPSIS
+  List which PIDs/processes are using which ports (Windows only), sorted by port.
+
+.DESCRIPTION
+  Collects all TCP (Get-NetTCPConnection) and UDP (Get-NetUDPEndpoint) at once,
+  resolves process names, emits objects, and sorts by LocalPort.
+
+.OUTPUTS
+  PSCustomObject with:
+    Proto, LocalAddress, LocalPort, RemoteAddress, RemotePort, State, PID, Process
+#>
+  [CmdletBinding()]
+  param()
+
+  # Gather once
+  $tcp = Get-NetTCPConnection -ErrorAction SilentlyContinue
+  $udp = Get-NetUDPEndpoint  -ErrorAction SilentlyContinue
+
+  # Resolve PID -> ProcessName once
+  $pidMap = @{}
+  $allPids = @($tcp.OwningProcess) |
+             Where-Object { $_ -gt 0 } |
+             Select-Object -Unique
+  foreach ($prcid in $allPids) {
+    try   { $pidMap[$prcid] = (Get-Process -Id $prcid -ErrorAction Stop).ProcessName }
+    catch { $pidMap[$prcid] = '-' }
+  }
+
+  # Normalize into a single list of objects
+  $rows = New-Object System.Collections.Generic.List[object]
+
+  foreach ($c in $tcp) {
+    $rows.Add([pscustomobject]@{
+      LocalPort     = [int]$c.LocalPort
+      Proto         = 'TCP'
+      LocalAddress  = $c.LocalAddress
+      RemoteAddress = if ($c.RemoteAddress -in @('::','0.0.0.0'))
+                        { $null } else {
+                          $c.RemoteAddress + $(if ($c.RemotePort) { ":"+[int]$c.RemotePort } else { $null })
+                        }
+      State         = $c.State
+      PID           = $c.OwningProcess
+      Process       = $pidMap[$c.OwningProcess]
+    })
+  }
+
+  foreach ($u in $udp) {
+    $rows.Add([pscustomobject]@{
+      LocalPort     = [int]$u.LocalPort
+      Proto         = 'UDP'
+      LocalAddress  = $u.LocalAddress
+      RemoteAddress = $null
+      RemotePort    = $null
+      State         = '-'
+      PID           = $u.OwningProcess
+      Process       = $pidMap[$u.OwningProcess]
+    })
+  }
+
+  # Sort once (numeric by LocalPort), then emit
+  $rows |
+    Sort-Object LocalPort, Proto, PID | Format-Table
+}
+# Convenience aliases
+Set-Alias portsInUse showPorts -Scope Global
+Set-Alias portsUsed  showPorts -Scope Global
