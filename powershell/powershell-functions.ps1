@@ -916,7 +916,7 @@ function killByPort {
       try {
         if ($Force) { Stop-Process -Id $prcid -Force -ErrorAction Stop }
         else        { Stop-Process -Id $prcid         -ErrorAction Stop }
-        Write-Host "✓ Killed PID $prcid ($procName)." -ForegroundColor Green
+        Write-Host "Killed PID $prcid ($procName)." -ForegroundColor Green
       } catch {
         Write-Warning "Failed to kill PID $prcid ($procName): $($_.Exception.Message)"
       }
