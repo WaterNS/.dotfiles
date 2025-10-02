@@ -828,3 +828,102 @@ function showPorts {
 # Convenience aliases
 Set-Alias portsInUse showPorts -Scope Global
 Set-Alias portsUsed  showPorts -Scope Global
+
+function killByPort {
+<#
+.SYNOPSIS
+  Kill the process(es) using a given local port (Windows only).
+
+.DESCRIPTION
+  Looks up TCP (Get-NetTCPConnection) and UDP (Get-NetUDPEndpoint) endpoints whose
+  *local* port equals the provided port number. For each owning PID found, it shows
+  basic details and prompts for confirmation before calling Stop-Process.
+
+.PARAMETER Port
+  The local port number to search for.
+
+.PARAMETER Force
+  If supplied, uses -Force when stopping the process.
+
+.EXAMPLE
+  killByPort 8080
+
+.EXAMPLE
+  killByPort 53 -Force
+#>
+  [CmdletBinding()]
+  param(
+    [Parameter(Mandatory=$true, Position=0)]
+    [ValidateRange(1,65535)]
+    [int]$Port,
+
+    [switch]$Force
+  )
+
+  # Gather matching endpoints once
+  $tcp = Get-NetTCPConnection -ErrorAction SilentlyContinue |
+         Where-Object { $_.LocalPort -eq $Port }
+  $udp = Get-NetUDPEndpoint  -ErrorAction SilentlyContinue |
+         Where-Object { $_.LocalPort -eq $Port }
+
+  if (($tcp.Count + $udp.Count) -eq 0) {
+    Write-Host "No TCP/UDP endpoints found listening/bound on local port $Port."
+    return
+  }
+
+  # Build PID -> endpoints map (for display), and resolve process names once
+  $pidToEndpoints = @{}
+  $pids = @($tcp.OwningProcess + $udp.OwningProcess) |
+          Where-Object { $_ -gt 0 } |
+          Select-Object -Unique
+  foreach ($prcid in $pids) {
+    $pidToEndpoints[$prcid] = [System.Collections.Generic.List[object]]::new()
+  }
+
+  foreach ($c in $tcp) {
+    $pidToEndpoints[$c.OwningProcess].Add([pscustomobject]@{
+      Proto='TCP'; Local="$($c.LocalAddress):$($c.LocalPort)";
+      Remote= if ($c.RemoteAddress -and $c.RemoteAddress -notin @('::','0.0.0.0')) { "$($c.RemoteAddress):$($c.RemotePort)" } else { '-' };
+      State=$c.State
+    })
+  }
+  foreach ($u in $udp) {
+    $pidToEndpoints[$u.OwningProcess].Add([pscustomobject]@{
+      Proto='UDP'; Local="$($u.LocalAddress):$($u.LocalPort)";
+      Remote='-'; State='-'
+    })
+  }
+
+  # Resolve PID -> process info
+  $pidToName = @{}
+  foreach ($prcid in $pids) {
+    try   { $pidToName[$prcid] = (Get-Process -Id $prcid -ErrorAction Stop).ProcessName }
+    catch { $pidToName[$prcid] = '-' }
+  }
+
+  # Prompt per PID
+  foreach ($prcid in $pids) {
+    $procName = $pidToName[$prcid]
+    Write-Host ""
+    Write-Host "PID $prcid  ($procName) is using local port $($Port):" -ForegroundColor Yellow
+    $pidToEndpoints[$prcid] |
+      Sort-Object Proto |
+      Format-Table Proto, Local, Remote, State -AutoSize |
+      Out-Host
+
+    $resp = Read-Host "Kill PID $prcid ($procName)? [y/N]"
+    if ($resp -match '^(y|yes)$') {
+      try {
+        if ($Force) { Stop-Process -Id $prcid -Force -ErrorAction Stop }
+        else        { Stop-Process -Id $prcid         -ErrorAction Stop }
+        Write-Host "✓ Killed PID $prcid ($procName)." -ForegroundColor Green
+      } catch {
+        Write-Warning "Failed to kill PID $prcid ($procName): $($_.Exception.Message)"
+      }
+    } else {
+      Write-Host "Skipped PID $prcid."
+    }
+  }
+
+  Write-Host "`nDone."
+}
