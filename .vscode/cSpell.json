@@ -15,6 +15,10 @@
     "installondemand", "softwareupdate", "ensurepip", "asitop", "devenv", "vstudio", "gitreset", "gitresethard",
     "HKCU", "HKLM", "foldertotal", "takeown", "HACKFIX", "pscustomobject", "MYEOF", "noattach", "modernshell",
     "checkwinsize", "powerlevel", "COMPDUMP", "nomatch", "autopkg", "robbyrussell", "mbuilov", "msls", "dircolors",
-    "uutils", "ARCHPAT", "outvar", "ddps", "psstd", "denoland", "pids", "prcID"
+    "uutils", "ARCHPAT", "outvar", "ddps", "psstd", "denoland", "pids", "prcID", "reponame", "olddir", "excludedfiles",
+    "sshfolderfile", "rootpid", "catchterm", "pathadd", "parentcmd", "newelement", "simpleserver", "subshell",
+    "basefilename", "testcommand", "funcstack", "rstart", "gitdefaultbranch", "cand", "iface", "myip", "nslookup",
+    "setaf", "myaddr", "APFS", "volname", "sparsebundle", "inputplist", "repolocation", "fdesetup", "authrestart",
+    "sndbx", "mountpoint", "clearsshhosts", "mkalias", "sprintf", "rlength", "zipball", "dgst", "filesin", "gsub"
   ]
 }

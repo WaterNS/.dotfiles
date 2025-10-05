@@ -904,3 +904,97 @@ symlink() {
       ln -s "$src" "$dst" && printf "✅  Symlink created: %s → %s\n" "$dst" "$src"
   fi
 }
+
+myip() {
+    # --- Colors (optional) ---
+    C_RESET=;C_CYAN=;C_GREEN=;C_YELLOW=;C_RED=;C_WHITE=
+    if [ -t 1 ] && [ -z "${NO_COLOR+x}" ] && command -v tput >/dev/null 2>&1; then
+        COLORS=$(tput colors 2>/dev/null || printf '0')
+        case "$COLORS" in ''|*[!0-9]*) COLORS=0 ;; esac
+        if [ "$COLORS" -ge 8 ] 2>/dev/null; then
+            C_RESET=$(tput sgr0); C_CYAN=$(tput setaf 6); C_GREEN=$(tput setaf 2)
+            C_YELLOW=$(tput setaf 3); C_RED=$(tput setaf 1); C_WHITE=$(tput setaf 7)
+        fi
+    fi
+
+    # --- Public IP (curl -> wget -> fetch -> DNS fallback) ---
+    printf "%s=== Public IP Address ===%s\n" "$C_CYAN" "$C_RESET"
+    pub_ip=
+    if command -v curl >/dev/null 2>&1; then
+        for u in https://api.ipify.org https://ifconfig.me https://checkip.amazonaws.com; do
+            pub_ip=$(curl -fsS "$u" 2>/dev/null) || pub_ip=
+            [ -n "$pub_ip" ] && break
+        done
+    fi
+    if [ -z "$pub_ip" ] && command -v wget >/dev/null 2>&1; then
+        for u in https://api.ipify.org https://ifconfig.me https://checkip.amazonaws.com; do
+            pub_ip=$(wget -q -O - "$u" 2>/dev/null) || pub_ip=
+            [ -n "$pub_ip" ] && break
+        done
+    fi
+    if [ -z "$pub_ip" ] && command -v fetch >/dev/null 2>&1; then
+        for u in https://api.ipify.org https://ifconfig.me https://checkip.amazonaws.com; do
+            pub_ip=$(fetch -qo - "$u" 2>/dev/null) || pub_ip=
+            [ -n "$pub_ip" ] && break
+        done
+    fi
+    if [ -z "$pub_ip" ] && command -v dig >/dev/null 2>&1; then
+        pub_ip=$(dig +short -4 myip.opendns.com @resolver1.opendns.com 2>/dev/null | awk 'NF{print; exit}')
+    fi
+    if [ -z "$pub_ip" ] && command -v drill >/dev/null 2>&1; then
+        pub_ip=$(drill -4 myip.opendns.com @resolver1.opendns.com 2>/dev/null | awk '/[[:space:]]A[[:space:]]/ {print $5; exit}')
+    fi
+    if [ -z "$pub_ip" ] && command -v nslookup >/dev/null 2>&1; then
+        pub_ip=$(nslookup -type=txt o-o.myaddr.l.google.com ns1.google.com 2>/dev/null \
+                 | awk -F'"' '/text =/ {print $2; exit}')
+        [ -n "$pub_ip" ] || pub_ip=$(nslookup -type=a myip.opendns.com resolver1.opendns.com 2>/dev/null \
+                 | awk '/^Address: [0-9]/{ip=$2} END{if(ip) print ip}')
+    fi
+    pub_ip=$(printf '%s' "$pub_ip" | tr -d '\r' | awk 'NR==1{gsub(/^[[:space:]]+|[[:space:]]+$/,""); print}')
+    if [ -n "$pub_ip" ]; then
+        printf "%s%s%s\n" "$C_GREEN" "$pub_ip" "$C_RESET"
+    else
+        printf "%sUnable to retrieve public IP.%s\n" "$C_RED" "$C_RESET"
+    fi
+
+    # --- Private IPv4s by adapter ---
+    printf "\n%s=== Private IP Addresses by Network Adapter ===%s\n" "$C_CYAN" "$C_RESET"
+
+    priv_lines=
+    if command -v ip >/dev/null 2>&1; then
+        # Linux (iproute2)
+        priv_lines=$(ip -o -4 addr show 2>/dev/null | awk '
+            { iface=$2; split($4,a,"/"); ip=a[1];
+              if (ip !~ /^127\./ && ip !~ /^169\.254\./) print iface " " ip }')
+    fi
+    if [ -z "$priv_lines" ] && command -v ifconfig >/dev/null 2>&1; then
+        # macOS / older Linux (net-tools)
+        priv_lines=$(ifconfig -a 2>/dev/null | awk '
+            /^[a-zA-Z0-9]/ { iface=$1; sub(":", "", iface) }
+            /inet[[:space:]]/ {
+                ip=""; for (i=1;i<=NF;i++) {
+                    if ($i=="inet") {
+                        cand=$(i+1); sub(/^addr:/,"",cand)
+                        if (cand ~ /^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$/) { ip=cand; break }
+                    }
+                    if ($i ~ /^inet:[0-9]/) {
+                        cand=$i; sub(/^inet:/,"",cand)
+                        if (cand ~ /^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$/) { ip=cand; break }
+                    }
+                }
+                if (ip ~ /^[0-9]+\./ && ip !~ /^127\./ && ip !~ /^169\.254\./) {
+                    print iface " " ip
+                }
+            }')
+    fi
+
+    if [ -n "$priv_lines" ]; then
+        printf '%s\n' "$priv_lines" | sort | awk -v Y="$C_YELLOW" -v W="$C_WHITE" -v R="$C_RESET" '
+            BEGIN{cur=""}
+            { iface=$1; ip=$2
+              if (iface!=cur){ print Y "Adapter: " iface R; cur=iface }
+              print "  " W "IP:" R " " ip }'
+    else
+        printf "%sNo IPv4 addresses found (or no supported tools found).%s\n" "$C_RED" "$C_RESET"
+    fi
+}
