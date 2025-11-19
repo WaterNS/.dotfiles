@@ -28,6 +28,7 @@
   "workbench.tree.renderIndentGuides": "always",
   "workbench.startupEditor": "newUntitledFile",
   "workbench.editor.wrapTabs": true,
+  "workbench.secondarySideBar.defaultVisibility": "hidden", // Hides sidebar on launch (typically chat interface)
 
   "files.insertFinalNewline": true, //POSIX-targeted tools want new lines
   "files.trimFinalNewlines": true,
