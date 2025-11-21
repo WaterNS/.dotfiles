@@ -525,6 +525,23 @@ Function install-head-busybox {
   }
 }
 
+Function install-nl-busybox {
+  if (!(Check-Command "nl" -Binary)) {
+    if ((Check-OS) -like "*win*") {
+      install-busybox
+
+      "Copying busybox as nl.exe ..."
+      Copy-Item "~/.dotfiles/opt/bin/busybox.exe" "~/.dotfiles/opt/bin/nl.exe"
+
+      if (Check-Command "nl" -Binary) {
+        "GOOD - nl is now available"
+      } else {
+        "BAD - nl doesn't seem to be available"
+      }
+    }
+  }
+}
+
 Function install-wget {
   if (!(betterWhereIs wget | Where-Object {$_.Type -eq "Executable"})) {
     if ((Check-OS) -like "*win*") {

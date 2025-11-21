@@ -159,6 +159,7 @@ If (Test-Path "~\Documents") {
 install-msls
 install-tail-busybox
 install-head-busybox
+install-nl-busybox
 install-less
 install-sed
 install-jq
