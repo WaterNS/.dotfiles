@@ -364,7 +364,7 @@ Function install-grep {
 Function install-ripgrep {
   if (!(Check-Command "rg")) {
     if ((Check-OS) -like "*win*") {
-      install-generic-github -repo "BurntSushi/ripgrep" -executablename "rg" -searchstring "64-pc-windows-msvc.zip" -excludeString "sha256"
+      install-generic-github -repo "BurntSushi/ripgrep" -executablename "rg" -searchstring "x86_64-pc-windows-msvc.zip" -excludeString "sha256"
     }
   }
 }
@@ -496,7 +496,7 @@ Function install-tail-busybox {
     if ((Check-OS) -like "*win*") {
       install-busybox
 
-      "Copying busybox as tail.exe ..."
+      #"Copying busybox as tail.exe ..."
       Copy-Item "~/.dotfiles/opt/bin/busybox.exe" "~/.dotfiles/opt/bin/tail.exe"
 
       if (Check-Command "tail" -Binary) {
@@ -513,7 +513,7 @@ Function install-head-busybox {
     if ((Check-OS) -like "*win*") {
       install-busybox
 
-      "Copying busybox as head.exe ..."
+      #"Copying busybox as head.exe ..."
       Copy-Item "~/.dotfiles/opt/bin/busybox.exe" "~/.dotfiles/opt/bin/head.exe"
 
       if (Check-Command "head" -Binary) {
@@ -530,7 +530,7 @@ Function install-nl-busybox {
     if ((Check-OS) -like "*win*") {
       install-busybox
 
-      "Copying busybox as nl.exe ..."
+      #"Copying busybox as nl.exe ..."
       Copy-Item "~/.dotfiles/opt/bin/busybox.exe" "~/.dotfiles/opt/bin/nl.exe"
 
       if (Check-Command "nl" -Binary) {
