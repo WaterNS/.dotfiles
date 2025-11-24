@@ -191,3 +191,8 @@ if [ ! -x "$(command -v hostname)" ]; then
     alias hostname='cat /etc/hostname'
   fi
 fi
+
+# bandwhich: Alias to ntop
+if [ -x "$(command -v bandwhich)" ]; then
+  alias ntop='sudo bandwhich --show-dns --total-utilization'
+fi

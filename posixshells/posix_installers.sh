@@ -1222,3 +1222,27 @@ install_deno () {
     fi
   fi
 }
+
+install_bandwhich () {
+  if [ ! -x "$(command -v bandwhich)" ]; then
+    if [ "$OS_FAMILY" = "Darwin" ]; then
+      install_homebrew
+      brew install "bandwhich"
+    elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
+      install_generic_apk "bandwhich"
+    # elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
+    #   install_generic_github "sharkdp/bat" "bat" "x86_64-unknown-linux-musl"
+    # elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x32" ]; then
+    #   install_generic_github "sharkdp/bat" "bat" "i686-unknown-linux-musl"
+    else
+      echo "";
+      echo "install_bandwhich: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
+    fi
+  fi
+}
+
+install_ntop () {
+  if [ ! -x "$(command -v ntop)" ]; then
+    install_bandwhich
+  fi
+}

@@ -158,6 +158,7 @@ install_trash
 install_btop
 install_htop
 install_mactop
+install_bandwhich
 install_zsh
 
 # Install VIM items
