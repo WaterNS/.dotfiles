@@ -388,22 +388,10 @@ install_diffsofancy () {
     install_curl
     install_perl
     if [ -x "$(command -v perl)" ]; then
-      echo "NOTE: diff-so-fancy not found, downloading to dotfiles bin location"
-      echo "------------------------------------------------"
-      #echo ""; echo "Pulling down: diff-so-fancy (better git diff)"
-      diffsofancy="https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy"
-
-      curl -S -s $diffsofancy > "$HOMEREPO/opt/bin/diff-so-fancy" && chmod 0755 "$HOMEREPO/opt/bin/diff-so-fancy";
-
-      if [ -f "$HOMEREPO/opt/bin/diff-so-fancy" ]; then
-        echo "  ++ GOOD - diff-so-fancy is now available ++"; echo "";
-      else
-        echo "BAD - diff-so-fancy doesn't seem to be available"
-      fi
+      install_generic_github "so-fancy/diff-so-fancy" "diff-so-fancy"
     else
       echo "Not downloading diff-so-fancy: perl is not available"
     fi
-    unset diffsofancy;
   fi
 }
 
