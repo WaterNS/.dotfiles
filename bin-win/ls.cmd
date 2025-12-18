@@ -132,12 +132,12 @@ if "!IN_POWERSHELL!"=="1" (
 
   REM If GCI-style flags present, call Get-ChildItem
   if "!HAS_GCI!"=="1" (
-    "!PSRUN!" -NoProfile -ExecutionPolicy Bypass -Command "Get-ChildItem @args" %*
+    "!PSRUN!" -NoProfile -ExecutionPolicy Bypass -File "%~dp0ls-gci.ps1" %*
     exit /b !ERRORLEVEL!
   )
 
   REM Default in PowerShell context is Get-ChildItem
-  "!PSRUN!" -NoProfile -ExecutionPolicy Bypass -Command "Get-ChildItem @args" %*
+  "!PSRUN!" -NoProfile -ExecutionPolicy Bypass -File "%~dp0ls-gci.ps1" %*
   exit /b !ERRORLEVEL!
 )
 
