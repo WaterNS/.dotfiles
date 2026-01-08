@@ -49,23 +49,27 @@ if ($reInit) {Remove-Item "$HOMEREPO/opt" -Recurse}
 # Create dir for installation of packages for dotfiles
 If (!(Test-Path $HOMEREPO/opt)) {New-Item $HOMEREPO/opt/bin -ItemType Directory > $null}
 
-# Add dotfiles bin to user environment variable (permanently)
-$ExistingUserPath = [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User)
-# Dynamically downloaded bin files
-If (!($ExistingUserPath -like "*$HOME/.dotfiles/opt/bin*")) {
-  [Environment]::SetEnvironmentVariable(
-    "Path",
-    $ExistingUserPath + ";$HOME/.dotfiles/opt/bin",
-    [EnvironmentVariableTarget]::User
-  )
+##
+# Add dotfiles bin folder(s) to PATH
+##
+$pathsToAdd = @(
+  (Join-Path $HOME ".dotfiles\opt\bin"),
+  (Join-Path $HOME ".dotfiles\bin-win")
+)
+
+# --- Persistent/Permanent (User) PATH ---
+$userPath = [Environment]::GetEnvironmentVariable("Path", "User")
+if ([string]::IsNullOrEmpty($userPath)) { $userPath = "" }
+$userParts = $userPath -split ';' | ForEach-Object { $_.Trim() } | Where-Object { $_ } # split, trim, de-dupe (case-insensitive on Windows)
+foreach ($p in $pathsToAdd) {
+  if (-not ($userParts -contains $p)) {$userParts += $p}
 }
-# Statically provided bin files
-If (!($ExistingUserPath -like "*$HOME/.dotfiles/bin-win*")) {
-  [Environment]::SetEnvironmentVariable(
-    "Path",
-    $ExistingUserPath + ";$HOME/.dotfiles/bin-win",
-    [EnvironmentVariableTarget]::User
-  )
+$newUserPath = ($userParts | Select-Object -Unique) -join ';'
+[Environment]::SetEnvironmentVariable("Path", $newUserPath, "User")
+
+# --- Current session PATH (immediate) ---
+foreach ($p in $pathsToAdd) {
+  if (-not (($env:Path -split ';') -contains $p)) {$env:Path += ";$p"}
 }
 
 # Set .dotfiles repo setting
