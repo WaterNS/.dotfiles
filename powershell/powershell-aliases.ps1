@@ -19,7 +19,25 @@ Set-Alias vscode code
 
 if (!(Check-Command "vstudio")) {
   if (Check-Command "devenv") {
-    Function AliasVSStudio {Start-Process devenv $args}
+    Function AliasVSStudio {
+      $argsList = @($args)
+      $hasSolution = $false
+      foreach ($arg in $argsList) {
+        if ($arg -match '\.sln$') {
+          $hasSolution = $true
+          break
+        }
+      }
+
+      if (-not $hasSolution) {
+        $solutions = @(Get-ChildItem -File -Filter *.sln -ErrorAction SilentlyContinue)
+        if ($solutions.Count -eq 1) {
+          $argsList += $solutions[0].FullName
+        }
+      }
+
+      Start-Process devenv $argsList
+    }
     Set-Alias vstudio AliasVSStudio
   }
 }
