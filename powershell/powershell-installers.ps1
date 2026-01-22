@@ -725,7 +725,7 @@ Function install-nl-busybox {
 }
 
 Function install-wget {
-  if (!(betterWhereIs wget | Where-Object {$_.Type -eq "Executable"})) {
+  if (!(betterWhereIs wget -WarningAction SilentlyContinue | Where-Object {$_.Type -eq "Executable"})) {
     if ((Check-OS) -like "*win*") {
       "NOTE: wget not found, availing into dotfiles bin"
       "------------------------------------------------"
@@ -735,7 +735,7 @@ Function install-wget {
       #mkdir -p "$HOME/.dotfiles/opt/tmp" | Out-Null
       Powershell-FileDownload "$latest" -o "$HOME/.dotfiles/opt/bin/wget.exe"
 
-      if (betterWhereIs wget | Where-Object {$_.Type -eq "Executable"}) {
+      if (betterWhereIs wget -WarningAction SilentlyContinue | Where-Object {$_.Type -eq "Executable"}) {
         "GOOD - wget is now available"
       } else {
         "BAD - wget doesn't seem to be available"
