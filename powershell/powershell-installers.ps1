@@ -245,6 +245,188 @@ param (
   }
 }
 
+Function install-python3 {
+param (
+  [Alias("u")][Switch]$Uninstall,
+  [string]$Version,
+  [Switch]$NoPip,
+  [Switch]$AllowPreRelease
+)
+
+  $local:pythonFolder = Join-Path $HOME ".dotfiles\\opt\\bin\\python3"
+  $local:pythonFolder = [IO.Path]::GetFullPath($local:pythonFolder)
+  $local:pythonExe = Join-Path $local:pythonFolder "python.exe"
+  $local:tmpRoot = Join-Path $HOME ".dotfiles\\opt\\tmp"
+  $local:tmpDir = Join-Path $local:tmpRoot "python3"
+  $local:arch = if ([Environment]::Is64BitOperatingSystem) { "amd64" } else { "win32" }
+
+  if ($Uninstall) {
+    if (Test-Path "$local:pythonFolder") {
+      Remove-Item "$local:pythonFolder" -Recurse -Force
+    }
+    return
+  }
+
+  if (!(Check-Installed -name "Python" -type "folder" -path $local:pythonFolder)) {
+    if ((Check-OS) -like "*win*") {
+      "NOTE: Python not found, availing into dotfiles bin"
+      "------------------------------------------------"
+      [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
+
+      $local:versionList = $null
+      if (-not $Version -or $Version -match '^\d+\.\d+$') {
+        try {
+          $local:index = Invoke-WebRequest "https://www.python.org/ftp/python/" -UseBasicParsing
+          $local:versionList = [regex]::Matches($local:index.Content, 'href="(\d+\.\d+\.\d+)/"') |
+            ForEach-Object { $_.Groups[1].Value } |
+            ForEach-Object { [version]$_ } |
+            Sort-Object -Descending
+        } catch {
+          Write-Warning "Failed to query python.org for available versions."
+        }
+      }
+
+      $local:candidates = @()
+      if (-not $Version) {
+        if ($local:versionList) {
+          $local:candidates = $local:versionList | ForEach-Object { $_.ToString() }
+        } else {
+          Write-Warning "install-python3: Version is required when python.org cannot be reached."
+          return
+        }
+      } elseif ($Version -match '^\d+\.\d+$') {
+        if ($local:versionList) {
+          $local:minorVersion = [version]$Version
+          $local:candidates = $local:versionList |
+            Where-Object { $_.Major -eq $local:minorVersion.Major -and $_.Minor -eq $local:minorVersion.Minor } |
+            ForEach-Object { $_.ToString() }
+          if (-not $local:candidates) {
+            Write-Warning "install-python3: Could not find a patch version for $Version."
+            return
+          }
+        } else {
+          Write-Warning "install-python3: Version is missing a patch number (example: 3.12.8)."
+          return
+        }
+      } else {
+        $local:candidates = @($Version)
+      }
+
+      $local:embedMatch = $null
+      $local:embedStable = $false
+      $local:downloadBase = $null
+      $local:selectedVersion = $null
+      foreach ($local:candidate in $local:candidates) {
+        $local:downloadBase = "https://www.python.org/ftp/python/$local:candidate/"
+        try {
+          $local:dirIndex = Invoke-WebRequest $local:downloadBase -UseBasicParsing
+        } catch {
+          continue
+        }
+
+        $local:stablePattern = 'href="(python-{0}-embed-{1}\.zip)"' -f $local:candidate, $local:arch
+        $local:embedMatch = [regex]::Matches(
+          $local:dirIndex.Content,
+          $local:stablePattern
+        ) | ForEach-Object { $_.Groups[1].Value } | Select-Object -First 1
+
+        if ($local:embedMatch) {
+          $local:embedStable = $true
+          $local:selectedVersion = $local:candidate
+          break
+        }
+
+        if (-not $AllowPreRelease) {
+          continue
+        }
+
+        $local:prePattern = 'href="(python-{0}[a-z0-9\.]*-embed-{1}\.zip)"' -f $local:candidate, $local:arch
+        $local:embedMatch = [regex]::Matches(
+          $local:dirIndex.Content,
+          $local:prePattern
+        ) | ForEach-Object { $_.Groups[1].Value } | Select-Object -First 1
+
+        if ($local:embedMatch) {
+          $local:embedStable = $false
+          $local:selectedVersion = $local:candidate
+          break
+        }
+      }
+
+      if (-not $local:embedMatch) {
+        if ($AllowPreRelease) {
+          Write-Warning "install-python3: No embeddable zip found for the requested version(s) ($local:arch)."
+        } else {
+          Write-Warning "install-python3: No stable embeddable zip found. Use -AllowPreRelease to accept prerelease builds."
+        }
+        return
+      }
+
+      $Version = $local:selectedVersion
+      $local:downloadUrl = "$local:downloadBase$local:embedMatch"
+      $local:resolvedTag = $local:embedMatch -replace '^python-','' -replace ("-embed-{0}\.zip$" -f $local:arch),''
+      if (-not $local:embedStable) {
+        Write-Warning "install-python3: Resolved prerelease build '$local:resolvedTag' under $Version."
+      }
+
+      if (Test-Path "$local:pythonFolder") {
+        Remove-Item "$local:pythonFolder" -Recurse -Force
+      }
+
+      if (Test-Path "$local:tmpDir") {
+        Remove-Item "$local:tmpDir" -Recurse -Force
+      }
+
+      New-Item -ItemType Directory -Path "$local:pythonFolder" -Force | Out-Null
+      New-Item -ItemType Directory -Path "$local:tmpDir" -Force | Out-Null
+
+      "Downloading Python $Version (portable)..."
+      Write-Host "URL: $local:downloadUrl"
+      Powershell-FileDownload "$local:downloadUrl" -o "$local:tmpDir\\python-embed.zip"
+      Expand-Archive -LiteralPath "$local:tmpDir\\python-embed.zip" -DestinationPath "$local:pythonFolder"
+      Remove-Item "$local:tmpDir\\python-embed.zip" -Force
+
+      $local:pthFile = Get-ChildItem "$local:pythonFolder" -Filter "python*._pth" | Select-Object -First 1
+      if ($local:pthFile) {
+        $local:pthLines = Get-Content $local:pthFile.FullName
+        $local:pthLines = $local:pthLines | ForEach-Object {
+          if ($_ -match '^\s*#\s*import site') { 'import site' } else { $_ }
+        }
+        if (-not ($local:pthLines -match '^\s*Lib\\site-packages\s*$')) {
+          $local:pthLines += 'Lib\\site-packages'
+        }
+        Set-Content -Path $local:pthFile.FullName -Value $local:pthLines -Encoding ASCII
+      }
+
+      New-Item -ItemType Directory -Path (Join-Path $local:pythonFolder "Lib\\site-packages") -Force | Out-Null
+
+      if (-not $NoPip) {
+        $local:getPip = Join-Path $local:tmpDir "get-pip.py"
+        Powershell-FileDownload "https://bootstrap.pypa.io/get-pip.py" -o "$local:getPip"
+        & $local:pythonExe "$local:getPip" --no-warn-script-location
+        Remove-Item "$local:getPip" -Force
+      }
+
+      Remove-Item -Path "$local:tmpDir" -Recurse -Force
+
+      if (Test-Path "$local:pythonExe") {
+        "GOOD - Python3 is now available"
+        # Python3 helper for Windows
+        if ((Test-Path "$HOME\.dotfiles\opt\bin\python3\python.exe")) {
+          if (!($env:PATH -like "*.dotfiles\opt\bin\python3*")) {
+            $env:PATH += ";$HOME\.dotfiles\opt\bin\python3\"
+            $env:PATH += ";$HOME\.dotfiles\opt\bin\python3\Scripts"
+          }
+          Set-Alias python "$HOME\.dotfiles\opt\bin\python3\python.exe"
+          Set-Alias python3 "$HOME\.dotfiles\opt\bin\python3\python.exe"
+        }
+      } else {
+        "BAD - Python3 doesn't seem to be available"
+      }
+    }
+  }
+}
+
 Function install-ntop {
   if (!(Check-Command ntop)) {
     if ((Check-OS) -like "*win*") {
