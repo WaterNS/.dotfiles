@@ -28,9 +28,7 @@ catch [System.Management.Automation.CommandNotFoundException]
 }
 
 # Import dotfiles gitconfig
-if (! ($(git config --global --get-all include.path) -like "*.dotfiles/git/git_tweaks*")) {
-  git config --global --add include.path "~/.dotfiles/git/git_tweaks"
-}
+Ensure-GitGlobalIncludePath '~/.dotfiles/git/git_tweaks'
 
 
 if ($reInit) {
@@ -75,16 +73,16 @@ foreach ($p in $pathsToAdd) {
 # Set .dotfiles repo setting
 $currentPath=$PWD
 Set-Location $HOMEREPO
-git config user.name "User"
-git config user.email waterns@users.noreply.github.com
-git config push.default matching
+Set-GitRepoValue "user.name" "User"
+Set-GitRepoValue "user.email" "waterns@users.noreply.github.com"
+Set-GitRepoValue "push.default" "matching"
 
 if (!(Test-Path "$HOME/.ssh/WaterNS")) {
   Write-Host "Creating ~/.ssh/WaterNS"
   ssh-keygen -t rsa -b 4096 -f "$HOME/.ssh/WaterNS" -q -N '""' -C '""';
 }
 if (Test-Path ~/.ssh/WaterNS) {
-  git config core.sshCommand "ssh -i ~/.ssh/WaterNS"
+  Set-GitRepoValue "core.sshCommand" "ssh -i ~/.ssh/WaterNS"
 }
 Set-Location $currentPath
 

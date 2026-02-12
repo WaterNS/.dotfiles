@@ -25,37 +25,45 @@
 ################
 # Git Settings #
 ################
+$shouldMutateGitGlobalConfig = (Check-Command git) -and -not (Test-IsNonInteractiveInvocation)
+
 #Use LineFeeds in Repo, Not CarriageReturn+LineFeeds
 #Needed if using Windows Subsystem for Linux and Powershell on same repo
-git config --global core.autocrlf false
-git config --global core.eol lf
+if ($shouldMutateGitGlobalConfig) {
+  Set-GitGlobalValue "core.autocrlf" "false"
+  Set-GitGlobalValue "core.eol" "lf"
+}
 
 # Set GIT Config Settings
-if (Check-Command git) {
-  git config --global --remove-section include
-  git config --global --add include.path '~/.dotfiles/git/git_tweaks'
+if ($shouldMutateGitGlobalConfig) {
+  Ensure-GitGlobalIncludePath '~/.dotfiles/git/git_tweaks'
 
   if ([version]$(((git --version) -replace('[^0-9.]')).split('.')[0..2] -join (".")) -gt [version]'2.21') {
-    git config --global --add log.date 'foobar'
-    git config --global --remove-section log
-    git config --global --add log.date 'auto:format:%a %Y-%h-%d %I:%M %p %z %Z'
+    Set-GitGlobalValue "log.date" 'auto:format:%a %Y-%h-%d %I:%M %p %z %Z'
   }
   else {
-    git config --global --add log.test 'foobar'
-    git config --global --remove-section log
+    git config --global --unset-all log.date 2>$null
   }
 }
 
 if (Check-Command delta) {
   $env:GIT_PAGER = 'delta' # Set Git Pager for session
-  git config --global --add include.path '~/.dotfiles/git/git_deltadiff'
+  if ($shouldMutateGitGlobalConfig) {
+    Ensure-GitGlobalIncludePath '~/.dotfiles/git/git_deltadiff'
+    Remove-GitGlobalIncludePath '~/.dotfiles/git/git_diffsofancy'
+  }
 } elseif (Check-Command "diff-so-fancy") {
   $env:GIT_PAGER='diff-so-fancy | less' # Set Git Pager for session
   $env:LESS="-x2 -RFX $LESS" # Set LESS settings for session
-  git config --global --add include.path '~/.dotfiles/git/git_diffsofancy' # Include diff-so-fancy colors
+  if ($shouldMutateGitGlobalConfig) {
+    Ensure-GitGlobalIncludePath '~/.dotfiles/git/git_diffsofancy' # Include diff-so-fancy colors
+    Remove-GitGlobalIncludePath '~/.dotfiles/git/git_deltadiff'
+  }
 } else {
-  git config --global --unset-all include.path '~/.dotfiles/git/git_diffsofancy'
-  git config --global --unset-all include.path '~/.dotfiles/git/git_deltadiff'
+  if ($shouldMutateGitGlobalConfig) {
+    Remove-GitGlobalIncludePath '~/.dotfiles/git/git_diffsofancy'
+    Remove-GitGlobalIncludePath '~/.dotfiles/git/git_deltadiff'
+  }
 }
 
 # Enable Tab Expansion using `MenuComplete` style

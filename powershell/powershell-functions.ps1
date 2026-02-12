@@ -188,6 +188,18 @@ Function Test-IsNonInteractiveShell {
   return $false
 }
 
+function Test-IsNonInteractiveInvocation {
+  $pwshArgs = @([Environment]::GetCommandLineArgs()) | ForEach-Object { "$_".ToLowerInvariant() }
+  return (
+    ($pwshArgs -contains '-command') -or
+    ($pwshArgs -contains '-c') -or
+    ($pwshArgs -contains '-file') -or
+    ($pwshArgs -contains '-f') -or
+    ($pwshArgs -contains '-encodedcommand') -or
+    ($pwshArgs -contains '-ec')
+  )
+}
+
 Function find-string([String]$regex, $path) {
   if (!$path) {$path = "."}
   Get-ChildItem $path -file -recurse | Select-String -pattern ([Regex]::Escape("$regex")) | group path | select -ExpandProperty name
@@ -201,6 +213,49 @@ Function Powershell-FileDownload([String]$URL,$output) {
   $wc = new-object system.net.WebClient
   $wc.DownloadFile($URL,$output)
   $wc.Dispose()
+}
+
+function Set-GitGlobalValue {
+  Param (
+    [string]$Key,
+    [string]$Value
+  )
+
+  $currentValue = git config --global --get $Key 2>$null
+  if ($currentValue -ne $Value) {
+    git config --global --replace-all $Key $Value | Out-Null
+  }
+}
+
+function Ensure-GitGlobalIncludePath {
+  Param (
+    [string]$IncludePath
+  )
+
+  $includePaths = @(git config --global --get-all include.path 2>$null)
+  if ($includePaths -notcontains $IncludePath) {
+    git config --global --add include.path $IncludePath | Out-Null
+  }
+}
+
+function Remove-GitGlobalIncludePath {
+  Param (
+    [string]$IncludePath
+  )
+
+  git config --global --unset-all include.path $IncludePath 2>$null
+}
+
+function Set-GitRepoValue {
+  Param (
+    [string]$Key,
+    [string]$Value
+  )
+
+  $currentValue = git config --get $Key 2>$null
+  if ($currentValue -ne $Value) {
+    git config --replace-all $Key $Value | Out-Null
+  }
 }
 
 Function gitRemoveOrphanBranches() {
