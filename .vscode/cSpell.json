@@ -20,6 +20,6 @@
     "basefilename", "testcommand", "funcstack", "rstart", "gitdefaultbranch", "cand", "iface", "myip", "nslookup",
     "setaf", "myaddr", "APFS", "volname", "sparsebundle", "inputplist", "repolocation", "fdesetup", "authrestart",
     "sndbx", "mountpoint", "clearsshhosts", "mkalias", "sprintf", "rlength", "zipball", "dgst", "filesin", "gsub",
-    "bandwhich"
+    "bandwhich", "rclone"
   ]
 }
