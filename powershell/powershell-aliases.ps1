@@ -141,3 +141,8 @@ if ((Check-Command "Get-Uptime")) {
 if (Test-Path "C:\Program Files\Git\usr\bin\bash.exe") {
   Set-Alias bash "C:\Program Files\Git\usr\bin\bash.exe"
 }
+
+if (Check-Command python) {
+  Function AliasPy {python $args}
+  Set-Alias py AliasPy
+}
