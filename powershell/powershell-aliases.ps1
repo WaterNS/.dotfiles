@@ -146,3 +146,7 @@ if (Check-Command python) {
   Function AliasPy {python $args}
   Set-Alias py AliasPy
 }
+
+if (Test-Path "C:\Program Files\Tesseract-OCR\tesseract.exe") {
+  Set-Alias tesseract "C:\Program Files\Tesseract-OCR\tesseract.exe"
+}
