@@ -744,7 +744,7 @@ Function install-wget {
   }
 }
 
-Function install-xPDFTools {
+Function install-popplerUtils {
   if (!(Check-Command pdfinfo)) {
     if ((Check-OS) -like "*win*") {
       "NOTE: xPDF Tools not found, availing into dotfiles bin"
@@ -754,8 +754,8 @@ Function install-xPDFTools {
       #$local:latest=$(Invoke-WebRequest $cht | Select-Object content | Get-URLs | Select-String "windows_amd64" | Select-Object -ExpandProperty line)
       $local:latest="https://dl.xpdfreader.com/xpdf-tools-win-4.06.zip"
 
-      "Downloading xPDF Tools..."
-      mkdir -p "$HOME/.dotfiles/opt/tmp" | Out-Null
+      "Downloading Poppler Utils/xPDF Tools..."
+      mkdir -p "$HOME/.dotfiles/opt/tmp" -ErrorAction SilentlyContinue | Out-Null
       Powershell-FileDownload "$latest" -o "$HOME/.dotfiles/opt/tmp/xpdftools.zip"
 
       Expand-Archive -LiteralPath "$HOME/.dotfiles/opt/tmp/xpdftools.zip" -DestinationPath "$HOME/.dotfiles/opt/tmp/xpdftools"
@@ -766,9 +766,9 @@ Function install-xPDFTools {
       $collection = $("pdfinfo", "pdftotext", "pdftopng", "pdftohtml", "pdfimages", "pdffonts", "pdfdetach")
       foreach ($item in $collection) {
         if (Check-Command $item) {
-          "GOOD - $item (xPDF Tools) is now available"
+          "GOOD - $item (Poppler Utils/xPDF Tools) is now available"
         } else {
-          "BAD - $item (xPDF Tools) doesn't seem to be available"
+          "BAD - $item (Poppler Utils/xPDF Tools) doesn't seem to be available"
         }
       }
     }
