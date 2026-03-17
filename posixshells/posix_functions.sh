@@ -998,3 +998,15 @@ myip() {
         printf "%sNo IPv4 addresses found (or no supported tools found).%s\n" "$C_RED" "$C_RESET"
     fi
 }
+
+# killAirplay: Handle different flags for GNU/Linux `stat` vs Darwin version
+if [ "$OS_FAMILY" = "Darwin" ]; then
+  killAirplay() {
+    echo "Killing AirPlay related processes"
+    killall ControlCenter
+    killall AirPlayXPCHelper
+    killall mediaremoted
+    killall sharingd
+    killall coreaudiod
+  }
+fi
