@@ -747,7 +747,7 @@ Function install-wget {
 Function install-popplerUtils {
   if (!(Check-Command pdfinfo)) {
     if ((Check-OS) -like "*win*") {
-      "NOTE: xPDF Tools not found, availing into dotfiles bin"
+      "NOTE: Poppler Utils/xPDF Tools not found, availing into dotfiles bin"
       "------------------------------------------------"
       #[Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
       #$local:cht="https://api.github.com/repos/mvdan/sh/releases/latest"
