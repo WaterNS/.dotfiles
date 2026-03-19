@@ -982,3 +982,49 @@ function killByPort {
 
   Write-Host "`nDone."
 }
+
+function scanSubnetForHosts {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Subnet,
+
+        [int[]]$Ports = @(80, 8080),
+
+        [switch]$Pretty = $true,
+
+        [switch]$Objects
+    )
+
+    $results = 1..254 | ForEach-Object -Parallel {
+        $ip = "$using:Subnet.$_"
+
+        foreach ($port in $using:Ports) {
+            try {
+                $client = New-Object System.Net.Sockets.TcpClient
+                $async = $client.BeginConnect($ip, $port, $null, $null)
+                $wait = $async.AsyncWaitHandle.WaitOne(200)
+
+                if ($wait -and $client.Connected) {
+                    [PSCustomObject]@{
+                        IP   = $ip
+                        Port = $port
+                        Open = $true
+                    }
+                }
+
+                $client.Close()
+            } catch {}
+        }
+    }
+
+    # If -Objects is specified, force raw output
+    if ($Objects) {
+        $Pretty = $false
+    }
+
+    if ($Pretty) {
+        $results | Format-Table -AutoSize
+    } else {
+        $results
+    }
+}
