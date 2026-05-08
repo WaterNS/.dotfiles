@@ -87,14 +87,14 @@ Function install-generic-github {
       $local:pkgrepo="https://api.github.com/repos/$repo/releases/latest"
       $local:assetsURL = $(Invoke-WebRequest $pkgrepo -UseBasicParsing | ConvertFrom-Json | Select-Object assets_url)[0].assets_url;
       $local:latest = $(
-        Invoke-WebRequest $assetsURL -UseBasicParsing | ConvertFrom-Json | ForEach-Object { $_.browser_download_url } | Select-String $searchstring | Where-Object { -not ($excludeString -and ($_ -match $excludeString)) } | Out-String
+        Invoke-WebRequest ($assetsURL + "?per_page=100") -UseBasicParsing | ConvertFrom-Json | ForEach-Object { $_.browser_download_url } | Select-String $searchstring | Where-Object { -not ($excludeString -and ($_ -match $excludeString)) } | Out-String
       ).Trim();
       $local:ext = $null
       if ($latest.Split("/")[-1] -match "\.") {$ext = $latest.Split("/")[-1].Split(".")[-1]}
 
 
       "Downloading $executablename...";
-      "$latest";
+      if ($latest) {"Latest: $latest"} else {"Assets: $assetsURL"}
       if ($ext -eq "exe" -or $null -eq $ext) {
         Powershell-FileDownload "$latest" -o "$HOME/.dotfiles/opt/bin/$executablename$(If ($ext) {".$ext"})"
       } else {
