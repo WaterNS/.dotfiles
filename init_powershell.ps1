@@ -182,6 +182,7 @@ install-nuget
 install-wget
 install-python3
 install-popplerUtils
+install-rclone
 
 #Write update/init file
 $shaInitUpdated=$(git --git-dir "$HOME/.dotfiles/.git" log -n 1 --pretty=format:%H -- init_powershell.ps1)

@@ -774,3 +774,11 @@ Function install-popplerUtils {
     }
   }
 }
+
+Function install-rclone {
+  if (!(Check-Command "rclone")) {
+    if ((Check-OS) -like "*win*") {
+      install-generic-github -repo "rclone/rclone" -executablename "rclone" -searchstring "-windows-amd64.zip"
+    }
+  }
+}
