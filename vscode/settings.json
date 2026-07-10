@@ -13,7 +13,7 @@
   "terminal.integrated.scrollback": 9999,
   "terminal.integrated.initialHint": false, // Don't need the initial terminal hint (chat hint etc)
 
-  "workbench.colorTheme": "Monokai",
+  // "workbench.colorTheme": "Monokai", // Disabled in favor default dark theme (for now)
   "workbench.colorCustomizations": {
     "[Monokai]": {
       "commandCenter.background": "#D3D3D3",
