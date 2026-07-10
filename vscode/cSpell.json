@@ -30,7 +30,7 @@
     "Spacebar", "prefs", "sandboxed", "barebones", "Entra", "unshallow",
     "shopt", "extglob", "pwsh", "msbuild", "msdeploy", "elif", "notmatch",
     "vstest", "creds", "coreutils", "WINDIR", "errorlevel", "usebackq", "setlocal",
-    "endlocal", "LASTEXITCODE"
+    "endlocal", "LASTEXITCODE", "pycache"
   ],
   "ignoreWords": [
     "ify", "sify", // Word-'ify' hacks

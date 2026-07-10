@@ -1028,3 +1028,11 @@ function scanSubnetForHosts {
         $results
     }
 }
+
+function simpleserver {
+  if (Check-Command python) {
+    # & python -m SimpleHTTPServer 8000 #Python2 version
+    & python -m http.server 8000 #Python3 version
+  }
+}
+Set-Alias serverHttp simpleserver
