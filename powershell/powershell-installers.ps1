@@ -782,3 +782,98 @@ Function install-rclone {
     }
   }
 }
+
+Function install-ffmpeg {
+  $local:requiredExecutables = @("ffmpeg", "ffprobe")
+  $local:missingExecutables = @($requiredExecutables | Where-Object { !(Check-Command $_ -Binary) })
+
+  if (($missingExecutables.Count -gt 0) -and ((Check-OS) -like "*win*")) {
+    "NOTE: FFmpeg not found, availing into dotfiles bin"
+    "--------------------------------------------------"
+    [Net.ServicePointManager]::SecurityProtocol = "tls12, tls11, tls"
+    $local:latest = "https://github.com/yt-dlp/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip"
+    $local:tmpDir = Join-Path $HOME ".dotfiles\opt\tmp\ffmpeg"
+    $local:archive = Join-Path $tmpDir "ffmpeg.zip"
+    $local:extractDir = Join-Path $tmpDir "expanded"
+    $local:binDir = Join-Path $HOME ".dotfiles\opt\bin"
+
+    try {
+      New-Item -Path $tmpDir -ItemType Directory -Force | Out-Null
+      New-Item -Path $binDir -ItemType Directory -Force | Out-Null
+
+      "Downloading FFmpeg and ffprobe..."
+      Powershell-FileDownload $latest $archive
+      Expand-Archive -LiteralPath $archive -DestinationPath $extractDir -Force
+
+      foreach ($executableName in $missingExecutables) {
+        $local:binary = Get-ChildItem $extractDir -Recurse -File -Filter "$executableName.exe" | Select-Object -First 1
+        if (!$binary) {
+          throw "$executableName.exe was not found in the downloaded FFmpeg archive"
+        }
+
+        Move-Item -LiteralPath $binary.FullName -Destination (Join-Path $binDir "$executableName.exe") -Force
+      }
+    }
+    catch {
+      Write-Error "install-ffmpeg: $($_.Exception.Message)"
+    }
+    finally {
+      if (Test-Path -LiteralPath $tmpDir) {
+        Remove-Item -LiteralPath $tmpDir -Recurse -Force
+      }
+    }
+
+    foreach ($executableName in $requiredExecutables) {
+      if (Check-Command $executableName -Binary) {
+        "GOOD - $executableName is now available"
+      } else {
+        "BAD - $executableName doesn't seem to be available"
+      }
+    }
+  }
+}
+
+Function install-ffprobe {
+  # The FFmpeg bundle contains both executables.
+  install-ffmpeg
+}
+
+Function install-phantomjs {
+  if (!(Check-Command "phantomjs" -Binary)) {
+    if ((Check-OS) -like "*win*") {
+      install-generic-chocolatey -pkgname "phantomjs" -executablename "phantomjs"
+    }
+  }
+}
+
+Function install-deno {
+  if (!(Check-Command "deno" -Binary)) {
+    if ((Check-OS) -like "*win*") {
+      install-generic-github -repo "denoland/deno" -executablename "deno" -searchstring "/deno-x86_64-pc-windows-msvc\.zip$"
+    }
+  }
+}
+
+Function install-ytdlp {
+  if (!(Check-Command "yt-dlp" -Binary)) {
+    if ((Check-OS) -like "*win*") {
+      install-generic-github -repo "yt-dlp/yt-dlp" -executablename "yt-dlp" -searchstring "/yt-dlp\.exe$"
+    }
+  }
+
+  install-ffmpeg
+
+  try {
+    install-deno
+  }
+  catch {
+    Write-Warning "install-ytdlp: Deno could not be installed; YouTube support may be limited: $($_.Exception.Message)"
+  }
+
+  try {
+    install-phantomjs
+  }
+  catch {
+    Write-Warning "install-ytdlp: PhantomJS could not be installed: $($_.Exception.Message)"
+  }
+}
