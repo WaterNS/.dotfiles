@@ -1,7 +1,25 @@
 #!/bin/sh
 
-if [ -f ~/.dotfiles/posixshells/posix_functions.sh ]; then
-  . ~/.dotfiles/posixshells/posix_functions.sh
+if [ -z "${HOMEREPO:-}" ]; then
+  case "${TERM_PROGRAM:-}:${APPNAME:-}" in
+    a-Shell:*|*:a-Shell|*:a-Shell-mini|*:a-Shell-*) HOMEREPO="$HOME/Documents/.dotfiles" ;;
+    *) HOMEREPO="$HOME/.dotfiles" ;;
+  esac
+fi
+export HOMEREPO
+
+if [ -f "$HOMEREPO/posixshells/posix_id_os.sh" ]; then
+  . "$HOMEREPO/posixshells/posix_id_os.sh"
+fi
+
+if [ "${IS_ASHELL:-}" = true ] || [ "${IS_ISH:-}" = true ]; then
+  echo "NOTE: skipping Zsh add-ons on ${OS_PLATFORM:-this mobile host}."
+  # shellcheck disable=SC2317 # exit is the fallback when this file is executed rather than sourced
+  return 0 2>/dev/null || exit 0
+fi
+
+if [ -f "$HOMEREPO/posixshells/posix_functions.sh" ]; then
+  . "$HOMEREPO/posixshells/posix_functions.sh"
 fi
 
 # shellcheck disable=SC2154 # $ri/$u sourced from upstream script

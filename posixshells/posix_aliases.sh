@@ -174,7 +174,7 @@ if [ -n "$TMUX" ] && [ "$NOT_SECONDARY_SESSION" ]; then
 fi
 
 # tree: Use treeBASH, if nothing else available
-if [ -x "$(command -v treeBASH)" ] && [ ! -x "$(command -v tree)" ]; then
+if [ -x "$(command -v bash)" ] && [ -x "$(command -v treeBASH)" ] && [ ! -x "$(command -v tree)" ]; then
   alias tree='treeBASH'
 fi
 
@@ -194,5 +194,18 @@ fi
 
 # bandwhich: Alias to ntop
 if [ -x "$(command -v bandwhich)" ]; then
-  alias ntop='sudo bandwhich --show-dns --total-utilization'
+  if [ "${IS_ISH:-}" = true ] || [ "$(id -u 2>/dev/null)" = 0 ]; then
+    alias ntop='bandwhich --show-dns --total-utilization'
+  else
+    alias ntop='sudo bandwhich --show-dns --total-utilization'
+  fi
+fi
+
+# yt-dlp helper commands use one executable dispatcher so the same
+# implementation is shared by POSIX shells and a-Shell.
+if command -v ytdl >/dev/null 2>&1; then
+  alias ytdl-hq='ytdl --shortcut=hq'
+  alias ytdl-hq-mp4='ytdl --shortcut=hq-mp4'
+  alias ytdl-mp3='ytdl --shortcut=mp3'
+  alias youtube-dlp='ytdl --shortcut=raw'
 fi

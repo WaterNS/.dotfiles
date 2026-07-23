@@ -5,7 +5,7 @@
 # elif [ "$u" = true ]; then
 # fi
 
-HOMEREPO="$HOME/.dotfiles"
+HOMEREPO=${HOMEREPO:-"$HOME/.dotfiles"}
 
 # Ignore git config and force git output in English to make our work easier
 git_eng="env LANG=C GIT_CONFIG_NOSYSTEM=1 GIT_CONFIG=/dev/null HOME=/dev/null git"

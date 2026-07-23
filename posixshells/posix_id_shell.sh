@@ -4,7 +4,7 @@
 ## busybox hacky solution:
 whichShellRunning=$(exec 2>/dev/null; readlink "/proc/$$/exe")
 case "$whichShellRunning" in
-  */busybox) BUSYBOX_VERSION="$(busybox | head -1 | sed 's/.*\(v[0-9\.]*\).*/\1/')"; export BUSYBOX_VERSION;;
+  */busybox) BUSYBOX_VERSION="$(busybox | head -n 1 | sed 's/.*\(v[0-9\.]*\).*/\1/')"; export BUSYBOX_VERSION;;
   #*) RUNNINGSHELLVERSION=$($SHELL --version);; #PROBLEMATIC/Not needed currently: Doesn't work with ASH
 esac
 
@@ -24,11 +24,12 @@ elif [ -n "$BUSYBOX_VERSION" ]; then
   fi
   RUNNINGSHELLVERSION="via BusyBox $BUSYBOX_VERSION"
 else
-  if contains "$SHELL" "/sh"; then
-    export RUNNINGSHELL='sh'
-  else
-    export RUNNINGSHELL="$SHELL"
-  fi
+  case "${SHELL:-}" in
+    */ash) export RUNNINGSHELL='ash' ;;
+    */sh) export RUNNINGSHELL='sh' ;;
+    '') export RUNNINGSHELL='sh' ;;
+    *) export RUNNINGSHELL="$SHELL" ;;
+  esac
 fi
 
 if [ "$AWS_EXECUTION_ENV" = "CloudShell" ]; then

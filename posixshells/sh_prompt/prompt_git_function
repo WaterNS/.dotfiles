@@ -75,18 +75,14 @@ if [ "$($git_eng config --get branch."$($git_eng rev-parse --abbrev-ref HEAD 2>/
 
   __lastreflog=$($git_eng reflog show --date=unix "$__upstream" -n1 | grep -o "{.*}" | tr -d '{}')
   if [ -z "$__lastreflog" ]; then
-    if [ "$PS1_DARWIN" ]; then
-      __lastreflog=$(date -j -v-${__MaxFetchSeconds}S +%s)
-    else
-      __lastreflog=$(date --date "-${__MaxFetchSeconds} sec")
-    fi
+    __lastreflog=$(($(date +%s) - __MaxFetchSeconds))
   fi
 
   if [ -f "$__gitdir/FETCH_HEAD" ]; then
     if [ "$PS1_DARWIN" ]; then
       __lastfetch=$(statWhenModified "$__gitdir/FETCH_HEAD")
     else
-      __lastfetch=$(date +%s -r "$__gitdir/FETCH_HEAD")
+      __lastfetch=$(date -r "$__gitdir/FETCH_HEAD" +%s)
     fi
   else
     __lastfetch=0

@@ -21,6 +21,7 @@
     "setaf", "myaddr", "APFS", "volname", "sparsebundle", "inputplist", "repolocation", "fdesetup", "authrestart",
     "sndbx", "mountpoint", "clearsshhosts", "mkalias", "sprintf", "rlength", "zipball", "dgst", "filesin", "gsub",
     "bandwhich", "rclone", "Poppler", "pdfinfo", "xpdftools", "pdftotext", "pdftopng", "pdftohtml", "pdfimages",
-    "pdffonts", "pdfdetach", "incase", "tesseract", "remux", "ytdl", "vcodec", "multistreams", "encodedcommand"
+    "pdffonts", "pdfdetach", "incase", "tesseract", "remux", "ytdl", "vcodec", "multistreams", "encodedcommand",
+    "quickjs", "ashell", "APPNAME"
   ]
 }

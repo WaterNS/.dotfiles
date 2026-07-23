@@ -1,0 +1,2 @@
+# Intentionally empty. a-Shell also loads .bashrc one line at a time, so the
+# repository's normal Bash startup file must not be installed here.

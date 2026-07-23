@@ -20,7 +20,9 @@ HW_TOTALSTORAGE="??"
 HW_FREESTORAGE="??"
 
 HW_HOSTNAME=$(hostname)
-HW_TOTALCORES=$(getconf _NPROCESSORS_ONLN)
+if command -v getconf >/dev/null 2>&1; then
+  HW_TOTALCORES=$(getconf _NPROCESSORS_ONLN 2>/dev/null)
+fi
 
 
 #REF: https://unix.stackexchange.com/a/149634
@@ -56,13 +58,17 @@ kbToHumanReadable() {
 if [ -f "/proc/meminfo" ]; then
   meminfo () {
     __meminfo=$(awk '$3=="kB"{if ($2>1024^2){$2=$2/1024^2;$3="GB";} else if ($2>1024){$2=$2/1024;$3="MB";}} 1' /proc/meminfo)
-    echo "$__meminfo" | column -t;
+    if command -v column >/dev/null 2>&1; then
+      echo "$__meminfo" | column -t
+    else
+      echo "$__meminfo"
+    fi
     unset __meminfo;
   }
   HW_TOTALRAM=$(meminfo | awk '/MemTotal/ {printf "%.2f", $2; print $3}')
 fi
 
-if [ "$OS_FAMILY" = "Darwin" ]; then
+if [ "$OS_PLATFORM" = "macos" ]; then
   HW_TOTALPCPUs="1" #$(sysctl -n machdep.cpu.core_count)
   if [ -x "$(command -v sysctl)" ] && [ "$(sysctl -n hw 2>/dev/null)" ]; then
     HW_CPUNAME=$(sysctl -n machdep.cpu.brand_string)
@@ -73,7 +79,7 @@ fi
 
 if [ -x "$(command -v df)" ]; then
   __rootdiskspace=$(df -kP / | awk 'NR>1')
-  if [ "$OS_FAMILY" = "Darwin" ];then
+  if [ "$OS_PLATFORM" = "macos" ];then
     __rootdiskspace=$(df -kP /System/Volumes/Data | awk 'NR>1')
   fi
   HW_TOTALSTORAGE=$(kbToHumanReadable "$(echo "$__rootdiskspace" | awk '{print $2}')")
@@ -83,13 +89,22 @@ fi
 
 if [ -f "/proc/cpuinfo" ]; then
   HW_TOTALPCPUs=$(grep "processor" /proc/cpuinfo | sort | uniq | wc -l)
+  if [ "${IS_ISH:-}" = true ]; then
+    HW_CPUNAME='iSH x86 emulator'
+    [ "$HW_TOTALPCPUs" -gt 0 ] 2>/dev/null || HW_TOTALPCPUs=1
+    HW_TOTALCORES=$HW_TOTALPCPUs
   #REF: https://unix.stackexchange.com/a/279354
-  if [ "$(lscpu 2>/dev/null)" ]; then
-    HW_TOTALCORES=$(printf "%s\n" "$(( $(lscpu | awk '/^Socket\(s\)/{ print $2 }') * $(lscpu | awk '/^Core\(s\) per socket/{ print $4 }') ))")
+  elif [ "$(lscpu 2>/dev/null)" ]; then
+    __cpuSockets=$(lscpu | awk '/^Socket\(s\)/{ print $2 }')
+    __cpuCoresPerSocket=$(lscpu | awk '/^Core\(s\) per socket/{ print $4 }')
+    if [ -n "$__cpuSockets" ] && [ -n "$__cpuCoresPerSocket" ]; then
+      HW_TOTALCORES=$((__cpuSockets * __cpuCoresPerSocket))
+    fi
+    unset __cpuSockets __cpuCoresPerSocket
   fi
 fi
 
-if [ -x "$(command -v lscpu)" ] && [ "$(lscpu 2>/dev/null)" ]; then
+if [ "${IS_ISH:-}" != true ] && [ -x "$(command -v lscpu)" ] && [ "$(lscpu 2>/dev/null)" ]; then
   HW_CPUNAME=$(lscpu | grep 'Model name' | cut -f 2 -d ":" | awk '{$1=$1}1')
 fi
 

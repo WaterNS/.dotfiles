@@ -1,5 +1,9 @@
 #!/bin/sh
 
+command_exists() {
+  command -v "$1" >/dev/null 2>&1
+}
+
 fetchGitDefaultBranch() {
   if [ "$#" -ne 1 ]; then
     echo "Usage: fetchGitDefaultBranch /path/to/repo"
@@ -156,11 +160,11 @@ fixsshperms ()
     chmod 700 ~/.ssh
     chmod 644 ~/.ssh/*.pub
 
-    # More comprehensive version of: find ~/.ssh -type f -iname "id*" -not -path "*.pub" -print0 | xargs -0 chmod 600
+    # More comprehensive version of: find ~/.ssh -type f ! -path "*.pub" -print0 | xargs -0 chmod 600
 
     # Ref: https://unix.stackexchange.com/a/103011
     # POSIX way to loop through array where objects are not expected to have newlines (so newline is safe IFS)
-    files=$(find "$HOME/.ssh" -type f -not -path "*.pub")
+    files=$(find "$HOME/.ssh" -type f ! -path "*.pub")
     excludedfiles="authorized_keys known_hosts config"
     set -f; IFS='
     '                           # turn off variable value expansion except for splitting at newlines
@@ -326,9 +330,11 @@ pathadd() {
 }
 
 simpleserver() {
-  if [ -x "$(command -v python)" ]; then
+  if command_exists python3; then
     # Use subshell to change path to /tmp and launch simple http server
-    (cd /tmp && python -m SimpleHTTPServer 8000);
+    (cd /tmp && python3 -m http.server 8000)
+  elif command_exists python; then
+    (cd /tmp && python -m SimpleHTTPServer 8000)
   fi
 }
 
@@ -421,6 +427,17 @@ isFakeXcodeCmd() {
 isRealCommand() {
   __originalCmd=$1
   __realCmd=false
+
+  # a-Shell command placeholders intentionally do not use executable mode bits,
+  # and `which` is an optional package. Its own dispatcher is authoritative.
+  if [ "${IS_ASHELL:-}" = true ]; then
+    if command_exists "$__originalCmd"; then
+      unset __originalCmd __realCmd
+      return 0
+    fi
+    unset __originalCmd __realCmd
+    return 1
+  fi
 
   if [ -x "$(command -v "$__originalCmd")" ] || which "$__originalCmd" > /dev/null 2>&1; then
     __realCmd=true

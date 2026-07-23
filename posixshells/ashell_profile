@@ -1,0 +1,36 @@
+# a-Shell evaluates every non-comment line independently. Keep this file flat.
+export HOMEREPO="$HOME/Documents/.dotfiles"
+export IS_ASHELL=true
+export OS_PLATFORM=ashell
+export OS_FAMILY=Darwin
+export OS_ARCH=ARM64
+export OS_NAME="$APPNAME"
+export OS_VERSION="$APPVERSION"
+export OS_STRING="$OS_FAMILY - $OS_NAME $OS_VERSION - $OS_ARCH [$OS_PLATFORM]"
+export RUNNINGSHELL=a-Shell
+export RUNNINGSHELLVERSION="$APPVERSION"
+export PATH="$HOMEREPO/opt/bin:$HOMEREPO/bin:$HOME/Documents/bin:$PATH"
+export GIT_EDITOR=vim
+export VISUAL=vim
+export EDITOR=vim
+alias cd..='cd ..'
+alias ls='ls -alhpF'
+alias ll='ls -alhpF'
+alias df='df -h'
+alias diskspace='df -h'
+alias vim='vim -i NONE'
+alias cp='cp -i'
+alias mv='mv -i'
+alias cls='clear'
+alias clea='clear'
+alias ckear='clear'
+alias python='python3'
+alias pip='pip3'
+alias status='lg2 status'
+alias log='lg2 log'
+alias push='lg2 push'
+alias ytdl-hq='ytdl --shortcut=hq'
+alias ytdl-hq-mp4='ytdl --shortcut=hq-mp4'
+alias ytdl-mp3='ytdl --shortcut=mp3'
+alias youtube-dlp='ytdl --shortcut=raw'
+rehash

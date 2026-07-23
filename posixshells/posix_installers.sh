@@ -1,14 +1,37 @@
 #!/bin/sh
 
+HOMEREPO=${HOMEREPO:-"$HOME/.dotfiles"}
+export HOMEREPO
+
 # Identify Operating System (better uname)
-. ~/.dotfiles/posixshells/posix_id_os.sh
+. "$HOMEREPO/posixshells/posix_id_os.sh"
 
 # Source posix functions
-. ~/.dotfiles/posixshells/posix_functions.sh
+. "$HOMEREPO/posixshells/posix_functions.sh"
 
-if notcontains "$PATH" "$HOME/.dotfiles/opt/bin"; then
-  PATH=$PATH:~/.dotfiles/opt/bin #Include dotfiles bin
-fi
+case ":$PATH:" in
+  *":$HOMEREPO/opt/bin:"*) ;;
+  *) PATH="$HOMEREPO/opt/bin:$PATH" ;;
+esac
+export PATH
+
+# A true/0 result tells the caller to return success before installing prerequisites/attempting downloads.
+skip_ish_install() {
+  if [ "${IS_ISH:-}" = true ]; then
+    echo "NOTE: skipping $1 on iSH."
+    return 0
+  fi
+  return 1
+}
+
+# Zsh and its framework/add-ons are intentionally desktop-only.
+skip_install_iSH_aShell() {
+  if [ "${IS_ASHELL:-}" = true ] || [ "${IS_ISH:-}" = true ]; then
+    echo "NOTE: skipping $1 on ${OS_PLATFORM:-this mobile host}."
+    return 0
+  fi
+  return 1
+}
 
 install_generic_apk () {
   __pkgName="$1"
@@ -20,23 +43,35 @@ install_generic_apk () {
   fi
 
   if isMissingOrFakeCmd "$__executableName"; then
-    if [ -x "$(command -v apk)" ]; then
+    if command_exists apk; then
       if isBusyBoxCmd "$__executableName"; then
         echo "NOTE: $__executableName is busybox polyfill, installing real version via APK"
       else
         echo "NOTE: $__executableName not found, installing via APK"
       fi
       echo "------------------------------------------------"
-      echo "Updating APK cache..."
-      apk update
+      if [ "${APK_CACHE_UPDATED:-}" != true ]; then
+        echo "Updating APK cache..."
+        if ! apk update; then
+          unset __pkgName __executableName
+          return 1
+        fi
+        APK_CACHE_UPDATED=true
+      fi
 
       echo "Requesting ${__pkgName} from APK..."
-      apk add "$__pkgName"
+      if ! apk add "$__pkgName"; then
+        echo "BAD - APK was unable to install $__pkgName" >&2
+        unset __pkgName __executableName
+        return 1
+      fi
 
-      if [ -x "$(command -v "$__executableName")" ]; then
+      if command_exists "$__executableName"; then
         echo "  ++ GOOD - $__executableName is now available ++"; echo "";
       else
-        echo "BAD - $__executableName doesn't seem to be available"
+        echo "BAD - $__executableName doesn't seem to be available" >&2
+        unset __pkgName __executableName
+        return 1
       fi
     else
       echo "install_generic_apk (while attempting install $__executableName): APK package manager not found!"
@@ -46,6 +81,42 @@ install_generic_apk () {
   # Cleanup variables - can cause unexpected bugs if not done.
   # Scoped variables (local) not available in base bourne shell.
   unset __pkgName; unset __executableName;
+}
+
+install_generic_ashell() {
+  __pkgName=$1
+  __executableName=${2:-$1}
+
+  if [ "${IS_ASHELL:-}" != true ]; then
+    echo "install_generic_ashell: not running in a-Shell" >&2
+    unset __pkgName __executableName
+    return 1
+  fi
+
+  if ! command_exists "$__executableName"; then
+    if ! command_exists pkg; then
+      echo "install_generic_ashell: a-Shell's pkg command is unavailable" >&2
+      unset __pkgName __executableName
+      return 1
+    fi
+
+    echo "NOTE: $__executableName not found, installing $__pkgName via a-Shell pkg"
+    pkg install "$__pkgName" || {
+      unset __pkgName __executableName
+      return 1
+    }
+    rehash 2>/dev/null || :
+  fi
+
+  if command_exists "$__executableName"; then
+    echo "  ++ GOOD - $__executableName is now available ++"
+    unset __pkgName __executableName
+    return 0
+  fi
+
+  echo "BAD - $__executableName doesn't seem to be available" >&2
+  unset __pkgName __executableName
+  return 1
 }
 
 install_generic_apt () {
@@ -159,7 +230,7 @@ install_generic_homebrew () {
   if [ ! -x "$(command -v "$__executableName")" ]; then
     install_curl
     install_jq
-    if [ "$OS_FAMILY" = "Darwin" ]; then
+    if [ "$OS_PLATFORM" = "macos" ]; then
       echo "NOTE: $__pkgName not found, availing into dotfiles bin"
       echo "------------------------------------------------"
       __pkgurl="https://formulae.brew.sh/api/formula/$__pkgName.json"
@@ -248,7 +319,7 @@ install_generic_github () {
   fi
 
   if [ ! -x "$(command -v "$__executableName")" ]; then
-    if [ "$OS_FAMILY" = "Darwin" ] || [ "$OS_FAMILY" = "Linux" ]; then
+    if [ "$OS_PLATFORM" = "macos" ] || [ "$OS_FAMILY" = "Linux" ]; then
       echo "NOTE: $__executableName not found, downloading into dotfiles bin"
       echo "------------------------------------------------"
       # shellcheck disable=SC2086
@@ -323,7 +394,7 @@ install_generic_binary () {
 
   if [ ! -x "$(command -v "$__executableName")" ]; then
     install_curl
-    if [ "$OS_FAMILY" = "Darwin" ]; then
+    if [ "$OS_PLATFORM" = "macos" ]; then
       echo "NOTE: $__executableName not found, availing into dotfiles bin"
       echo "------------------------------------------------"
       __pkgRelease=$__binaryURL
@@ -410,7 +481,7 @@ install_youtubedl () {
 
 install_unar () {
   if [ ! -x "$(command -v unar)" ]; then
-    if [ "$OS_FAMILY" = "Darwin" ]; then
+    if [ "$OS_PLATFORM" = "macos" ]; then
       install_generic_homebrew unar
       #install_generic_binary "https://cdn.theunarchiver.com/downloads/unarMac.zip" "unar"
     else
@@ -420,9 +491,20 @@ install_unar () {
 }
 
 install_ffmpeg () {
-  if [ ! -x "$(command -v ffmpeg)" ]; then
+  if isMissingOrFakeCmd ffmpeg; then
+    if [ "${IS_ASHELL:-}" = true ]; then
+      echo 'ffmpeg is normally bundled with a-Shell; update or reinstall the app if it is unavailable.' >&2
+      return 1
+    elif [ "$OS_FAMILY" = "Linux" ] && command_exists apk; then
+      install_generic_apk ffmpeg ffmpeg
+      return
+    elif [ "$OS_FAMILY" = "Linux" ] && command_exists apt; then
+      install_generic_apt ffmpeg ffmpeg
+      return
+    fi
+
     install_curl
-    if [ "$OS_FAMILY" = "Darwin" ]; then
+    if [ "$OS_PLATFORM" = "macos" ]; then
       install_unar
       echo "NOTE: ffmpeg not found, installing into dotfiles bin"
       echo "------------------------------------------------"
@@ -431,16 +513,16 @@ install_ffmpeg () {
         return 1
       fi
 
-      if [ ! -d "$HOME/.dotfiles/opt/tmp" ]; then
-        mkdir -p "$HOME/.dotfiles/opt/tmp"
+      if [ ! -d "$HOMEREPO/opt/tmp" ]; then
+        mkdir -p "$HOMEREPO/opt/tmp"
       fi
 
       ffmpeg="https://evermeet.cx/pub/ffmpeg/snapshots/"
       latest=$(curl $ffmpeg | grep -v ".7z.sig" | grep .7z | head -1 | sed -n 's/.*href="\([^"]*\).*/\1/p')
-      curl "$ffmpeg$latest" -o "$HOME"/.dotfiles/opt/tmp/ffmpeg.7z; echo ""
+      curl "$ffmpeg$latest" -o "$HOMEREPO/opt/tmp/ffmpeg.7z"; echo ""
 
-      unar "$HOME/.dotfiles/opt/tmp/ffmpeg.7z" -o "$HOME/.dotfiles/opt/bin/"
-      rm -r "$HOME/.dotfiles/opt/tmp/ffmpeg.7z"
+      unar "$HOMEREPO/opt/tmp/ffmpeg.7z" -o "$HOMEREPO/opt/bin/"
+      rm -r "$HOMEREPO/opt/tmp/ffmpeg.7z"
 
       if [ -x "$(command -v ffmpeg)" ]; then
         echo "  ++ GOOD - ffmpeg is now available ++"; echo "";
@@ -455,9 +537,20 @@ install_ffmpeg () {
 }
 
 install_ffprobe () {
-  if [ ! -x "$(command -v ffprobe)" ]; then
+  if isMissingOrFakeCmd ffprobe; then
+    if [ "${IS_ASHELL:-}" = true ]; then
+      echo 'ffprobe is normally bundled with a-Shell; update or reinstall the app if it is unavailable.' >&2
+      return 1
+    elif [ "$OS_FAMILY" = "Linux" ] && command_exists apk; then
+      install_generic_apk ffmpeg ffprobe
+      return
+    elif [ "$OS_FAMILY" = "Linux" ] && command_exists apt; then
+      install_generic_apt ffmpeg ffprobe
+      return
+    fi
+
     install_curl
-    if [ "$OS_FAMILY" = "Darwin" ]; then
+    if [ "$OS_PLATFORM" = "macos" ]; then
       install_unar
       echo "NOTE: ffprobe not found, installing into dotfiles bin"
       echo "------------------------------------------------"
@@ -466,16 +559,16 @@ install_ffprobe () {
         return 1
       fi
 
-      if [ ! -d "$HOME/.dotfiles/opt/tmp" ]; then
-        mkdir -p "$HOME/.dotfiles/opt/tmp"
+      if [ ! -d "$HOMEREPO/opt/tmp" ]; then
+        mkdir -p "$HOMEREPO/opt/tmp"
       fi
 
       ffprobe="https://evermeet.cx/pub/ffprobe/snapshots/"
       latest=$(curl $ffprobe | grep -v ".7z.sig" | grep .7z | head -1 | sed -n 's/.*href="\([^"]*\).*/\1/p')
-      curl "$ffprobe/$latest" -o "$HOME/.dotfiles/opt/tmp/ffprobe.7z"; echo ""
+      curl "$ffprobe/$latest" -o "$HOMEREPO/opt/tmp/ffprobe.7z"; echo ""
 
-      unar "$HOME/.dotfiles/opt/tmp/ffprobe.7z" -o "$HOME/.dotfiles/opt/bin/"
-      rm -r "$HOME/.dotfiles/opt/tmp/ffprobe.7z"
+      unar "$HOMEREPO/opt/tmp/ffprobe.7z" -o "$HOMEREPO/opt/bin/"
+      rm -r "$HOMEREPO/opt/tmp/ffprobe.7z"
 
       if [ -x "$(command -v ffprobe)" ]; then
         echo "  ++ GOOD - ffprobe is now available ++"; echo "";
@@ -492,7 +585,7 @@ install_ffprobe () {
 install_phantomjs () {
     if [ ! -x "$(command -v phantomjs)" ]; then
       install_curl
-      if [ "$OS_FAMILY" = "Darwin" ]; then
+      if [ "$OS_PLATFORM" = "macos" ]; then
         echo "NOTE: phantomjs not found, installing into dotfiles bin"
         echo "------------------------------------------------"
 
@@ -521,7 +614,9 @@ install_phantomjs () {
 
 install_jq () {
   if [ ! -x "$(command -v jq)" ]; then
-    if [ "$OS_FAMILY" = "Darwin" ]; then
+    if [ "$OS_FAMILY" = "Linux" ] && command_exists apk; then
+      install_generic_apk jq jq
+    elif [ "$OS_PLATFORM" = "macos" ]; then
       install_generic_github "jqlang/jq" "jq" "osx"
     elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
       install_generic_github "jqlang/jq" "jq" "linux64"
@@ -535,7 +630,9 @@ install_jq () {
 
 install_shellcheck () {
   if [ ! -x "$(command -v shellcheck)" ]; then
-    if [ "$OS_FAMILY" = "Darwin" ]; then
+    if [ "$OS_FAMILY" = "Linux" ] && command_exists apk; then
+      install_generic_apk shellcheck shellcheck
+    elif [ "$OS_PLATFORM" = "macos" ]; then
       install_generic_homebrew "shellcheck"
     elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
       install_generic_github "koalaman/shellcheck" "shellcheck" "linux.x86_64"
@@ -547,9 +644,11 @@ install_shellcheck () {
 
 install_shfmt () {
   if [ ! -x "$(command -v shfmt)" ]; then
-    if [ "$OS_FAMILY" = "Darwin" ]&& [ "$OS_ARCH" = "ARM64" ]; then
+    if [ "$OS_FAMILY" = "Linux" ] && command_exists apk; then
+      install_generic_apk shfmt shfmt
+    elif [ "$OS_PLATFORM" = "macos" ] && [ "$OS_ARCH" = "ARM64" ]; then
       install_generic_github "mvdan/sh" "shfmt" "darwin_amd64"
-    elif [ "$OS_FAMILY" = "Darwin" ]&& [ "$OS_ARCH" = "x64" ]; then
+    elif [ "$OS_PLATFORM" = "macos" ] && [ "$OS_ARCH" = "x64" ]; then
       install_generic_github "mvdan/sh" "shfmt" "darwin_amd64"
     elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
       install_generic_github "mvdan/sh" "shfmt" "linux_amd64"
@@ -565,7 +664,7 @@ install_nerdfonts () {
     fontname="Droid Sans Mono for Powerline Nerd Font Complete.otf"
     if [ ! -f "$HOME/.dotfiles/opt/fonts/$fontname" ] && [ ! -f "$HOME/Library/Fonts/dotfiles/$fontname" ]; then
       install_curl
-      if [ "$OS_FAMILY" = "Darwin" ]; then
+      if [ "$OS_PLATFORM" = "macos" ]; then
         echo "NOTE: nerd-fonts not found, availing into $HOME/Library/Fonts/dotfiles/"
         echo "------------------------------------------------------------------------"
 
@@ -588,7 +687,7 @@ install_nerdfonts () {
 
 install_lsd () {
   if [ ! -x "$(command -v lsd)" ]; then
-    if [ "$OS_FAMILY" = "Darwin" ]; then
+    if [ "$OS_PLATFORM" = "macos" ]; then
       install_generic_homebrew "lsd"
     elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apt)" ]; then
       install_generic_apt "lsd"
@@ -605,7 +704,7 @@ install_lsd () {
 install_prettyping () {
     if [ ! -x "$(command -v prettyping)" ]; then
       install_curl
-      if [ "$OS_FAMILY" = "Darwin" ] || [ "$OS_FAMILY" = "Linux" ]; then
+      if [ "$OS_PLATFORM" = "macos" ] || [ "$OS_FAMILY" = "Linux" ]; then
         echo "NOTE: prettyping not found, availing into dotfiles bin"
         echo "------------------------------------------------"
 
@@ -624,6 +723,10 @@ install_prettyping () {
 }
 
 install_ohmyzsh () {
+  if skip_install_iSH_aShell "Oh My Zsh"; then
+    return 0
+  fi
+
   #Super enhancement framework for ZSH shell
   if [ ! -d ~/.dotfiles/opt/ohmyzsh ]; then
     if [ -x "$(command -v zsh)" ]; then
@@ -690,7 +793,7 @@ install_blesh () {
 
 install_ncdu () {
   if [ ! -x "$(command -v ncdu)" ]; then
-    if [ "$OS_FAMILY" = "Darwin" ]; then
+    if [ "$OS_PLATFORM" = "macos" ]; then
       install_homebrew
       if [ -x "$(command -v brew)" ]; then
         brew install "ncdu"
@@ -707,7 +810,7 @@ install_ncdu () {
 install_git_delta () {
   if [ ! -x "$(command -v delta)" ]; then
     install_less
-    if [ "$OS_FAMILY" = "Darwin" ]; then
+    if [ "$OS_PLATFORM" = "macos" ]; then
       #install_generic_homebrew "git-delta" "delta"
       install_homebrew
       brew install "delta"
@@ -726,7 +829,7 @@ install_git_delta () {
 install_bat () {
   if [ ! -x "$(command -v bat)" ]; then
     install_less
-    if [ "$OS_FAMILY" = "Darwin" ]; then
+    if [ "$OS_PLATFORM" = "macos" ]; then
       install_homebrew
       brew install "bat"
     elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
@@ -743,21 +846,95 @@ install_bat () {
 }
 
 install_ytdlp() {
-  if [ ! -x "$(command -v yt-dlp)" ]; then
-    if [ "$OS_FAMILY" = "Darwin" ]; then
-      install_generic_github "yt-dlp/yt-dlp" "yt-dlp" "yt-dlp_macos" --exact
-    elif [ "$OS_FAMILY" = "Linux" ]; then
-      install_python3
-      install_generic_github "yt-dlp/yt-dlp" "yt-dlp" --exact
-    else
-      echo "";
-      echo "install_ytdlp: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
+  __forceYtdlpUpdate=false
+  [ "${1:-}" = '--update' ] && __forceYtdlpUpdate=true
+  __managedYtdlp="$HOMEREPO/opt/bin/yt-dlp"
+
+  if [ "${IS_ASHELL:-}" = true ] || [ "${IS_ISH:-}" = true ] || [ "$OS_FAMILY" = "Linux" ]; then
+    if [ "${IS_ASHELL:-}" != true ]; then
+      install_python3 || return 1
+    elif ! command_exists python3; then
+      echo 'yt-dlp requires a-Shell Python 3; update or reinstall the app.' >&2
+      return 1
     fi
+
+    if [ "$__forceYtdlpUpdate" = true ] || [ ! -s "$__managedYtdlp" ]; then
+      if ! command_exists curl; then
+        install_curl || return 1
+      fi
+      if ! mkdir -p "$HOMEREPO/opt/bin" "$HOMEREPO/opt/tmp"; then
+        unset __forceYtdlpUpdate __managedYtdlp
+        return 1
+      fi
+      if command_exists mktemp; then
+        __ytdlpDownload=$(mktemp "$HOMEREPO/opt/tmp/yt-dlp.download.XXXXXX") || {
+          unset __forceYtdlpUpdate __managedYtdlp __ytdlpDownload
+          return 1
+        }
+      else
+        __ytdlpDownload="$HOMEREPO/opt/tmp/yt-dlp.download.$$"
+      fi
+      echo "Downloading the platform-independent yt-dlp release into $HOMEREPO/opt/bin"
+      if ! curl -fL -S 'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp' -o "$__ytdlpDownload"; then
+        rm -f "$__ytdlpDownload"
+        unset __forceYtdlpUpdate __managedYtdlp __ytdlpDownload
+        return 1
+      fi
+      if [ ! -s "$__ytdlpDownload" ]; then
+        echo 'yt-dlp download was empty; keeping the previous installation.' >&2
+        rm -f "$__ytdlpDownload"
+        unset __forceYtdlpUpdate __managedYtdlp __ytdlpDownload
+        return 1
+      fi
+      if ! python3 "$__ytdlpDownload" --version >/dev/null 2>&1; then
+        echo 'Downloaded yt-dlp release failed its Python validation; keeping the previous installation.' >&2
+        rm -f "$__ytdlpDownload"
+        unset __forceYtdlpUpdate __managedYtdlp __ytdlpDownload
+        return 1
+      fi
+      if ! chmod a+rx "$__ytdlpDownload" || ! mv "$__ytdlpDownload" "$__managedYtdlp"; then
+        echo 'Unable to install the validated yt-dlp download.' >&2
+        rm -f "$__ytdlpDownload"
+        unset __forceYtdlpUpdate __managedYtdlp __ytdlpDownload
+        return 1
+      fi
+      if [ ! -s "$__managedYtdlp" ]; then
+        echo 'Managed yt-dlp installation is missing after the update.' >&2
+        unset __forceYtdlpUpdate __managedYtdlp __ytdlpDownload
+        return 1
+      fi
+      rehash 2>/dev/null || :
+    fi
+  elif [ "$OS_PLATFORM" = "macos" ]; then
+    if [ "$__forceYtdlpUpdate" = true ] && [ -x "$__managedYtdlp" ]; then
+      "$__managedYtdlp" -U || return 1
+    elif isMissingOrFakeCmd yt-dlp; then
+      install_generic_github "yt-dlp/yt-dlp" "yt-dlp" "yt-dlp_macos" --exact
+    fi
+  else
+    echo "install_ytdlp: OS version ($OS_FAMILY $OS_ARCH) doesn't have a supported installer" >&2
+    unset __forceYtdlpUpdate __managedYtdlp
+    return 1
   fi
-  install_ffmpeg
-  install_ffprobe
-  install_phantomjs
-  install_deno
+
+  install_ffmpeg || {
+    unset __forceYtdlpUpdate __managedYtdlp __ytdlpDownload
+    return 1
+  }
+  install_ffprobe || {
+    unset __forceYtdlpUpdate __managedYtdlp __ytdlpDownload
+    return 1
+  }
+
+  if [ "${IS_ASHELL:-}" = true ]; then
+    install_generic_ashell qjs qjs || echo 'WARNING: qjs installation failed; YouTube JavaScript challenge support will be limited.' >&2
+  elif [ "${IS_ISH:-}" = true ]; then
+    echo 'NOTE: iSH has no supported current JavaScript runtime; yt-dlp works, but some YouTube formats/challenges may be unavailable.'
+  else
+    install_deno
+  fi
+
+  unset __forceYtdlpUpdate __managedYtdlp __ytdlpDownload
 }
 
 install_tput () {
@@ -774,7 +951,11 @@ install_tput () {
 }
 
 install_curl () {
-  if [ ! -x "$(command -v curl)" ]; then
+  if isMissingOrFakeCmd curl; then
+    if [ "${IS_ASHELL:-}" = true ]; then
+      echo 'curl is normally bundled with a-Shell; update or reinstall the app if it is unavailable.' >&2
+      return 1
+    fi
     if [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
       install_generic_apk "curl"
     elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apt)" ]; then
@@ -797,6 +978,19 @@ install_vim () {
       echo "install_vim: Unable to install - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
     fi
   fi
+}
+
+install_vim_plugins() {
+  # if ! isRealCommand "vim"; then
+  #   echo "install_vim_plugins: vim is not available; skipping its plugins." >&2
+  #   return 1
+  # fi
+
+  install_curl || return 1
+  if ! isRealCommand "git"; then
+    install_git || return 1
+  fi
+  . "$HOMEREPO/vim/init_vim.sh"
 }
 
 install_perl () {
@@ -826,7 +1020,11 @@ install_opensshkeygen () {
 }
 
 install_python3 () {
-  if [ ! -x "$(command -v python3)" ]; then
+  if isMissingOrFakeCmd python3; then
+    if [ "${IS_ASHELL:-}" = true ]; then
+      echo 'Python 3 is normally bundled with a-Shell; update or reinstall the app if it is unavailable.' >&2
+      return 1
+    fi
     if [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
       install_generic_apk "python3"
     elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apt)" ]; then
@@ -866,7 +1064,7 @@ install_less () {
 
 install_aria2 () {
   if [ ! -x "$(command -v aria2)" ]; then
-    if [ "$OS_FAMILY" = "Darwin" ]; then
+    if [ "$OS_PLATFORM" = "macos" ]; then
       install_homebrew
       if [ -x "$(command -v brew)" ]; then
         brew install "aria2"
@@ -881,7 +1079,7 @@ install_aria2 () {
 }
 
 install_homebrew () {
-  if [ "$OS_FAMILY" = "Darwin" ]; then
+  if [ "$OS_PLATFORM" = "macos" ]; then
     export HOMEBREW_INSTALL_FROM_API=1;
     if [ ! -x "$(command -v brew)" ]; then
       install_xcodeCMDlineTools
@@ -904,7 +1102,7 @@ install_homebrew () {
 }
 
 install_xcodeCMDlineTools () {
-  if [ "$OS_FAMILY" = "Darwin" ]; then
+  if [ "$OS_PLATFORM" = "macos" ]; then
     if [ ! -f "/Library/Developer/CommandLineTools/usr/bin/clang" ]; then
       echo 'Installing XCode Command Line tools...'
       in_progress=/tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
@@ -927,7 +1125,7 @@ install_xcodeCMDlineTools () {
 }
 
 install_macRosetta2 () {
-  if [ "$OS_FAMILY" = "Darwin" ]; then
+  if [ "$OS_PLATFORM" = "macos" ]; then
     if [ ! -f "/Library/Apple/usr/share/rosetta/rosetta" ]; then
       echo 'Installing Rosetta2...'
       softwareupdate --install-rosetta --agree-to-license || echo 'Installation failed.' 1>&2
@@ -942,8 +1140,13 @@ install_macRosetta2 () {
 }
 
 install_git () {
+  if [ "${IS_ASHELL:-}" = true ]; then
+    echo "a-Shell provides lg2 rather than a fully compatible git command; automatic git setup is skipped."
+    return 0
+  fi
+
   if isMissingOrFakeCmd "git"; then
-    if [ "$OS_FAMILY" = "Darwin" ]; then
+    if [ "$OS_PLATFORM" = "macos" ]; then
       install_homebrew
       if [ -x "$(command -v brew)" ] && isMissingOrFakeCmd "git"; then
         #This likely won't run since Homebrew installs xCode, which installs git
@@ -964,12 +1167,14 @@ install_git () {
       echo "Unable to install git - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
     fi
   fi
-  install_git_lfs
+  if [ "${IS_ISH:-}" != true ]; then
+    install_git_lfs
+  fi
 }
 
 install_git_lfs() {
   if isMissingOrFakeCmd "git-lfs"; then
-    if [ "$OS_FAMILY" = "Darwin" ]; then
+    if [ "$OS_PLATFORM" = "macos" ]; then
       install_homebrew
       if [ -x "$(command -v brew)" ] && isMissingOrFakeCmd "git-lfs"; then
         brew install "git-lfs"
@@ -1017,7 +1222,7 @@ install_pip () {
 }
 
 install_asitop () {
-  if [ "$OS_FAMILY" = "Darwin" ]; then
+  if [ "$OS_PLATFORM" = "macos" ]; then
     if isMissingOrFakeCmd "asitop"; then
       install_pip
       if isRealCommand "pip"; then
@@ -1038,8 +1243,7 @@ install_asitop () {
 
 install_tmux() {
   if isMissingOrFakeCmd "tmux"; then
-    install_git # git is required for TMUX Plugin Manager
-    if [ "$OS_FAMILY" = "Darwin" ]; then
+    if [ "$OS_PLATFORM" = "macos" ]; then
       install_homebrew
       if [ -x "$(command -v brew)" ] && isMissingOrFakeCmd "tmux"; then
         brew install "tmux"
@@ -1060,15 +1264,29 @@ install_tmux() {
     fi
   fi
 
-  if isRealCommand "tmux" && [ ! -d ~/.dotfiles/opt/tmux/tpm ] && [ ! "$RUNNINGINITSCRIPT" ]; then
-    # Init TMUX extras
-    . ~/.dotfiles/tmux/init_tmux.sh
+  if [ "${RUNNINGINITSCRIPT:-}" != true ] &&
+     isRealCommand "tmux" &&
+     [ ! -d "$HOMEREPO/opt/tmux/plugins/tpm" ]; then
+    install_tmux_plugins
   fi
+}
+
+install_tmux_plugins() {
+  # if ! isRealCommand "tmux"; then
+  #   echo "install_tmux_plugins: tmux is not available; skipping its plugins." >&2
+  #   return 1
+  # fi
+
+  install_curl || return 1
+  if ! isRealCommand "git"; then
+    install_git || return 1
+  fi
+  . "$HOMEREPO/tmux/init_tmux.sh"
 }
 
 install_tree () {
   if [ ! -x "$(command -v tree)" ]; then
-    if [ "$OS_FAMILY" = "Darwin" ]; then
+    if [ "$OS_PLATFORM" = "macos" ]; then
       install_homebrew
       brew install "tree"
     elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
@@ -1088,7 +1306,7 @@ install_tree () {
 
 install_trash () {
   if [ ! -x "$(command -v trash)" ]; then
-    if [ "$OS_FAMILY" = "Darwin" ]; then
+    if [ "$OS_PLATFORM" = "macos" ]; then
       install_homebrew
       brew install "trash"
     # elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
@@ -1106,7 +1324,7 @@ install_trash () {
 
 install_btop () {
   if [ ! -x "$(command -v btop)" ]; then
-    if [ "$OS_FAMILY" = "Darwin" ]; then
+    if [ "$OS_PLATFORM" = "macos" ]; then
       install_homebrew
       brew install "btop"
     elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apt)" ]; then
@@ -1126,7 +1344,7 @@ install_btop () {
 
 install_htop () {
   if [ ! -x "$(command -v htop)" ]; then
-    if [ "$OS_FAMILY" = "Darwin" ]; then
+    if [ "$OS_PLATFORM" = "macos" ]; then
       install_homebrew
       brew install "htop"
     elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apt)" ]; then
@@ -1146,7 +1364,7 @@ install_htop () {
 
 install_glances () {
   if [ ! -x "$(command -v glances)" ]; then
-    if [ "$OS_FAMILY" = "Darwin" ]; then
+    if [ "$OS_PLATFORM" = "macos" ]; then
       install_homebrew
       brew install "glances"
     elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apt)" ]; then
@@ -1166,7 +1384,7 @@ install_glances () {
 
 install_mactop () {
   if [ ! -x "$(command -v mactop)" ]; then
-    if [ "$OS_FAMILY" = "Darwin" ]; then
+    if [ "$OS_PLATFORM" = "macos" ]; then
       install_homebrew
       brew install "mactop"
     # elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
@@ -1183,8 +1401,14 @@ install_mactop () {
 }
 
 install_zsh () {
+  if skip_install_iSH_aShell "Zsh"; then
+    return 0
+  fi
+
   if [ ! -x "$(command -v zsh)" ]; then
-    if [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apt)" ]; then
+    if [ "$OS_FAMILY" = "Linux" ] && command_exists apk; then
+      install_generic_apk zsh zsh
+    elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apt)" ]; then
       install_generic_apt "zsh"
     else
       echo "install_zsh: OS version ($OS_STRING) doesn't have supported function"; echo "";
@@ -1192,9 +1416,29 @@ install_zsh () {
   fi
 }
 
+install_zsh_plugins() {
+  if skip_install_iSH_aShell "Oh My Zsh and the Zsh plugin suite"; then
+    return 0
+  fi
+
+  # if ! isRealCommand "zsh"; then
+  #   echo "install_zsh_plugins: zsh is not available; skipping its plugins." >&2
+  #   return 0
+  # fi
+
+  install_curl || return 1
+  if ! isRealCommand "git"; then
+    install_git || return 1
+  fi
+  install_ohmyzsh || return 1
+  . "$HOMEREPO/posixshells/zsh/init_zsh_addons.sh"
+}
+
 install_deno () {
   if [ ! -x "$(command -v deno)" ]; then
-    if [ "$OS_FAMILY" = "Darwin" ]; then
+    if [ "${IS_ASHELL:-}" = true ] || [ "${IS_ISH:-}" = true ]; then
+      echo "install_deno: no compatible Deno binary is available for $OS_PLATFORM/$OS_ARCH"
+    elif [ "$OS_PLATFORM" = "macos" ]; then
       # install_homebrew
       # brew install "deno"
       install_generic_github "denoland/deno" "deno" "deno-aarch64-apple-darwin" "sha256"
@@ -1213,7 +1457,7 @@ install_deno () {
 
 install_bandwhich () {
   if [ ! -x "$(command -v bandwhich)" ]; then
-    if [ "$OS_FAMILY" = "Darwin" ]; then
+    if [ "$OS_PLATFORM" = "macos" ]; then
       install_homebrew
       brew install "bandwhich"
     elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
@@ -1237,7 +1481,7 @@ install_ntop () {
 
 install_rclone () {
   if [ ! -x "$(command -v rclone)" ]; then
-    if [ "$OS_FAMILY" = "Darwin" ]; then
+    if [ "$OS_PLATFORM" = "macos" ]; then
       install_homebrew
       brew install "rclone"
     elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then

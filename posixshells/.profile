@@ -1,26 +1,29 @@
 #!/bin/sh
 
+HOMEREPO=${HOMEREPO:-"$HOME/.dotfiles"}
+export HOMEREPO
+
 # Non-Interactive Guard Check -- No-op when running in non-interactive shells
 # Short-circuit if the guard says to skip
-if [ -f "$HOME/.dotfiles/posixshells/nonInteractiveGuardCheck.sh" ] && \
-          . "$HOME/.dotfiles/posixshells/nonInteractiveGuardCheck.sh"; \
+if [ -f "$HOMEREPO/posixshells/nonInteractiveGuardCheck.sh" ] && \
+          . "$HOMEREPO/posixshells/nonInteractiveGuardCheck.sh"; \
 then
   return # Exit RC script in non-interactive shells
 fi
 
 # PATH: Include .dotfiles bins
-PATH=$PATH:~/.dotfiles/bin
-PATH=$PATH:~/.dotfiles/opt/bin
+PATH="$HOMEREPO/opt/bin:$HOMEREPO/bin:$PATH"
+export PATH
 
 # PATH: Include custom Homebrew bin
-if [ -d ~/.dotfiles/opt/homebrew/bin ]; then
-  PATH=$PATH:~/.dotfiles/opt/homebrew/bin
+if [ -d "$HOMEREPO/opt/homebrew/bin" ]; then
+  PATH=$PATH:$HOMEREPO/opt/homebrew/bin
 fi
 
 # PATH: Include custom pip bin
-if [ -d ~/.dotfiles/opt/pip_packages/bin ]; then
-  PATH=$PATH:~/.dotfiles/opt/pip_packages/bin
-  PYTHONPATH=~/.dotfiles/opt/pip_packages
+if [ -d "$HOMEREPO/opt/pip_packages/bin" ]; then
+  PATH=$PATH:$HOMEREPO/opt/pip_packages/bin
+  PYTHONPATH=$HOMEREPO/opt/pip_packages
   export PYTHONPATH
 fi
 # PATH: Include custom python bin
@@ -37,18 +40,18 @@ fi
 # fi
 
 #Identify running shell
-. ~/.dotfiles/posixshells/posix_id_shell.sh
+. "$HOMEREPO/posixshells/posix_id_shell.sh"
 
 # Identify Operating System (better uname)
-. ~/.dotfiles/posixshells/posix_id_os.sh
+. "$HOMEREPO/posixshells/posix_id_os.sh"
 [ "$NOT_SECONDARY_SESSION" ] && echo "$OS_STRING";
 
 # Identify hardware
-. ~/.dotfiles/posixshells/posix_id_devicehw.sh
+. "$HOMEREPO/posixshells/posix_id_devicehw.sh"
 [ "$NOT_SECONDARY_SESSION" ] && echo "$HW_STRING";
 
 ### History Stuffs
-. ~/.dotfiles/posixshells/posix_history.sh
+. "$HOMEREPO/posixshells/posix_history.sh"
 
 # VIM: Create backup, swap, and undo folders if don't exist
 if [ ! -d ~/.vim/backups ]; then mkdir -p ~/.vim/backups; fi
@@ -58,25 +61,25 @@ if [ ! -d ~/.vim/undo ]; then mkdir -p ~/.vim/undo; fi
 ############################################
 # INCLUDES
 ############################################
-if [ -f ~/.dotfiles/posixshells/posix_functions.sh ]; then
-  . ~/.dotfiles/posixshells/posix_functions.sh
+if [ -f "$HOMEREPO/posixshells/posix_functions.sh" ]; then
+  . "$HOMEREPO/posixshells/posix_functions.sh"
 fi
 
-if [ -f ~/.dotfiles/posixshells/posix_aliases.sh ]; then
-  . ~/.dotfiles/posixshells/posix_aliases.sh
+if [ -f "$HOMEREPO/posixshells/posix_aliases.sh" ]; then
+  . "$HOMEREPO/posixshells/posix_aliases.sh"
 fi
 
-if [ -f ~/.dotfiles/posixshells/posix_installers.sh ]; then
-	. ~/.dotfiles/posixshells/posix_installers.sh
+if [ -f "$HOMEREPO/posixshells/posix_installers.sh" ]; then
+	. "$HOMEREPO/posixshells/posix_installers.sh"
 fi
 
-if [ -f ~/.dotfiles/posixshells/posix_prompt ]; then
-  . ~/.dotfiles/posixshells/posix_prompt
+if [ -f "$HOMEREPO/posixshells/posix_prompt" ]; then
+  . "$HOMEREPO/posixshells/posix_prompt"
 fi
 
 # Get color support for 'less', man, etc
-if [ -f ~/.dotfiles/posixshells/less/termcap ]; then
-  . ~/.dotfiles/posixshells/less/termcap
+if [ -f "$HOMEREPO/posixshells/less/termcap" ]; then
+  . "$HOMEREPO/posixshells/less/termcap"
   export LESS="$LESS --RAW-CONTROL-CHARS"
 fi
 
@@ -147,7 +150,7 @@ export CONDA_AUTO_ACTIVATE_BASE=false # Don't auto activate Conda on install
   [ "$NOT_SECONDARY_SESSION" ] && fixsshperms
 
   # Set path when running on OSX and from Terminal window
-  if [ "$OS_FAMILY" = "Darwin" ]; then
+  if [ "$OS_PLATFORM" = "macos" ]; then
     if DidTerminalCallShell && [ "$PWD" = "$HOME" ]; then
       if [ -d "$HOME/Desktop" ]; then
         cd ~/Desktop || exit
@@ -166,7 +169,7 @@ export CONDA_AUTO_ACTIVATE_BASE=false # Don't auto activate Conda on install
 
 ## Update, if needed
 if [ "$NOT_SECONDARY_SESSION" ]; then
-  . ~/.dotfiles/posixshells/dotfiles_updater.sh
+  . "$HOMEREPO/posixshells/dotfiles_updater.sh"
 fi
 
 #tripleSplitTMUX # Split terminal into 3 by default

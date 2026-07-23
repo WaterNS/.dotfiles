@@ -1,0 +1,182 @@
+#!/bin/sh
+
+# Single POSIX implementation for the yt-dlp shortcuts. Interactive helper
+# names are aliases which select a mode through the reserved --shortcut option.
+
+YTDLP_MODE='hq'
+case "${1:-}" in
+  --shortcut=hq)
+    shift
+    ;;
+  --shortcut=hq-mp4)
+    YTDLP_MODE='hq-mp4'
+    shift
+    ;;
+  --shortcut=mp3)
+    YTDLP_MODE='mp3'
+    shift
+    ;;
+  --shortcut=raw)
+    YTDLP_MODE='raw'
+    shift
+    ;;
+  --shortcut=*)
+    echo "Unknown ytdl shortcut: ${1#--shortcut=}" >&2
+    exit 2
+    ;;
+esac
+
+if [ "$YTDLP_MODE" != 'raw' ] && [ "$#" -eq 0 ]; then
+  echo "ytdl: A URL or other yt-dlp argument is required" >&2
+  exit 2
+fi
+
+if [ -n "${HOMEREPO:-}" ] && [ -f "$HOMEREPO/posixshells/posix_id_os.sh" ]; then
+  REPO_DIR=$HOMEREPO
+elif [ -n "${HOME:-}" ] && [ -f "$HOME/Documents/.dotfiles/posixshells/posix_id_os.sh" ]; then
+  REPO_DIR="$HOME/Documents/.dotfiles"
+elif [ -n "${HOME:-}" ] && [ -f "$HOME/.dotfiles/posixshells/posix_id_os.sh" ]; then
+  REPO_DIR="$HOME/.dotfiles"
+else
+  SCRIPT_DIR=$(CDPATH='' cd -- "$(dirname -- "$0")" || exit 1; pwd -P)
+  REPO_DIR=$(CDPATH='' cd -- "$SCRIPT_DIR/.." || exit 1; pwd -P)
+fi
+
+HOMEREPO=$REPO_DIR
+export HOMEREPO
+
+if [ ! -f "$HOMEREPO/posixshells/posix_id_os.sh" ]; then
+  echo "Unable to locate the dotfiles repository for ytdl." >&2
+  exit 1
+fi
+
+. "$HOMEREPO/posixshells/posix_id_os.sh"
+
+command_exists() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+load_installers() {
+  . "$HOMEREPO/posixshells/posix_installers.sh"
+}
+
+initialize_ytdlp() {
+  YTDLP_BIN=''
+  if [ -s "$HOMEREPO/opt/bin/yt-dlp" ]; then
+    YTDLP_BIN="$HOMEREPO/opt/bin/yt-dlp"
+  elif command_exists yt-dlp; then
+    YTDLP_BIN=$(command -v yt-dlp)
+  fi
+
+  if [ -z "$YTDLP_BIN" ]; then
+    load_installers
+    install_ytdlp || return 1
+
+    if [ -s "$HOMEREPO/opt/bin/yt-dlp" ]; then
+      YTDLP_BIN="$HOMEREPO/opt/bin/yt-dlp"
+    elif command_exists yt-dlp; then
+      YTDLP_BIN=$(command -v yt-dlp)
+    fi
+  fi
+
+  if [ -z "$YTDLP_BIN" ]; then
+    echo 'Required command yt-dlp is unavailable. Run init_posix.sh to retry installation.' >&2
+    return 1
+  fi
+  export YTDLP_BIN
+}
+
+initialize_postprocessing() {
+  if ! command_exists ffmpeg || ! command_exists ffprobe; then
+    load_installers
+    install_ffmpeg || return 1
+    install_ffprobe || return 1
+  fi
+
+  if ! command_exists ffmpeg || ! command_exists ffprobe; then
+    echo 'Required yt-dlp post-processing commands ffmpeg and ffprobe are unavailable.' >&2
+    return 1
+  fi
+}
+
+run_ytdlp_once() {
+  if [ "${IS_ASHELL:-}" = true ] && command_exists qjs; then
+    "$YTDLP_BIN" --js-runtimes quickjs "$@"
+  else
+    "$YTDLP_BIN" "$@"
+  fi
+}
+
+run_ytdlp_with_retry() {
+  ytdlp_attempt=0
+  ytdlp_retry_delay=${YTDLP_RETRY_DELAY:-5}
+  # Three attempts by default; set YTDLP_RETRY_LIMIT=0 for unlimited retries.
+  ytdlp_retry_limit=${YTDLP_RETRY_LIMIT:-3}
+
+  while :; do
+    run_ytdlp_once "$@"
+    ytdlp_status=$?
+    [ "$ytdlp_status" -eq 0 ] && return 0
+
+    # Syntax/exec errors and an interrupted command will not improve on retry.
+    case "$ytdlp_status" in
+      2|126|127|130) return "$ytdlp_status" ;;
+      *) ;;
+    esac
+
+    ytdlp_attempt=$((ytdlp_attempt + 1))
+    if [ "$ytdlp_retry_limit" -gt 0 ] && [ "$ytdlp_attempt" -ge "$ytdlp_retry_limit" ]; then
+      return "$ytdlp_status"
+    fi
+
+    echo "yt-dlp failed (exit $ytdlp_status); retrying in ${ytdlp_retry_delay}s..." >&2
+    sleep "$ytdlp_retry_delay"
+  done
+}
+
+initialize_ytdlp || exit 1
+
+case "$YTDLP_MODE" in
+  raw)
+    run_ytdlp_once "$@"
+    ;;
+  hq)
+    initialize_postprocessing || exit 1
+    run_ytdlp_with_retry \
+      --embed-subs \
+      --compat-options 'no-live-chat,multistreams' \
+      --embed-metadata \
+      --embed-thumbnail \
+      --embed-chapters \
+      --remux-video mkv \
+      --merge-output-format mkv \
+      -o '%(title)s.%(ext)s' \
+      -c --socket-timeout 5 \
+      "$@"
+    ;;
+  hq-mp4)
+    initialize_postprocessing || exit 1
+    run_ytdlp_with_retry \
+      --embed-subs \
+      --compat-options 'no-live-chat,multistreams' \
+      --embed-metadata \
+      --embed-thumbnail \
+      --embed-chapters \
+      -f 'bv*[ext=mp4][vcodec^=avc]+ba[ext=m4a]/b[ext=mp4] / bv*+ba/b' \
+      -o '%(title)s.%(ext)s' \
+      -c --socket-timeout 5 \
+      "$@"
+    ;;
+  mp3)
+    initialize_postprocessing || exit 1
+    run_ytdlp_with_retry \
+      --embed-metadata \
+      --compat-options 'no-live-chat,multistreams' \
+      --embed-thumbnail \
+      --extract-audio \
+      --audio-format mp3 \
+      -o '%(title)s.%(ext)s' \
+      -c --socket-timeout 5 \
+      "$@"
+    ;;
+esac

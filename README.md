@@ -15,7 +15,7 @@ Built for:
   - Powershell
   - Cloud environments: AWS CloudShell, Azure Cloud Shell
 - Tools: VS Code, git, vim
-- Installers (try to) support x64 Windows / Linux / MacOS (Intel/Apple Silicon) / iOS (via apps like iSH/aShell)
+- Installers (try to) support x64 Windows / Linux / macOS (Intel/Apple Silicon) / iOS (e,g, a-Shell,iSH)
 
 ## What it does
 
@@ -31,7 +31,7 @@ Bootstraps a new machine/environment with basics and points configurations to on
   - When available, alias standard command to modern counterpart (e.g. `ls` might point to `exa`, `lsd`, etc )
 - Functions: Some polyfills, some neat little tricks/helper functions
 
-- Self Updating: Each session will check and auto update (if timer expired).
+- Self Updating: Desktop and iSH sessions check and auto update when the timer expires. a-Shell uses an explicit archive/Working Copy refresh because `lg2` is not treated as fully compatible Git.
 
 ### Bundles in:
 - Configs for tools outside the command line (e.g. VS Code profile, OS shortcuts)
@@ -39,18 +39,18 @@ Bootstraps a new machine/environment with basics and points configurations to on
 - Tweaks OS preferences and experience
 
 ## Where:
-All this lands in `$HOME/.dotfiles`. Cache and downloaded binaries/tools stored in `$HOME/.dotfiles/opt/`.
+On desktop systems and iSH, this lands in `$HOME/.dotfiles`. Cache and downloaded binaries/tools are stored in `$HOME/.dotfiles/opt/`.
+
+a-Shell is the exception: writable user files live below Documents, so the repository belongs at `$HOME/Documents/.dotfiles` and its managed tools at `$HOME/Documents/.dotfiles/opt/`.
 
 Symlinks created for config files found in $HOME, pointing to ones in this repo.
 
 
-# POSIX OS bootstrap (OSX/Linux):
+# POSIX OS bootstrap (macOS/Linux/iSH/a-Shell):
 1. Pull & Init dotfiles
-```
-d=~/.dotfiles u=https://github.com/WaterNS/.dotfiles/tarball/master;
-mkdir -p $d && (curl -fsSL $u||wget -qO- $u) | \
-  tar xzC $d --strip 1 && \
-  $d/init_posix.sh
+
+```sh
+echo 'set -e;umask 077;q(){ command -v "$1">/dev/null;};if [ -r /proc/ish/version ]||[ -r /ish/version ]||uname -r|grep -q -e -ish;then q curl&&q tar||apk add --no-cache curl tar;fi;b=$HOME/tmp/d.$$;mkdir -p "${b%/*}";x(){ rm -f "$b";};trap x 0;u=https://raw.githubusercontent.com/WaterNS/.dotfiles/master/bootstrap_posix.sh;if q curl;then curl -fsSLo "$b" "$u";elif q wget;then wget -qO "$b" "$u";else echo "Install curl or wget.">&2;exit 1;fi;[ -s "$b" ];sh "$b"'|sh
 ```
 
 2. [Optional] Add SSH pubkey to github account:
@@ -62,6 +62,12 @@ pubkey WaterNS
 ```
 cd ~/.dotfiles && git remote set-url origin git@github.com:WaterNS/.dotfiles.git
 ```
+
+## a-Shell behavior (iOS/iPadOS):
+
+For Apple Shortcuts that invoke yt-dlp, Python, or FFmpeg, configure the a-Shell action to run **In App**. Using `ytdl --shortcut=MODE ...` directly is independent of alias loading. Shortcut output otherwise uses a-Shell's Shortcuts working directory unless an explicit output path is supplied.
+
+To update a-Shell, rerun the same bootstrap command above. The normal timed updater requires real Git commands and repository metadata, so it cannot use `lg2` as a drop-in replacement. The shared bootstrap instead refreshes the GitHub archive and then runs the existing a-Shell initializer.
 
 # Windows bootstrap:
 1. Install git (if needed): https://git-scm.com/download/

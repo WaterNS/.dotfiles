@@ -1,7 +1,9 @@
 #!/bin/sh
 
-if [ -f ~/.dotfiles/posixshells/posix_functions.sh ]; then
-  . ~/.dotfiles/posixshells/posix_functions.sh
+HOMEREPO=${HOMEREPO:-"$HOME/.dotfiles"}
+
+if [ -f "$HOMEREPO/posixshells/posix_functions.sh" ]; then
+  . "$HOMEREPO/posixshells/posix_functions.sh"
 fi
 
 # Clean up any broken symlinks pointing to dotfiles
@@ -13,7 +15,7 @@ set -f; IFS='
 for file in $brokensymlinks; do
   set +f; unset IFS
 
-  if contains "$(readlink "$file")" "$HOME/.dotfiles/";then
+  if contains "$(readlink "$file")" "$HOMEREPO/";then
     printf "Found broken symlink (%s) to dotfiles, removing...\n" "$file"
     rm "$file"
   fi
@@ -24,7 +26,7 @@ unset brokensymlinks
 
 # Ref: https://unix.stackexchange.com/a/103011
 # POSIX way to loop through array where objects are not expected to have newlines (so newline is safe IFS)
-files=$(find "$HOME/.dotfiles" -type f -name '.*' -not -path "*/opt/*")
+files=$(find "$HOMEREPO" -type f -name '.*' ! -path "*/opt/*")
 excludedfiles=".editorconfig .gitignore .gitattributes .DS_Store"
 set -f; IFS='
 '                           # turn off variable value expansion except for splitting at newlines
@@ -55,8 +57,8 @@ set +f; unset IFS           # do it again in case $INPUT was empty
 unset files
 
 #Handle linking VSCode in OSX and Linux
-if [ "$OS_FAMILY" = "Darwin" ] || [ "$OS_FAMILY" = "Linux" ]; then
-  repoVSCodeFile="$HOME/.dotfiles/vscode/settings.json"
+if [ "${IS_ISH:-}" != true ] && [ "${IS_ASHELL:-}" != true ] && { [ "$OS_PLATFORM" = "macos" ] || [ "$OS_PLATFORM" = "linux" ]; }; then
+  repoVSCodeFile="$HOMEREPO/vscode/settings.json"
 
   vsCodeDirs=""
   customIFS=":"

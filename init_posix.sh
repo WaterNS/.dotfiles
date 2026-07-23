@@ -1,12 +1,23 @@
 #!/bin/sh
 
 export RUNNINGINITSCRIPT=true
-SCRIPTDIR=$( cd "$(dirname "$0")" || exit ; pwd -P )
+SCRIPTDIR=$(CDPATH='' cd -- "$(dirname -- "$0")" || exit; pwd -P)
 SCRIPTPATH=$SCRIPTDIR/$(basename "$0")
 export SCRIPTPATHINIT="$SCRIPTPATH"
 INITSCRIPTARGS=""
-HOMEREPO="$HOME/.dotfiles"
-PATH=$PATH:$HOMEREPO/bin
+HOMEREPO=$SCRIPTDIR
+export HOMEREPO
+PATH="$HOMEREPO/opt/bin:$HOMEREPO/bin:$PATH"
+export PATH
+
+# Detect mobile host applications before any Darwin/macOS behavior is selected.
+. "$HOMEREPO/posixshells/posix_id_os.sh"
+
+# a-Shell executes startup files one line at a time and cannot run the desktop
+# macOS bootstrap. Give it a purpose-built POSIX-script setup instead.
+if [ "${IS_ASHELL:-}" = true ]; then
+  exec sh "$HOMEREPO/posixshells/ashell_init_helper.sh" "$@"
+fi
 
 # Check passed options/args
 while getopts ":ur" opt ; do
@@ -24,17 +35,17 @@ if [ "$ZSH_VERSION" ]; then
 fi
 
 # Source posix functions
-if [ -f "$HOME/.dotfiles/posixshells/posix_functions.sh" ]; then
-  . "$HOME/.dotfiles/posixshells/posix_functions.sh"
+if [ -f "$HOMEREPO/posixshells/posix_functions.sh" ]; then
+  . "$HOMEREPO/posixshells/posix_functions.sh"
 fi
 
 # Source installer functions
-if [ -f "$HOME/.dotfiles/posixshells/posix_installers.sh" ]; then
-  . "$HOME/.dotfiles/posixshells/posix_installers.sh"
+if [ -f "$HOMEREPO/posixshells/posix_installers.sh" ]; then
+  . "$HOMEREPO/posixshells/posix_installers.sh"
 fi
 
 # Mac: Check if Full Disk Access is available -- if not prompt and exit
-if [ "$OS_FAMILY" = "Darwin" ]; then
+if [ "$OS_PLATFORM" = "macos" ]; then
   if ! plutil -lint /Library/Preferences/com.apple.TimeMachine.plist >/dev/null; then
     echo "This script requires your terminal app to have Full Disk Access."
     echo "Add this terminal to the Full Disk Access list in System Preferences > Security & Privacy, quit the app, and re-run this script."
@@ -50,7 +61,7 @@ EOF
 fi
 
 # Preload Rosetta (lot of utils aren't compiled for ARM in macOS space)
-if [ "$OS_FAMILY" = "Darwin" ]; then
+if [ "$OS_PLATFORM" = "macos" ]; then
   setMacTerminalDefaultTheme
   install_macRosetta2
 fi
@@ -79,12 +90,12 @@ if [ "$u" ]; then
 fi
 
 # Script to link dotfiles from home folder to dotfiles versions
-"$HOME/.dotfiles/posixshells/posix_dotfilelinker.sh"
+"$HOMEREPO/posixshells/posix_dotfilelinker.sh"
 
 # If ReInitializing, remove existing bin folders
 if [ "$r" ] && [ -d "$HOMEREPO/opt" ]; then
 	if [ -d "$HOMEREPO/opt" ]; then rm -rf "$HOMEREPO/opt"; fi
-	if [ "$OS_FAMILY" = "Darwin" ]; then
+	if [ "$OS_PLATFORM" = "macos" ]; then
 		if [ -d "$HOME/Library/Fonts/dotfiles" ]; then
 			rm -rf "$HOME/Library/Fonts/dotfiles";
 		fi
@@ -95,22 +106,23 @@ fi
 mkdir -p "$HOMEREPO/opt"
 mkdir -p "$HOMEREPO/opt/bin"
 
-# Create .bash_profile if doesn't exist
-if [ ! -f ~/.bash_profile ]; then
+# Create desktop shell login files when appropriate.
+#   - iSH logs in through ash and reads .profile directly.
+if [ "${IS_ISH:-}" != true ] && [ ! -f ~/.bash_profile ]; then
 	echo 'NOTE: .bash_profile not found, creating!'
 	touch ~/.bash_profile
 	echo '#!/bin/bash' >> ~/.bash_profile
 fi
 
 # Create .zprofile (zsh) if doesn't exist
-if [ ! -f ~/.zprofile ]; then
+if [ "${IS_ISH:-}" != true ] && [ ! -f ~/.zprofile ]; then
 	echo 'NOTE: .zprofile (zsh) not found, creating!'
 	touch ~/.zprofile
 	echo '#!/bin/zsh' >> ~/.zprofile
 fi
 
 # Source .bashrc in existing .bash_profile
-if ! grep -q "bashrc" ~/.bash_profile; then
+if [ "${IS_ISH:-}" != true ] && ! grep -q "bashrc" ~/.bash_profile; then
 	echo 'NOTE: .bash_profile found, but missing reference to ~/.bashrc, adding!'
 	echo "source ~/.bashrc" >> ~/.bash_profile
 fi
@@ -130,6 +142,8 @@ git config user.email waterns@users.noreply.github.com
 git config push.default matching
 if [ ! -f ~/.ssh/id_rsa ] && [ ! -f ~/.ssh/WaterNS ]; then
   install_opensshkeygen # ssh-keygen is required to generate key
+  mkdir -p ~/.ssh
+  chmod 700 ~/.ssh
   echo "Creating ~/.ssh/WaterNS"
   ssh-keygen -t rsa -b 4096 -f ~/.ssh/WaterNS -N "" -q;
   echo "";
@@ -153,6 +167,7 @@ install_shfmt
 install_lsd
 install_blesh
 install_whereis
+install_tree
 install_tmux
 install_trash
 install_btop
@@ -160,28 +175,13 @@ install_htop
 install_mactop
 install_bandwhich
 install_zsh
-
-# Install VIM items
-. "$HOMEREPO/vim/init_vim.sh"
-
-# Init TMUX items
-. "$HOMEREPO/tmux/init_tmux.sh"
-
-# Install ZSH and its addons
-#install_zsh
-if [ -x "$(command -v zsh)" ]; then
-  install_ohmyzsh
-  . "$HOMEREPO/posixshells/zsh/init_zsh_addons.sh"
-fi
-
-
-# Update youtube-dl, if installed
-if [ "$u" ] && [ -x "$(command -v youtube-dl)" ]; then
-  youtube-dl -U
-fi
+install_ytdlp "${u:+--update}" || exit 1
+install_vim_plugins
+install_tmux_plugins
+install_zsh_plugins
 
 # Init Darwin based systems
-if [ "$OS_FAMILY" = "Darwin" ]; then
+if [ "$OS_PLATFORM" = "macos" ]; then
   . "$HOMEREPO/macOS/darwin_inits.sh"
 fi
 
