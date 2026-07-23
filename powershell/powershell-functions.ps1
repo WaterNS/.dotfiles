@@ -1104,6 +1104,15 @@ function ytdl {
   ytdl-hq @args
 }
 
+function ytdl-hq-mkv {
+  if ($args.Count -eq 0) {
+    Write-Error "ytdl-hq-mkv: A URL or other yt-dlp argument is required"
+    return
+  }
+
+  ytdl-hq @args
+}
+
 function ytdl-hq-mp4 {
   if ($args.Count -eq 0) {
     Write-Error "ytdl-hq-mp4: A URL or other yt-dlp argument is required"

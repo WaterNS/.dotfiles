@@ -8,6 +8,10 @@ case "${1:-}" in
   --shortcut=hq)
     shift
     ;;
+  --shortcut=hq-mkv)
+    YTDLP_MODE='hq-mkv'
+    shift
+    ;;
   --shortcut=hq-mp4)
     YTDLP_MODE='hq-mp4'
     shift
@@ -140,7 +144,7 @@ case "$YTDLP_MODE" in
   raw)
     run_ytdlp_once "$@"
     ;;
-  hq)
+  hq|hq-mkv)
     initialize_postprocessing || exit 1
     run_ytdlp_with_retry \
       --embed-subs \

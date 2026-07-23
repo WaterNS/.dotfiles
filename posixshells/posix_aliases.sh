@@ -205,6 +205,7 @@ fi
 # implementation is shared by POSIX shells and a-Shell.
 if command -v ytdl >/dev/null 2>&1; then
   alias ytdl-hq='ytdl --shortcut=hq'
+  alias ytdl-hq-mkv='ytdl --shortcut=hq-mkv'
   alias ytdl-hq-mp4='ytdl --shortcut=hq-mp4'
   alias ytdl-mp3='ytdl --shortcut=mp3'
   alias youtube-dlp='ytdl --shortcut=raw'

@@ -65,7 +65,7 @@ cd ~/.dotfiles && git remote set-url origin git@github.com:WaterNS/.dotfiles.git
 
 ## a-Shell behavior (iOS/iPadOS):
 
-For Apple Shortcuts that invoke yt-dlp, Python, or FFmpeg, configure the a-Shell action to run **In App**. Using `ytdl --shortcut=MODE ...` directly is independent of alias loading. Shortcut output otherwise uses a-Shell's Shortcuts working directory unless an explicit output path is supplied.
+For Apple Shortcuts that invoke yt-dlp, Python, or FFmpeg, configure the a-Shell action to run **In App**. Using `ytdl --shortcut=MODE ...` directly is independent of alias loading; supported modes are `hq`, `hq-mkv`, `hq-mp4`, `mp3`, and `raw`. Shortcut output otherwise uses a-Shell's Shortcuts working directory unless an explicit output path is supplied.
 
 To update a-Shell, rerun the same bootstrap command above. The normal timed updater requires real Git commands and repository metadata, so it cannot use `lg2` as a drop-in replacement. The shared bootstrap instead refreshes the GitHub archive and then runs the existing a-Shell initializer.
 
