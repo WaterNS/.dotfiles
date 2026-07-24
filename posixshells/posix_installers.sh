@@ -33,6 +33,13 @@ skip_install_iSH_aShell() {
   return 1
 }
 
+ashell_command_installed() {
+  command_exists "$1" ||
+    [ -f "$HOME/Documents/bin/$1" ] ||
+    [ -f "$HOME/Documents/bin/$1.wasm" ] ||
+    [ -f "$HOME/Documents/bin/$1.wasm3" ]
+}
+
 install_generic_apk () {
   __pkgName="$1"
 
@@ -93,7 +100,7 @@ install_generic_ashell() {
     return 1
   fi
 
-  if ! command_exists "$__executableName"; then
+  if ! ashell_command_installed "$__executableName"; then
     if ! command_exists pkg; then
       echo "install_generic_ashell: a-Shell's pkg command is unavailable" >&2
       unset __pkgName __executableName
@@ -105,11 +112,10 @@ install_generic_ashell() {
       unset __pkgName __executableName
       return 1
     }
-    rehash 2>/dev/null || :
   fi
 
-  if command_exists "$__executableName"; then
-    echo "  ++ GOOD - $__executableName is now available ++"
+  if ashell_command_installed "$__executableName"; then
+    echo "  ++ GOOD - $__executableName is installed for a-Shell ++"
     unset __pkgName __executableName
     return 0
   fi
@@ -903,7 +909,6 @@ install_ytdlp() {
         unset __forceYtdlpUpdate __managedYtdlp __ytdlpDownload
         return 1
       fi
-      rehash 2>/dev/null || :
     fi
   elif [ "$OS_PLATFORM" = "macos" ]; then
     if [ "$__forceYtdlpUpdate" = true ] && [ -x "$__managedYtdlp" ]; then

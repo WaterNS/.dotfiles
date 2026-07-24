@@ -16,7 +16,10 @@ export PATH
 # a-Shell executes startup files one line at a time and cannot run the desktop
 # macOS bootstrap. Give it a purpose-built POSIX-script setup instead.
 if [ "${IS_ASHELL:-}" = true ]; then
-  exec sh "$HOMEREPO/posixshells/ashell_init_helper.sh" "$@"
+  # Dash is a virtual a-Shell command and cannot be rediscovered recursively
+  # from an existing Dash session. Source the helper in this session.
+  . "$HOMEREPO/posixshells/ashell_init_helper.sh"
+  exit $?
 fi
 
 # Check passed options/args

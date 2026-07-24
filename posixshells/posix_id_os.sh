@@ -10,8 +10,8 @@ unameDetails=$(uname -a 2>/dev/null)
 unameMachine=$(uname -m 2>/dev/null)
 unameRelease=$(uname -r 2>/dev/null)
 
-case "${TERM_PROGRAM:-}:${APPNAME:-}" in
-  a-Shell:*|*:a-Shell|*:a-Shell-mini|*:a-Shell-*)
+case "${DOTFILES_PLATFORM:-}:${TERM_PROGRAM:-}:${APPNAME:-}" in
+  ashell:*|*:a-Shell:*|*:a-Shell|*:a-Shell-mini|*:a-Shell-*)
     OS_FAMILY='Darwin'
     OS_PLATFORM='ashell'
     IS_ASHELL=true
@@ -60,16 +60,22 @@ case "${TERM_PROGRAM:-}:${APPNAME:-}" in
 esac
 export OS_FAMILY OS_PLATFORM
 
-case "$unameMachine" in
-  i386|i486|i586|i686|x86) OS_ARCH='x32' ;;
-  x86_64|amd64) OS_ARCH='x64' ;;
-  arm64|ARM64|aarch64) OS_ARCH='ARM64' ;;
-  armv6*|armv7*|armv8l) OS_ARCH='ARM32' ;;
-  *)
-    OS_ARCH='unknown arch'
-    echo "Dotfiles OS_ARCH: Wasn't able to id OS arch"
-    ;;
-esac
+if [ "${IS_ASHELL:-}" = true ]; then
+  # a-Shell's uname may report the iPhone/iPad model identifier rather than
+  # the CPU architecture. Supported iOS devices run its native ARM64 build.
+  OS_ARCH='ARM64'
+else
+  case "$unameMachine" in
+    i386|i486|i586|i686|x86) OS_ARCH='x32' ;;
+    x86_64|amd64) OS_ARCH='x64' ;;
+    arm64|ARM64|aarch64) OS_ARCH='ARM64' ;;
+    armv6*|armv7*|armv8l) OS_ARCH='ARM32' ;;
+    *)
+      OS_ARCH='unknown arch'
+      echo "Dotfiles OS_ARCH: Wasn't able to id OS arch"
+      ;;
+  esac
+fi
 export OS_ARCH
 
 OS_NAME='unknown name'

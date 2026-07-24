@@ -1,11 +1,16 @@
 #!/bin/sh
 
 # a-Shell's prompt is ios_system, not a persistent POSIX shell. This helper is
-# run through bundled dash, while the installed startup files remain deliberately
-# flat so a-Shell can execute them one line at a time.
+# sourced into one bundled Dash session, while the installed startup files remain
+# deliberately flat so a-Shell can execute them one line at a time.
 
-SCRIPT_DIR=$(CDPATH='' cd -- "$(dirname -- "$0")" || exit 1; pwd -P)
-HOMEREPO=${HOMEREPO:-$(CDPATH='' cd -- "$SCRIPT_DIR/.." || exit 1; pwd -P)}
+if [ -n "${HOMEREPO:-}" ]; then
+  HOMEREPO=$(CDPATH='' cd -- "$HOMEREPO" || exit 1; pwd -P)
+  SCRIPT_DIR=$HOMEREPO/posixshells
+else
+  SCRIPT_DIR=$(CDPATH='' cd -- "$(dirname -- "$0")" || exit 1; pwd -P)
+  HOMEREPO=$(CDPATH='' cd -- "$SCRIPT_DIR/.." || exit 1; pwd -P)
+fi
 export HOMEREPO
 
 . "$HOMEREPO/posixshells/posix_id_os.sh"
@@ -134,16 +139,16 @@ link_ashell_file "$HOMEREPO/bin/ytdl" "$ASHELL_BIN/ytdl" || exit 1
 
 # rg and which are small, useful a-Shell packages used by this toolbelt. The
 # yt-dlp installer adds qjs for JavaScript challenges.
-install_generic_ashell rg rg
-install_generic_ashell which which
+install_generic_ashell rg rg ||
+  echo 'WARNING: rg installation failed; ripgrep shortcuts will be unavailable.' >&2
+install_generic_ashell which which ||
+  echo 'WARNING: which installation failed; command-location helpers will be limited.' >&2
 
 if [ -n "$ashell_update_arg" ]; then
   install_ytdlp "$ashell_update_arg" || exit 1
 else
   install_ytdlp || exit 1
 fi
-
-rehash 2>/dev/null || :
 
 echo ''
 echo 'a-Shell setup completed. Open a new a-Shell window to load the profile.'

@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # Shared archive bootstrap for macOS, Linux, iSH, and a-Shell.
-# The README entry command feeds this file to a real POSIX shell after installing
-# missing iSH-only bootstrap dependencies.
+# The README entry commands run this file through a real POSIX shell after
+# installing missing iSH-only bootstrap dependencies.
 
 bootstrap_error() {
 	printf '%s\n' "Dotfiles bootstrap: $*" >&2
@@ -30,12 +30,14 @@ if [ -z "${HOME:-}" ]; then
 	exit 1
 fi
 
-case "${TERM_PROGRAM:-}:${APPNAME:-}" in
-a-Shell:* | *:a-Shell | *:a-Shell-mini | *:a-Shell-*)
+case "${DOTFILES_PLATFORM:-}:${TERM_PROGRAM:-}:${APPNAME:-}" in
+ashell:* | *:a-Shell:* | *:a-Shell | *:a-Shell-mini | *:a-Shell-*)
 	dotfiles_dir=$HOME/Documents/.dotfiles
+	bootstrap_shell='dash'
 	;;
 *)
 	dotfiles_dir=$HOME/.dotfiles
+	bootstrap_shell='sh'
 	;;
 esac
 
@@ -47,7 +49,15 @@ case "$dotfiles_dir" in
 	;;
 esac
 
-for bootstrap_command in mkdir grep rm rmdir sh tar; do
+# The a-Shell launcher is already running this script inside Dash. Dash is a
+# virtual top-level command there, so a recursive `command -v dash` is invalid.
+if [ "$bootstrap_shell" != 'dash' ] &&
+   ! command -v "$bootstrap_shell" >/dev/null 2>&1; then
+	bootstrap_error "Required POSIX shell not found: $bootstrap_shell"
+	exit 1
+fi
+
+for bootstrap_command in mkdir grep rm rmdir tar; do
 	if ! command -v "$bootstrap_command" >/dev/null 2>&1; then
 		bootstrap_error "Required command not found: $bootstrap_command"
 		exit 1
@@ -120,11 +130,25 @@ if ! tar -xzf "$bootstrap_archive" -C "$dotfiles_dir" --strip-components 1; then
 	exit 1
 fi
 
-if [ ! -f "$dotfiles_dir/init_posix.sh" ]; then
-	bootstrap_error "Missing initializer after extraction: $dotfiles_dir/init_posix.sh"
-	exit 1
+if [ "$bootstrap_shell" = 'dash' ]; then
+	# a-Shell registers Dash as a virtual command, not a PATH executable that a
+	# running Dash session can discover recursively. Keep setup in this session.
+	ashell_helper=$dotfiles_dir/posixshells/ashell_init_helper.sh
+	if [ ! -f "$ashell_helper" ]; then
+		bootstrap_error "Missing a-Shell initializer after extraction: $ashell_helper"
+		exit 1
+	fi
+	HOMEREPO=$dotfiles_dir
+	export HOMEREPO
+	. "$ashell_helper"
+	bootstrap_status=$?
+else
+	if [ ! -f "$dotfiles_dir/init_posix.sh" ]; then
+		bootstrap_error "Missing initializer after extraction: $dotfiles_dir/init_posix.sh"
+		exit 1
+	fi
+	"$bootstrap_shell" "$dotfiles_dir/init_posix.sh" "$@"
+	bootstrap_status=$?
 fi
 
-sh "$dotfiles_dir/init_posix.sh" "$@"
-bootstrap_status=$?
 exit "$bootstrap_status"
