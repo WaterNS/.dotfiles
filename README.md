@@ -46,19 +46,31 @@ a-Shell is the exception: writable user files live below Documents, so the repos
 Symlinks created for config files found in $HOME, pointing to ones in this repo.
 
 
-# POSIX OS bootstrap (macOS/Linux/iSH/a-Shell):
-1. Pull & Init dotfiles
+# POSIX OS bootstrap
 
+## macOS, Linux, and iSH
 ```sh
-echo 'set -e;umask 077;q(){ command -v "$1">/dev/null;};if [ -r /proc/ish/version ]||[ -r /ish/version ]||uname -r|grep -q -e -ish;then q curl&&q tar||apk add --no-cache curl tar;fi;b=$HOME/tmp/d.$$;mkdir -p "${b%/*}";x(){ rm -f "$b";};trap x 0;u=https://raw.githubusercontent.com/WaterNS/.dotfiles/master/bootstrap_posix.sh;if q curl;then curl -fsSLo "$b" "$u";elif q wget;then wget -qO "$b" "$u";else echo "Install curl or wget.">&2;exit 1;fi;[ -s "$b" ];sh "$b"'|sh
+d=~/.dotfiles u=https://github.com/WaterNS/.dotfiles/tarball/master;
+mkdir -p $d && (curl -fsSL $u||wget -qO- $u) | \
+  tar xzC $d --strip 1 && \
+  $d/init_posix.sh
 ```
 
-2. [Optional] Add SSH pubkey to github account:
+## a-Shell
+```sh
+sh -c 'DOTFILES_PLATFORM=ashell curl -fsSLo ~/tmp/1.sh https://raw.githubusercontent.com/WaterNS/.dotfiles/master/bootstrap_posix.sh && dash ~/tmp/1.sh && rm -f ~/tmp/1.sh'
+```
+
+
+## Optional follow-up
+
+1. Add an SSH public key to the GitHub account:
+
 ```
 pubkey WaterNS
 ```
 
-3. [Optional] Update local repo with SSH remote:
+2. [Optional] Update local repo with SSH remote:
 ```
 cd ~/.dotfiles && git remote set-url origin git@github.com:WaterNS/.dotfiles.git
 ```
@@ -66,8 +78,6 @@ cd ~/.dotfiles && git remote set-url origin git@github.com:WaterNS/.dotfiles.git
 ## a-Shell behavior (iOS/iPadOS):
 
 For Apple Shortcuts that invoke yt-dlp, Python, or FFmpeg, configure the a-Shell action to run **In App**. Using `ytdl --shortcut=MODE ...` directly is independent of alias loading; supported modes are `hq`, `hq-mkv`, `hq-mp4`, `mp3`, and `raw`. Shortcut output otherwise uses a-Shell's Shortcuts working directory unless an explicit output path is supplied.
-
-To update a-Shell, rerun the same bootstrap command above. The normal timed updater requires real Git commands and repository metadata, so it cannot use `lg2` as a drop-in replacement. The shared bootstrap instead refreshes the GitHub archive and then runs the existing a-Shell initializer.
 
 # Windows bootstrap:
 1. Install git (if needed): https://git-scm.com/download/
