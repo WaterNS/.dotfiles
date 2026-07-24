@@ -729,9 +729,9 @@ install_prettyping () {
 }
 
 install_ohmyzsh () {
-  if skip_install_iSH_aShell "Oh My Zsh"; then
-    return 0
-  fi
+  # if skip_install_iSH_aShell "Oh My Zsh"; then
+  #   return 0
+  # fi
 
   #Super enhancement framework for ZSH shell
   if [ ! -d ~/.dotfiles/opt/ohmyzsh ]; then
@@ -1436,9 +1436,9 @@ install_mactop () {
 }
 
 install_zsh () {
-  if skip_install_iSH_aShell "Zsh"; then
-    return 0
-  fi
+  # if skip_install_iSH_aShell "Zsh"; then
+  #   return 0
+  # fi
 
   if [ ! -x "$(command -v zsh)" ]; then
     if [ "$OS_FAMILY" = "Linux" ] && command_exists apk; then
