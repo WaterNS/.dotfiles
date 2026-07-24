@@ -13,7 +13,7 @@ unameRelease=$(uname -r 2>/dev/null)
 case "${DOTFILES_PLATFORM:-}:${TERM_PROGRAM:-}:${APPNAME:-}" in
   ashell:*|*:a-Shell:*|*:a-Shell|*:a-Shell-mini|*:a-Shell-*)
     OS_FAMILY='Darwin'
-    OS_PLATFORM='ashell'
+    OS_PLATFORM='aShell'
     IS_ASHELL=true
     export IS_ASHELL
     ;;
@@ -28,17 +28,17 @@ case "${DOTFILES_PLATFORM:-}:${TERM_PROGRAM:-}:${APPNAME:-}" in
     esac
 
     if [ -r /proc/ish/version ]; then
-      OS_PLATFORM='ish'
+      OS_PLATFORM='iSH'
       IS_ISH=true
       ISH_VERSION=$(head -n 1 /proc/ish/version 2>/dev/null)
     elif [ -r /ish/version ]; then
-      OS_PLATFORM='ish'
+      OS_PLATFORM='iSH'
       IS_ISH=true
       ISH_VERSION=$(head -n 1 /ish/version 2>/dev/null)
     else
       case "$unameRelease" in
         *-ish*)
-          OS_PLATFORM='ish'
+          OS_PLATFORM='iSH'
           IS_ISH=true
           ISH_VERSION=$unameRelease
           ;;
