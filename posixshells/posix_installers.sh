@@ -864,6 +864,36 @@ install_ytdlp() {
       return 1
     fi
 
+    if ! command_exists python3; then
+      echo 'yt-dlp requires Python 3, but python3 is unavailable after installation.' >&2
+      unset __forceYtdlpUpdate __managedYtdlp
+      return 1
+    fi
+
+    if ! python3 -c 'import sys; raise SystemExit(sys.version_info < (3, 10))' >/dev/null 2>&1; then
+      if [ "${IS_ISH:-}" = true ] && command_exists apk; then
+        echo 'NOTE: Current yt-dlp requires Python 3.10 or newer.'
+        echo "Requesting a newer Python from iSH's configured APK repositories..."
+        if apk -U upgrade python3; then
+          APK_CACHE_UPDATED=true
+        fi
+      fi
+    fi
+
+    if ! python3 -c 'import sys; raise SystemExit(sys.version_info < (3, 10))' >/dev/null 2>&1; then
+      echo "Current yt-dlp requires Python 3.10 or newer; found $(python3 --version 2>&1)." >&2
+      if [ "${IS_ISH:-}" = true ]; then
+        echo 'The configured iSH Alpine filesystem does not provide a new enough Python.' >&2
+        echo 'Upgrade the iSH filesystem/package repositories, then rerun init_posix.sh.' >&2
+      elif [ "${IS_ASHELL:-}" = true ]; then
+        echo 'Update or reinstall a-Shell, then rerun the bootstrap.' >&2
+      else
+        echo 'Upgrade Python 3 using the operating-system package manager, then retry.' >&2
+      fi
+      unset __forceYtdlpUpdate __managedYtdlp
+      return 1
+    fi
+
     if [ "$__forceYtdlpUpdate" = true ] || [ ! -s "$__managedYtdlp" ]; then
       if ! command_exists curl; then
         install_curl || return 1
@@ -892,8 +922,8 @@ install_ytdlp() {
         unset __forceYtdlpUpdate __managedYtdlp __ytdlpDownload
         return 1
       fi
-      if ! python3 "$__ytdlpDownload" --version >/dev/null 2>&1; then
-        echo 'Downloaded yt-dlp release failed its Python validation; keeping the previous installation.' >&2
+      if ! python3 "$__ytdlpDownload" --version >/dev/null; then
+        echo 'Downloaded yt-dlp could not run with the installed Python; the managed installation was not changed.' >&2
         rm -f "$__ytdlpDownload"
         unset __forceYtdlpUpdate __managedYtdlp __ytdlpDownload
         return 1
