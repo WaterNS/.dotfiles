@@ -103,12 +103,39 @@ initialize_postprocessing() {
   fi
 }
 
+ytdlp_has_js_runtime_option() {
+  for ytdlp_argument do
+    case "$ytdlp_argument" in
+      --)
+        return 1
+        ;;
+      --js-runtime|--js-runtime=*|--js-runtimes|--js-runtimes=*|\
+      --no-js-runtime|--no-js-runtimes)
+        return 0
+        ;;
+    esac
+  done
+
+  return 1
+}
+
 run_ytdlp_once() {
-  if [ "${IS_ASHELL:-}" = true ] && command_exists qjs; then
-    "$YTDLP_BIN" --js-runtimes quickjs "$@"
-  else
-    "$YTDLP_BIN" "$@"
+  if ! ytdlp_has_js_runtime_option "$@"; then
+    # Deno is enabled by default. Node and QuickJS need explicit flags;
+    # enable every available fallback and let yt-dlp validate their versions.
+    if command_exists qjs; then
+      set -- --js-runtimes quickjs "$@"
+    fi
+    if command_exists node; then
+      set -- --js-runtimes node "$@"
+    elif command_exists nodejs; then
+      ytdlp_node_path=$(command -v nodejs)
+      set -- --js-runtimes "node:$ytdlp_node_path" "$@"
+      unset ytdlp_node_path
+    fi
   fi
+
+  "$YTDLP_BIN" "$@"
 }
 
 run_ytdlp_with_retry() {

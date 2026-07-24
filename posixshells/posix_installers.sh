@@ -851,6 +851,95 @@ install_bat () {
   fi
 }
 
+install_qjs() {
+  if [ "${IS_ASHELL:-}" = true ]; then
+    install_generic_ashell qjs qjs
+    return
+  fi
+
+  if [ "$OS_FAMILY" = "Linux" ] && command_exists apk; then
+    __qjsMinimumVersion='0.20250426'
+    __qjsInstalledVersion=$(apk info -v quickjs 2>/dev/null | sed -n '1{s/^quickjs-//;p;}')
+
+    if [ -n "$__qjsInstalledVersion" ]; then
+      __qjsVersionComparison=$(apk version -t "$__qjsInstalledVersion" "$__qjsMinimumVersion" 2>/dev/null)
+      case "$__qjsVersionComparison" in
+        '='|'>')
+          if command_exists qjs; then
+            unset __qjsInstalledVersion __qjsMinimumVersion __qjsVersionComparison
+            return 0
+          fi
+          ;;
+      esac
+    fi
+
+    if [ "${APK_CACHE_UPDATED:-}" != true ]; then
+      echo 'Updating APK cache...'
+      if ! apk update; then
+        unset __qjsInstalledVersion __qjsMinimumVersion __qjsVersionComparison
+        return 1
+      fi
+      APK_CACHE_UPDATED=true
+    fi
+
+    echo "Requesting QuickJS ${__qjsMinimumVersion} or newer from APK..."
+    if ! apk add "quickjs>=$__qjsMinimumVersion"; then
+      echo 'The configured APK repositories do not provide a sufficiently recent QuickJS package.' >&2
+      unset __qjsInstalledVersion __qjsMinimumVersion __qjsVersionComparison
+      return 1
+    fi
+
+    __qjsInstalledVersion=$(apk info -v quickjs 2>/dev/null | sed -n '1{s/^quickjs-//;p;}')
+    if [ -n "$__qjsInstalledVersion" ]; then
+      __qjsVersionComparison=$(apk version -t "$__qjsInstalledVersion" "$__qjsMinimumVersion" 2>/dev/null)
+      case "$__qjsVersionComparison" in
+        '='|'>')
+          if command_exists qjs; then
+            echo '  ++ GOOD - qjs is now available ++'
+            unset __qjsInstalledVersion __qjsMinimumVersion __qjsVersionComparison
+            return 0
+          fi
+          ;;
+      esac
+    fi
+
+    echo 'BAD - a supported qjs executable is unavailable after APK installation.' >&2
+    unset __qjsInstalledVersion __qjsMinimumVersion __qjsVersionComparison
+    return 1
+  fi
+
+  if command_exists qjs; then
+    return 0
+  fi
+
+  echo "install_qjs: no compatible installer is available for $OS_PLATFORM/$OS_ARCH" >&2
+  return 1
+}
+
+install_ytdlp_js_runtime() {
+  if [ "${IS_ASHELL:-}" = true ] || [ "${IS_ISH:-}" = true ]; then
+    if install_qjs; then
+      return 0
+    fi
+
+    # A manually supplied Deno or Node runtime is still usable if this
+    # platform's preferred QuickJS package cannot be installed.
+    if command_exists deno || command_exists node || command_exists nodejs; then
+      return 0
+    fi
+
+    return 1
+  fi
+
+  # Preserve the existing desktop installer behavior. Node and QuickJS are
+  # still enabled dynamically as fallbacks by the ytdl wrapper.
+  if command_exists deno; then
+    return 0
+  fi
+
+  install_deno
+}
+
 install_ytdlp() {
   __forceYtdlpUpdate=false
   [ "${1:-}" = '--update' ] && __forceYtdlpUpdate=true
@@ -961,13 +1050,8 @@ install_ytdlp() {
     return 1
   }
 
-  if [ "${IS_ASHELL:-}" = true ]; then
-    install_generic_ashell qjs qjs || echo 'WARNING: qjs installation failed; YouTube JavaScript challenge support will be limited.' >&2
-  elif [ "${IS_ISH:-}" = true ]; then
-    echo 'NOTE: iSH has no supported current JavaScript runtime; yt-dlp works, but some YouTube formats/challenges may be unavailable.'
-  else
-    install_deno
-  fi
+  install_ytdlp_js_runtime ||
+    echo 'WARNING: No supported JavaScript runtime could be installed; YouTube format and challenge support will be limited.' >&2
 
   unset __forceYtdlpUpdate __managedYtdlp __ytdlpDownload
 }

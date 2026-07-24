@@ -71,7 +71,8 @@ Function install-generic-github {
     [string] $searchstring = "windows",
     [string] $excludeString,
 
-    [Switch] $folderInstall
+    [Switch] $folderInstall,
+    [Switch] $Force
   )
 
   if (!$pkgname -and !$executablename) {
@@ -79,7 +80,7 @@ Function install-generic-github {
     return
   }
 
-  if (!(Check-Installed -name $executablename -type $type -path $path)) {
+  if ($Force -or !(Check-Installed -name $executablename -type $type -path $path)) {
     if ((Check-OS) -like "*win*") {
       "NOTE: $executablename not found, availing into dotfiles bin"
       "------------------------------------------------"
@@ -102,13 +103,13 @@ Function install-generic-github {
         Powershell-FileDownload "$latest" -o "$HOME/.dotfiles/opt/tmp/$pkgname$(If ($ext) {".$ext"})"
 
         if ($ext -like "zip") {
-          Expand-Archive -LiteralPath "$HOME/.dotfiles/opt/tmp/$pkgname.$ext" -DestinationPath "$HOME/.dotfiles/opt/tmp/$pkgname"
+          Expand-Archive -LiteralPath "$HOME/.dotfiles/opt/tmp/$pkgname.$ext" -DestinationPath "$HOME/.dotfiles/opt/tmp/$pkgname" -Force:$Force
 
           if ($type -like "*folder*") {
-            Move-Item "$HOME/.dotfiles/opt/tmp/$pkgname" "$HOME/.dotfiles/opt/bin/$pkgname"
+            Move-Item "$HOME/.dotfiles/opt/tmp/$pkgname" "$HOME/.dotfiles/opt/bin/$pkgname" -Force:$Force
           } else {
             $local:binary = Get-ChildItem "$HOME/.dotfiles/opt/tmp/$pkgname/" -Recurse -Filter "$executablename*.exe"
-            Move-Item $binary.FullName "$HOME/.dotfiles/opt/bin/$executablename.exe"
+            Move-Item $binary.FullName "$HOME/.dotfiles/opt/bin/$executablename.exe" -Force:$Force
           }
         } elseif ($ext -like "msixbundle") {
           Add-AppPackage -path "$HOME/.dotfiles/opt/tmp/$pkgname$(If ($ext) {".$ext"})"
@@ -847,14 +848,59 @@ Function install-phantomjs {
 }
 
 Function install-deno {
-  if (!(Check-Command "deno" -Binary)) {
+  if (!(Test-YtdlpJsRuntime -Name "deno")) {
     if ((Check-OS) -like "*win*") {
-      install-generic-github -repo "denoland/deno" -executablename "deno" -searchstring "/deno-x86_64-pc-windows-msvc\.zip$"
+      $local:denoArchitecture = [Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture.ToString()
+      switch ($denoArchitecture) {
+        "X64" {
+          $local:denoAsset = "/deno-x86_64-pc-windows-msvc\.zip$"
+        }
+        "Arm64" {
+          $local:denoAsset = "/deno-aarch64-pc-windows-msvc\.zip$"
+        }
+        default {
+          Write-Warning "install-deno: no Windows Deno release is available for $denoArchitecture"
+          return
+        }
+      }
+
+      install-generic-github -repo "denoland/deno" -executablename "deno" -searchstring $denoAsset -Force
+    }
+  }
+}
+
+Function install-qjs {
+  if (!(Test-YtdlpJsRuntime -Name "qjs")) {
+    if ((Check-OS) -like "*win*") {
+      $local:qjsArchitecture = [Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture.ToString()
+      switch ($qjsArchitecture) {
+        "X64" {
+          $local:qjsAsset = "/qjs-windows-x86_64\.exe$"
+        }
+        "X86" {
+          $local:qjsAsset = "/qjs-windows-x86\.exe$"
+        }
+        default {
+          Write-Warning "install-qjs: no Windows QuickJS-NG release is available for $qjsArchitecture"
+          return
+        }
+      }
+
+      install-generic-github `
+        -repo "quickjs-ng/quickjs" `
+        -pkgname "quickjs" `
+        -executablename "qjs" `
+        -searchstring $qjsAsset `
+        -Force
     }
   }
 }
 
 Function install-ytdlp {
+  param(
+    [Switch] $SkipJsRuntime
+  )
+
   if (!(Check-Command "yt-dlp" -Binary)) {
     if ((Check-OS) -like "*win*") {
       install-generic-github -repo "yt-dlp/yt-dlp" -executablename "yt-dlp" -searchstring "/yt-dlp\.exe$"
@@ -863,17 +909,25 @@ Function install-ytdlp {
 
   install-ffmpeg
 
-  try {
-    install-deno
-  }
-  catch {
-    Write-Warning "install-ytdlp: Deno could not be installed; YouTube support may be limited: $($_.Exception.Message)"
+  if (!$SkipJsRuntime -and !(Test-YtdlpJsRuntimeCommand)) {
+    try {
+      install-deno
+    }
+    catch {
+      Write-Warning "install-ytdlp: Deno could not be installed: $($_.Exception.Message)"
+    }
   }
 
-  try {
-    install-phantomjs
+  if (!$SkipJsRuntime -and !(Test-YtdlpJsRuntimeCommand)) {
+    try {
+      install-qjs
+    }
+    catch {
+      Write-Warning "install-ytdlp: QuickJS could not be installed: $($_.Exception.Message)"
+    }
   }
-  catch {
-    Write-Warning "install-ytdlp: PhantomJS could not be installed: $($_.Exception.Message)"
+
+  if (!$SkipJsRuntime -and !(Test-YtdlpJsRuntimeCommand)) {
+    Write-Warning "install-ytdlp: no supported JavaScript runtime could be installed; YouTube support may be limited."
   }
 }
