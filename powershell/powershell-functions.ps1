@@ -1033,9 +1033,15 @@ function scanSubnetForHosts {
 }
 
 function simpleserver {
-  if (Check-Command python) {
-    # & python -m SimpleHTTPServer 8000 #Python2 version
-    & python -m http.server 8000 #Python3 version
+  if (Check-Command python3) {
+    $simpleServerPython = 'python3'
+  } elseif (Check-Command python) {
+    $simpleServerPython = 'python'
+  } else {
+    Write-Error 'simpleserver requires Python 3.'
+    return
   }
+
+  & $simpleServerPython (Join-Path $HOMEREPO 'bin\simple_http_server.py') 8000
 }
 Set-Alias serverHttp simpleserver

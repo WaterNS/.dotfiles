@@ -329,14 +329,23 @@ pathadd() {
   fi
 }
 
-simpleserver() {
+simpleserver() (
   if command_exists python3; then
-    # Use subshell to change path to /tmp and launch simple http server
-    (cd /tmp && python3 -m http.server 8000)
-  elif command_exists python; then
-    (cd /tmp && python -m SimpleHTTPServer 8000)
+    __simpleServerPython=python3
+  elif command_exists python &&
+       python -c 'import sys; raise SystemExit(sys.version_info[0] < 3)' >/dev/null 2>&1
+  then
+    __simpleServerPython=python
+  else
+    echo "simpleserver requires Python 3." >&2
+    return 1
   fi
-}
+
+  "$__simpleServerPython" \
+    "${HOMEREPO:-"$HOME/.dotfiles"}/bin/simple_http_server.py" \
+    --directory /tmp \
+    8000
+)
 
 getFileExt() {
   #Dictionary lookup, perhaps most easiest to understand
