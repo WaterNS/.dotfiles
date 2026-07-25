@@ -47,6 +47,75 @@ if [ -f "$HOMEREPO/posixshells/posix_installers.sh" ]; then
   . "$HOMEREPO/posixshells/posix_installers.sh"
 fi
 
+configure_ish_default_zsh() {
+  if [ "${IS_ISH:-}" != true ]; then
+    return 0
+  fi
+
+  if [ -x /bin/zsh ]; then
+    __ishZshPath=/bin/zsh
+  elif command_exists zsh; then
+    __ishZshPath=$(command -v zsh)
+  else
+    echo 'configure_ish_default_zsh: Zsh is unavailable.' >&2
+    return 1
+  fi
+  case "$__ishZshPath" in
+    /*) ;;
+    *)
+      echo "configure_ish_default_zsh: expected an absolute Zsh path, found $__ishZshPath." >&2
+      unset __ishZshPath
+      return 1
+      ;;
+  esac
+
+  __ishLoginUser=$(id -un 2>/dev/null)
+  if [ -z "$__ishLoginUser" ] || [ ! -r /etc/passwd ]; then
+    echo 'configure_ish_default_zsh: unable to identify the iSH login user.' >&2
+    unset __ishZshPath __ishLoginUser
+    return 1
+  fi
+
+  if ! __ishCurrentShell=$(awk -F: -v user="$__ishLoginUser" '
+    $1 == user { print $7; found = 1; exit }
+    END { if (!found) exit 1 }
+  ' /etc/passwd); then
+    echo "configure_ish_default_zsh: unable to read $__ishLoginUser's shell from /etc/passwd." >&2
+    unset __ishZshPath __ishLoginUser __ishCurrentShell
+    return 1
+  fi
+  if [ "$__ishCurrentShell" = "$__ishZshPath" ]; then
+    SHELL=$__ishZshPath
+    export SHELL
+    unset __ishZshPath __ishLoginUser __ishCurrentShell
+    return 0
+  fi
+
+  if ! command_exists chsh; then
+    install_generic_apk shadow chsh || {
+      unset __ishZshPath __ishLoginUser __ishCurrentShell
+      return 1
+    }
+  fi
+  if ! command_exists chsh; then
+    echo 'configure_ish_default_zsh: the Shadow package did not provide chsh.' >&2
+    unset __ishZshPath __ishLoginUser __ishCurrentShell
+    return 1
+  fi
+
+  if ! chsh -s "$__ishZshPath" "$__ishLoginUser"; then
+    echo "configure_ish_default_zsh: unable to set $__ishZshPath as $__ishLoginUser's login shell." >&2
+    unset __ishZshPath __ishLoginUser __ishCurrentShell
+    return 1
+  fi
+
+  SHELL=$__ishZshPath
+  export SHELL
+  echo "  ++ GOOD - new iSH sessions will use $__ishZshPath ++"
+  echo "     Restart iSH, or run 'exec zsh -l' to switch this session."
+  unset __ishZshPath __ishLoginUser __ishCurrentShell
+}
+
 # Mac: Check if Full Disk Access is available -- if not prompt and exit
 if [ "$OS_PLATFORM" = "macos" ]; then
   if ! plutil -lint /Library/Preferences/com.apple.TimeMachine.plist >/dev/null; then
@@ -178,6 +247,7 @@ install_htop
 install_mactop
 install_bandwhich
 install_zsh
+configure_ish_default_zsh
 install_ytdlp "${u:+--update}" || exit 1
 install_vim_plugins
 install_tmux_plugins

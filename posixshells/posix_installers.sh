@@ -24,15 +24,6 @@ skip_ish_install() {
   return 1
 }
 
-# Zsh and its framework/add-ons are intentionally desktop-only.
-skip_install_iSH_aShell() {
-  if [ "${IS_ASHELL:-}" = true ] || [ "${IS_ISH:-}" = true ]; then
-    echo "NOTE: skipping $1 on ${OS_PLATFORM:-this mobile host}."
-    return 0
-  fi
-  return 1
-}
-
 ashell_command_installed() {
   command_exists "$1" ||
     [ -f "$HOME/Documents/bin/$1" ] ||
@@ -729,9 +720,10 @@ install_prettyping () {
 }
 
 install_ohmyzsh () {
-  # if skip_install_iSH_aShell "Oh My Zsh"; then
-  #   return 0
-  # fi
+  if [ "${IS_ASHELL:-}" = true ]; then
+    echo "NOTE: skipping Oh My Zsh on a-Shell."
+    return 0
+  fi
 
   #Super enhancement framework for ZSH shell
   if [ ! -d ~/.dotfiles/opt/ohmyzsh ]; then
@@ -859,7 +851,7 @@ install_qjs() {
 
   if [ "$OS_FAMILY" = "Linux" ] && command_exists apk; then
     __qjsMinimumVersion='0.20250426'
-    __qjsInstalledVersion=$(apk info -v quickjs 2>/dev/null | sed -n '1{s/^quickjs-//;p;}')
+    __qjsInstalledVersion=$(apk info -ev quickjs 2>/dev/null | sed -n '1{s/^quickjs-//;p;}')
 
     if [ -n "$__qjsInstalledVersion" ]; then
       __qjsVersionComparison=$(apk version -t "$__qjsInstalledVersion" "$__qjsMinimumVersion" 2>/dev/null)
@@ -889,7 +881,7 @@ install_qjs() {
       return 1
     fi
 
-    __qjsInstalledVersion=$(apk info -v quickjs 2>/dev/null | sed -n '1{s/^quickjs-//;p;}')
+    __qjsInstalledVersion=$(apk info -ev quickjs 2>/dev/null | sed -n '1{s/^quickjs-//;p;}')
     if [ -n "$__qjsInstalledVersion" ]; then
       __qjsVersionComparison=$(apk version -t "$__qjsInstalledVersion" "$__qjsMinimumVersion" 2>/dev/null)
       case "$__qjsVersionComparison" in
@@ -1396,6 +1388,21 @@ install_tmux_plugins() {
   #   return 1
   # fi
 
+  if ! command_exists bash; then
+    if [ "$OS_FAMILY" = "Linux" ] && command_exists apk; then
+      install_generic_apk bash bash || return 1
+    elif [ "$OS_FAMILY" = "Linux" ] && command_exists apt; then
+      install_generic_apt bash bash || return 1
+    else
+      echo 'install_tmux_plugins: TPM requires Bash, but Bash is unavailable.' >&2
+      return 1
+    fi
+  fi
+  if ! command_exists bash; then
+    echo 'install_tmux_plugins: Bash is still unavailable after installation.' >&2
+    return 1
+  fi
+
   install_curl || return 1
   if ! isRealCommand "git"; then
     install_git || return 1
@@ -1520,30 +1527,33 @@ install_mactop () {
 }
 
 install_zsh () {
-  # if skip_install_iSH_aShell "Zsh"; then
-  #   return 0
-  # fi
+  if [ "${IS_ASHELL:-}" = true ]; then
+    echo "NOTE: skipping Zsh on a-Shell."
+    return 0
+  fi
 
   if [ ! -x "$(command -v zsh)" ]; then
     if [ "$OS_FAMILY" = "Linux" ] && command_exists apk; then
-      install_generic_apk zsh zsh
+      install_generic_apk zsh zsh || return 1
     elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apt)" ]; then
-      install_generic_apt "zsh"
+      install_generic_apt "zsh" || return 1
     else
       echo "install_zsh: OS version ($OS_STRING) doesn't have supported function"; echo "";
+      return 1
     fi
   fi
 }
 
 install_zsh_plugins() {
-  if skip_install_iSH_aShell "Oh My Zsh and the Zsh plugin suite"; then
+  if [ "${IS_ASHELL:-}" = true ]; then
+    echo "NOTE: skipping Oh My Zsh and the Zsh plugin suite on a-Shell."
     return 0
   fi
 
-  # if ! isRealCommand "zsh"; then
-  #   echo "install_zsh_plugins: zsh is not available; skipping its plugins." >&2
-  #   return 0
-  # fi
+  if ! isRealCommand "zsh"; then
+    echo "install_zsh_plugins: Zsh is unavailable; its framework and add-ons cannot be installed." >&2
+    return 1
+  fi
 
   install_curl || return 1
   if ! isRealCommand "git"; then

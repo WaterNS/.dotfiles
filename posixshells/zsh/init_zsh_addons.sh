@@ -12,8 +12,8 @@ if [ -f "$HOMEREPO/posixshells/posix_id_os.sh" ]; then
   . "$HOMEREPO/posixshells/posix_id_os.sh"
 fi
 
-if [ "${IS_ASHELL:-}" = true ] || [ "${IS_ISH:-}" = true ]; then
-  echo "NOTE: skipping Zsh add-ons on ${OS_PLATFORM:-this mobile host}."
+if [ "${IS_ASHELL:-}" = true ]; then
+  echo "NOTE: skipping Zsh add-ons on a-Shell."
   # shellcheck disable=SC2317 # exit is the fallback when this file is executed rather than sourced
   return 0 2>/dev/null || exit 0
 fi
