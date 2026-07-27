@@ -500,36 +500,29 @@ install_ffmpeg () {
       return
     fi
 
-    install_curl
+    install_curl || return 1
     if [ "$OS_PLATFORM" = "macos" ]; then
-      install_unar
       echo "NOTE: ffmpeg not found, installing into dotfiles bin"
       echo "------------------------------------------------"
-      if [ ! -x "$(command -v unar)" ]; then
-        echo "Unable to install ffmpeg - missing unar"; echo ""
+      mkdir -p "$HOMEREPO/opt/bin" "$HOMEREPO/opt/tmp" || return 1
+      __ffmpegArchive="$HOMEREPO/opt/tmp/ffmpeg.zip"
+
+      if curl -fL --retry 2 --connect-timeout 15 \
+        "https://evermeet.cx/ffmpeg/get/ffmpeg/zip" -o "$__ffmpegArchive" &&
+        ditto -x -k "$__ffmpegArchive" "$HOMEREPO/opt/bin/" &&
+        chmod a+rx "$HOMEREPO/opt/bin/ffmpeg" &&
+        "$HOMEREPO/opt/bin/ffmpeg" -version >/dev/null 2>&1; then
+        echo "  ++ GOOD - ffmpeg is now available ++"; echo ""
+      else
+        rm -f "$__ffmpegArchive" "$HOMEREPO/opt/bin/ffmpeg"
+        echo "BAD - ffmpeg couldn't be downloaded, extracted, or run" >&2
+        unset __ffmpegArchive
         return 1
       fi
-
-      if [ ! -d "$HOMEREPO/opt/tmp" ]; then
-        mkdir -p "$HOMEREPO/opt/tmp"
-      fi
-
-      ffmpeg="https://evermeet.cx/pub/ffmpeg/snapshots/"
-      latest=$(curl $ffmpeg | grep -v ".7z.sig" | grep .7z | head -1 | sed -n 's/.*href="\([^"]*\).*/\1/p')
-      curl "$ffmpeg$latest" -o "$HOMEREPO/opt/tmp/ffmpeg.7z"; echo ""
-
-      unar "$HOMEREPO/opt/tmp/ffmpeg.7z" -o "$HOMEREPO/opt/bin/"
-      rm -r "$HOMEREPO/opt/tmp/ffmpeg.7z"
-
-      if [ -x "$(command -v ffmpeg)" ]; then
-        echo "  ++ GOOD - ffmpeg is now available ++"; echo "";
-      else
-        echo "BAD - ffmpeg doesn't seem to be available"
-      fi
+      unset __ffmpegArchive
     else
       echo "Unable to install ffmpeg - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
     fi
-    unset ffmpeg; unset latest;
   fi
 }
 
@@ -546,36 +539,30 @@ install_ffprobe () {
       return
     fi
 
-    install_curl
+    install_curl || return 1
     if [ "$OS_PLATFORM" = "macos" ]; then
-      install_unar
       echo "NOTE: ffprobe not found, installing into dotfiles bin"
       echo "------------------------------------------------"
-      if [ ! -x "$(command -v unar)" ]; then
-        echo "Unable to install ffprobe - missing unar"; echo ""
+      mkdir -p "$HOMEREPO/opt/bin" "$HOMEREPO/opt/tmp" || return 1
+      __ffprobeArchive="$HOMEREPO/opt/tmp/ffprobe.zip"
+
+      if curl -fL --retry 2 --connect-timeout 15 \
+        "https://evermeet.cx/ffmpeg/get/ffprobe/zip" -o "$__ffprobeArchive" &&
+        ditto -x -k "$__ffprobeArchive" "$HOMEREPO/opt/bin/" &&
+        chmod a+rx "$HOMEREPO/opt/bin/ffprobe" &&
+        "$HOMEREPO/opt/bin/ffprobe" -version >/dev/null 2>&1; then
+        rm -f "$__ffprobeArchive"
+        echo "  ++ GOOD - ffprobe is now available ++"; echo ""
+      else
+        rm -f "$__ffprobeArchive" "$HOMEREPO/opt/bin/ffprobe"
+        echo "BAD - ffprobe couldn't be downloaded, extracted, or run" >&2
+        unset __ffprobeArchive
         return 1
       fi
-
-      if [ ! -d "$HOMEREPO/opt/tmp" ]; then
-        mkdir -p "$HOMEREPO/opt/tmp"
-      fi
-
-      ffprobe="https://evermeet.cx/pub/ffprobe/snapshots/"
-      latest=$(curl $ffprobe | grep -v ".7z.sig" | grep .7z | head -1 | sed -n 's/.*href="\([^"]*\).*/\1/p')
-      curl "$ffprobe/$latest" -o "$HOMEREPO/opt/tmp/ffprobe.7z"; echo ""
-
-      unar "$HOMEREPO/opt/tmp/ffprobe.7z" -o "$HOMEREPO/opt/bin/"
-      rm -r "$HOMEREPO/opt/tmp/ffprobe.7z"
-
-      if [ -x "$(command -v ffprobe)" ]; then
-        echo "  ++ GOOD - ffprobe is now available ++"; echo "";
-      else
-        echo "BAD - ffprobe doesn't seem to be available"
-      fi
+      unset __ffprobeArchive
     else
       echo "Unable to install ffprobe - OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
     fi
-    unset ffprobe; unset latest;
   fi
 }
 
@@ -923,12 +910,9 @@ install_ytdlp_js_runtime() {
     return 1
   fi
 
-  # Preserve the existing desktop installer behavior. Node and QuickJS are
-  # still enabled dynamically as fallbacks by the ytdl wrapper.
-  if command_exists deno; then
-    return 0
-  fi
-
+  # install_deno also validates an existing runtime and upgrades it when it is
+  # older than yt-dlp's supported Deno floor. Node and QuickJS remain dynamic
+  # fallbacks in the ytdl wrapper.
   install_deno
 }
 
@@ -1191,6 +1175,9 @@ install_aria2 () {
 
 install_homebrew () {
   if [ "$OS_PLATFORM" = "macos" ]; then
+    # Homebrew enables an interactive confirmation mode in terminals unless
+    # HOMEBREW_NO_ASK is set. Dotfiles initialization must remain unattended.
+    export HOMEBREW_NO_ASK=1
     export HOMEBREW_INSTALL_FROM_API=1;
     if [ ! -x "$(command -v brew)" ]; then
       install_xcodeCMDlineTools
@@ -1564,24 +1551,138 @@ install_zsh_plugins() {
 }
 
 install_deno () {
-  if [ ! -x "$(command -v deno)" ]; then
+  (
+    __denoMinimumVersion='2.3.0'
+    __denoVersionSupported() {
+      "$1" --version 2>/dev/null | awk '
+        NR == 1 && $1 == "deno" {
+          split($2, version, ".")
+          supported = version[1] > 2 || (version[1] == 2 && version[2] >= 3)
+        }
+        END { exit !supported }
+      '
+    }
+
+    __denoExisting=$(command -v deno 2>/dev/null)
+    if [ -x "$__denoExisting" ]; then
+      if __denoVersionSupported "$__denoExisting"; then
+        exit 0
+      fi
+      echo "NOTE: the installed Deno is older than $__denoMinimumVersion; attempting an upgrade."
+    fi
+
+    # Native Deno releases cannot run inside either iOS shell environment.
+    # Their yt-dlp setup selects QuickJS before this desktop-only installer.
     if [ "${IS_ASHELL:-}" = true ] || [ "${IS_ISH:-}" = true ]; then
       echo "install_deno: no compatible Deno binary is available for $OS_PLATFORM/$OS_ARCH"
-    elif [ "$OS_PLATFORM" = "macos" ]; then
-      # install_homebrew
-      # brew install "deno"
-      install_generic_github "denoland/deno" "deno" "deno-aarch64-apple-darwin" "sha256"
-    # elif [ "$OS_FAMILY" = "Linux" ] && [ -x "$(command -v apk)" ]; then
-    #   install_generic_apk "tree"
-    elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x64" ]; then
-      install_generic_github "denoland/deno" "deno" "deno-x86_64-unknown-linux-gnu" "sha256"
-    # elif [ "$OS_FAMILY" = "Linux" ] && [ "$OS_ARCH" = "x32" ]; then
-    #   install_generic_github "sharkdp/bat" "bat" "i686-unknown-linux-musl"
-    else
-      echo "";
-      echo "install_deno: OS version ($OS_FAMILY $OS_ARCH) doesn't have supported function"; echo "";
+      exit 0
     fi
-  fi
+
+    # Deno's upstream Linux archives target glibc. Alpine packages a native
+    # musl build, while iSH continues to use QuickJS via the branch above.
+    if [ "$OS_PLATFORM" = "linux" ] && command_exists apk; then
+      if [ "${APK_CACHE_UPDATED:-}" != true ]; then
+        echo 'Updating APK cache...'
+        apk update || exit 1
+        APK_CACHE_UPDATED=true
+      fi
+
+      echo "Requesting Deno $__denoMinimumVersion or newer from APK..."
+      if ! apk add "deno>=$__denoMinimumVersion"; then
+        echo "install_deno: the configured APK repositories do not provide Deno $__denoMinimumVersion or newer." >&2
+        exit 1
+      fi
+
+      __denoExisting=$(command -v deno 2>/dev/null)
+      if [ -x "$__denoExisting" ] &&
+        __denoVersionSupported "$__denoExisting"; then
+        echo "  ++ GOOD - deno is now available ++"
+        echo ""
+        exit 0
+      fi
+
+      echo "install_deno: APK installed an unsupported Deno runtime." >&2
+      exit 1
+    fi
+
+    case "$OS_PLATFORM:$OS_ARCH" in
+      macos:ARM64)
+        __denoAsset='deno-aarch64-apple-darwin.zip'
+        ;;
+      macos:x64)
+        __denoAsset='deno-x86_64-apple-darwin.zip'
+        ;;
+      linux:ARM64)
+        __denoAsset='deno-aarch64-unknown-linux-gnu.zip'
+        ;;
+      linux:x64)
+        __denoAsset='deno-x86_64-unknown-linux-gnu.zip'
+        ;;
+      *)
+        echo "install_deno: no compatible Deno release is available for $OS_PLATFORM/$OS_ARCH" >&2
+        exit 1
+        ;;
+    esac
+
+    __denoTmpDir=
+    __denoCleanup() {
+      if [ -n "$__denoTmpDir" ]; then
+        rm -rf "$__denoTmpDir"
+      fi
+    }
+    trap '__denoCleanup' 0
+    trap 'exit 129' HUP
+    trap 'exit 130' INT
+    trap 'exit 143' TERM
+
+    install_curl || exit 1
+    mkdir -p "$HOMEREPO/opt/bin" "$HOMEREPO/opt/tmp" || exit 1
+    __denoTmpDir=$(mktemp -d "$HOMEREPO/opt/tmp/deno.XXXXXX") || exit 1
+    __denoArchive="$__denoTmpDir/$__denoAsset"
+    __denoExtractDir="$__denoTmpDir/extracted"
+    __denoURL="https://github.com/denoland/deno/releases/latest/download/$__denoAsset"
+
+    echo "NOTE: deno not found, downloading into dotfiles bin"
+    echo "------------------------------------------------"
+    if ! curl -fL -S -s "$__denoURL" -o "$__denoArchive"; then
+      echo "install_deno: unable to download $__denoURL" >&2
+      exit 1
+    fi
+
+    mkdir -p "$__denoExtractDir" || {
+      exit 1
+    }
+    __denoExtractionFailed=false
+    if [ "$OS_PLATFORM" = "macos" ] && command_exists ditto; then
+      ditto -x -k "$__denoArchive" "$__denoExtractDir" ||
+        __denoExtractionFailed=true
+    elif command_exists unzip; then
+      unzip -q "$__denoArchive" -d "$__denoExtractDir" ||
+        __denoExtractionFailed=true
+    elif command_exists python3; then
+      python3 -m zipfile -e "$__denoArchive" "$__denoExtractDir" ||
+        __denoExtractionFailed=true
+    else
+      echo "install_deno: extracting Deno requires ditto, unzip, or Python 3" >&2
+      exit 1
+    fi
+    if [ "$__denoExtractionFailed" = true ] || [ ! -f "$__denoExtractDir/deno" ]; then
+      echo "install_deno: the downloaded Deno ZIP could not be extracted" >&2
+      exit 1
+    fi
+
+    chmod a+rx "$__denoExtractDir/deno"
+    if ! __denoVersionSupported "$__denoExtractDir/deno"; then
+      echo "install_deno: the downloaded executable is invalid or older than $__denoMinimumVersion" >&2
+      exit 1
+    fi
+    if ! mv -f "$__denoExtractDir/deno" "$HOMEREPO/opt/bin/deno"; then
+      exit 1
+    fi
+
+    echo "  ++ GOOD - deno is now available ++"
+    echo ""
+  )
 }
 
 install_bandwhich () {
