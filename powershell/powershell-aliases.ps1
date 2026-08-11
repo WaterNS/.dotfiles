@@ -18,7 +18,7 @@ if (betterWhereIs curl | Where-Object {$_.Type -eq "Executable"}) {
 Set-Alias vscode code
 
 if (!(Check-Command "vstudio")) {
-  if (Check-Command "devenv") {
+  if (Check-Command "vswhere") {
     Function AliasVSStudio {
       $argsList = @($args)
       $hasSolution = $false
@@ -36,7 +36,15 @@ if (!(Check-Command "vstudio")) {
         }
       }
 
-      Start-Process devenv $argsList
+      $devenvPath = vswhere -latest -prerelease -products * -property productPath |
+        Select-Object -First 1
+
+      if ([string]::IsNullOrWhiteSpace($devenvPath) -or
+          -not (Test-Path -LiteralPath $devenvPath -PathType Leaf)) {
+        throw 'Unable to locate Visual Studio devenv.exe with vswhere.'
+      }
+
+      & $devenvPath @argsList
     }
     Set-Alias vstudio AliasVSStudio
   }
