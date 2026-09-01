@@ -84,13 +84,16 @@ if ((Test-Path "C:\Python27\python2.exe") -and !($env:PATH -like "*C:\Python27\*
 }
 
 # Python3 helper for Windows
-if ((Test-Path "$HOME\.dotfiles\opt\bin\python3\python.exe")) {
-  if (!($env:PATH -like "*.dotfiles\opt\bin\python3*")) {
-    $env:PATH += ";$HOME\.dotfiles\opt\bin\python3\"
-    $env:PATH += ";$HOME\.dotfiles\opt\bin\python3\Scripts"
+& {
+  $managedPythonFolder = Join-Path $HOMEREPO "opt\bin\python3"
+  $managedPythonExe = Join-Path $managedPythonFolder "python.exe"
+  if (Test-Path -LiteralPath $managedPythonExe -PathType Leaf) {
+    Add-EnvPath -Path (Join-Path $managedPythonFolder "Scripts") -Prepend
+    Add-EnvPath -Path $managedPythonFolder -Prepend
+    Set-Alias python $managedPythonExe -Scope Global
+    Set-Alias python3 $managedPythonExe -Scope Global
+    Set-Alias py $managedPythonExe -Scope Global
   }
-  Set-Alias python "$HOME\.dotfiles\opt\bin\python3\python.exe"
-  Set-Alias python3 "$HOME\.dotfiles\opt\bin\python3\python.exe"
 }
 
 # Source Powershell Logout Script

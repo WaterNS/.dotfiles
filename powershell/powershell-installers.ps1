@@ -257,11 +257,20 @@ param (
   $local:pythonFolder = Join-Path $HOME ".dotfiles\\opt\\bin\\python3"
   $local:pythonFolder = [IO.Path]::GetFullPath($local:pythonFolder)
   $local:pythonExe = Join-Path $local:pythonFolder "python.exe"
+  $local:pythonScriptsFolder = Join-Path $local:pythonFolder "Scripts"
   $local:tmpRoot = Join-Path $HOME ".dotfiles\\opt\\tmp"
   $local:tmpDir = Join-Path $local:tmpRoot "python3"
   $local:arch = if ([Environment]::Is64BitOperatingSystem) { "amd64" } else { "win32" }
 
   if ($Uninstall) {
+    Remove-EnvPath -Path $local:pythonScriptsFolder -Container User
+    Remove-EnvPath -Path $local:pythonFolder -Container User
+    foreach ($local:aliasName in @("python", "python3", "py")) {
+      $local:managedAlias = Get-Alias -Name $local:aliasName -Scope Global -ErrorAction SilentlyContinue
+      if ($local:managedAlias -and ($local:managedAlias.Definition -eq $local:pythonExe)) {
+        Remove-Item -LiteralPath "Alias:\$local:aliasName" -Force
+      }
+    }
     if (Test-Path "$local:pythonFolder") {
       Remove-Item "$local:pythonFolder" -Recurse -Force
     }
@@ -412,19 +421,20 @@ param (
 
       if (Test-Path "$local:pythonExe") {
         "GOOD - Python3 is now available"
-        # Python3 helper for Windows
-        if ((Test-Path "$HOME\.dotfiles\opt\bin\python3\python.exe")) {
-          if (!($env:PATH -like "*.dotfiles\opt\bin\python3*")) {
-            $env:PATH += ";$HOME\.dotfiles\opt\bin\python3\"
-            $env:PATH += ";$HOME\.dotfiles\opt\bin\python3\Scripts"
-          }
-          Set-Alias python "$HOME\.dotfiles\opt\bin\python3\python.exe"
-          Set-Alias python3 "$HOME\.dotfiles\opt\bin\python3\python.exe"
-        }
       } else {
         "BAD - Python3 doesn't seem to be available"
       }
     }
+  }
+
+  # Keep the real executable ahead of Windows App Execution Alias stubs. This
+  # also repairs PATH when Python was already installed before this run.
+  if (Test-Path -LiteralPath $local:pythonExe -PathType Leaf) {
+    Add-EnvPath -Path $local:pythonScriptsFolder -Container User -Prepend
+    Add-EnvPath -Path $local:pythonFolder -Container User -Prepend
+    Set-Alias python $local:pythonExe -Scope Global
+    Set-Alias python3 $local:pythonExe -Scope Global
+    Set-Alias py $local:pythonExe -Scope Global
   }
 }
 

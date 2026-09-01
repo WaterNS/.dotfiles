@@ -274,8 +274,95 @@ Function gitRemoveOrphanBranches() {
   }
 }
 
+Function Get-EnvPathComparisonKey {
+  param([string] $Value)
+
+  if ([string]::IsNullOrWhiteSpace($Value)) {
+      return ''
+  }
+
+  $normalizedValue = [Environment]::ExpandEnvironmentVariables($Value.Trim()).Replace('/', '\')
+  if (($normalizedValue.Length -ge 2) -and
+      ($normalizedValue[0] -eq '"') -and
+      ($normalizedValue[$normalizedValue.Length - 1] -eq '"')) {
+      $normalizedValue = $normalizedValue.Substring(1, $normalizedValue.Length - 2).Trim()
+  }
+
+  if ($normalizedValue -match '^[A-Za-z]:\\+$') {
+      return ($normalizedValue.Substring(0, 2) + '\')
+  }
+  if ($normalizedValue -match '^\\+$') {
+      return '\'
+  }
+
+  return $normalizedValue.TrimEnd('\')
+}
+
 Function Add-EnvPath {
   #credit/ref/source: https://stackoverflow.com/a/34844707/7650275
+  param(
+      [Parameter(Mandatory=$true)]
+      [string] $Path,
+
+      [ValidateSet('Machine', 'User', 'Session')]
+      [string] $Container = 'Session',
+
+      [switch] $Prepend
+  )
+
+  $pathKey = if ($Prepend) { Get-EnvPathComparisonKey $Path } else { $null }
+
+  if ($Container -ne 'Session') {
+      $containerMapping = @{
+          Machine = [EnvironmentVariableTarget]::Machine
+          User = [EnvironmentVariableTarget]::User
+      }
+      $containerType = $containerMapping[$Container]
+      $persistedValue = [Environment]::GetEnvironmentVariable('Path', $containerType)
+      $persistedPaths = if ([string]::IsNullOrEmpty($persistedValue)) {
+          @()
+      } else {
+          $persistedValue -split ';'
+      }
+
+      if ($Prepend) {
+          $updatedPaths = @($Path) + @(
+              $persistedPaths |
+                  Where-Object { (Get-EnvPathComparisonKey $_) -ne $pathKey }
+          )
+          $updatedValue = $updatedPaths -join ';'
+          if ($updatedValue -cne $persistedValue) {
+              [Environment]::SetEnvironmentVariable('Path', $updatedValue, $containerType)
+          }
+      }
+      elseif ($persistedPaths -notcontains $Path) {
+          $persistedPaths = $persistedPaths + $Path | Where-Object { $_ }
+          [Environment]::SetEnvironmentVariable('Path', $persistedPaths -join ';', $containerType)
+      }
+  }
+
+  $envPaths = if ([string]::IsNullOrEmpty($env:Path)) {
+      @()
+  } else {
+      $env:Path -split ';'
+  }
+  if ($Prepend) {
+      $updatedPaths = @($Path) + @(
+          $envPaths |
+              Where-Object { (Get-EnvPathComparisonKey $_) -ne $pathKey }
+      )
+      $updatedValue = $updatedPaths -join ';'
+      if ($updatedValue -cne $env:Path) {
+          $env:Path = $updatedValue
+      }
+  }
+  elseif ($envPaths -notcontains $Path) {
+      $envPaths = $envPaths + $Path | Where-Object { $_ }
+      $env:Path = $envPaths -join ';'
+  }
+}
+
+Function Remove-EnvPath {
   param(
       [Parameter(Mandatory=$true)]
       [string] $Path,
@@ -284,24 +371,34 @@ Function Add-EnvPath {
       [string] $Container = 'Session'
   )
 
+  $pathKey = Get-EnvPathComparisonKey $Path
+
   if ($Container -ne 'Session') {
       $containerMapping = @{
           Machine = [EnvironmentVariableTarget]::Machine
           User = [EnvironmentVariableTarget]::User
       }
       $containerType = $containerMapping[$Container]
-
-      $persistedPaths = [Environment]::GetEnvironmentVariable('Path', $containerType) -split ';'
-      if ($persistedPaths -notcontains $Path) {
-          $persistedPaths = $persistedPaths + $Path | Where-Object { $_ }
-          [Environment]::SetEnvironmentVariable('Path', $persistedPaths -join ';', $containerType)
+      $persistedValue = [Environment]::GetEnvironmentVariable('Path', $containerType)
+      if (-not [string]::IsNullOrEmpty($persistedValue)) {
+          $updatedValue = @(
+              $persistedValue -split ';' |
+                  Where-Object { (Get-EnvPathComparisonKey $_) -ne $pathKey }
+          ) -join ';'
+          if ($updatedValue -cne $persistedValue) {
+              [Environment]::SetEnvironmentVariable('Path', $updatedValue, $containerType)
+          }
       }
   }
 
-  $envPaths = $env:Path -split ';'
-  if ($envPaths -notcontains $Path) {
-      $envPaths = $envPaths + $Path | Where-Object { $_ }
-      $env:Path = $envPaths -join ';'
+  if (-not [string]::IsNullOrEmpty($env:Path)) {
+      $updatedValue = @(
+          $env:Path -split ';' |
+              Where-Object { (Get-EnvPathComparisonKey $_) -ne $pathKey }
+      ) -join ';'
+      if ($updatedValue -cne $env:Path) {
+          $env:Path = $updatedValue
+      }
   }
 }
 
