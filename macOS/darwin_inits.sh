@@ -64,6 +64,9 @@ if [ "$OS_FAMILY" = "Darwin" ]; then
   # Save to disk (not to iCloud) by default
   defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false
 
+  # macOS 27: Disable Finder's "Suggest file names", including automatic TextEdit titles
+  defaults write NSGlobalDomain NSSmartNamingDisabled -bool true
+
   # Display ASCII control characters using caret notation in standard text views
   # Try e.g. `cd /tmp; unidecode "\x{0000}" > cc.txt; open -e cc.txt`
   defaults write NSGlobalDomain NSTextShowsControlCharacters -bool true
@@ -73,7 +76,7 @@ if [ "$OS_FAMILY" = "Darwin" ]; then
   defaults write com.apple.screensaver askForPasswordDelay -int 0
 
   # Dock:
-  defaults write com.apple.dock show-recents -bool false # Don’t show recent applications in Dock
+  defaults write com.apple.dock show-recents -bool false # Don't show recent applications in Dock
   defaults write com.apple.dock autohide -bool true # Automatically hide and show the Dock
 
   # Finder:
@@ -124,7 +127,7 @@ if [ "$OS_FAMILY" = "Darwin" ]; then
   defaults write com.apple.dock wvous-br-corner -int 0
   defaults write com.apple.dock wvous-br-modifier -int 0
 
-  # Disable smart quotes as it’s annoying for messages that contain code
+  # Disable smart quotes as it's annoying for messages that contain code
   defaults write com.apple.messageshelper.MessageController SOInputLineSettings -dict-add "automaticQuoteSubstitutionEnabled" -bool false
 
   # Mac App Store:
@@ -134,23 +137,23 @@ if [ "$OS_FAMILY" = "Darwin" ]; then
   defaults write com.apple.commerce AutoUpdate -bool true # Turn on app auto-update
 
   # Safari & WebKit:
-  defaults write com.apple.Safari UniversalSearchEnabled -bool false # FDA required - Privacy: don’t send search queries to Apple
-  defaults write com.apple.Safari SuppressSearchSuggestions -bool true # FDA required - Privacy: don’t send search queries to Apple
+  defaults write com.apple.Safari UniversalSearchEnabled -bool false # FDA required - Privacy: don't send search queries to Apple
+  defaults write com.apple.Safari SuppressSearchSuggestions -bool true # FDA required - Privacy: don't send search queries to Apple
   defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically -bool false # FDA required - Block pop-up windows
   defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaScriptCanOpenWindowsAutomatically -bool false # FDA required
-  defaults write com.apple.Safari SendDoNotTrackHTTPHeader -bool true # Enable “Do Not Track”
+  defaults write com.apple.Safari SendDoNotTrackHTTPHeader -bool true # Enable "Do Not Track"
   defaults write com.apple.Safari InstallExtensionUpdatesAutomatically -bool true # Update extensions automatically
   defaults write com.apple.Safari WebKitTabToLinksPreferenceKey -bool true # FDA required
   defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2TabsToLinks -bool true # FDA required - Press Tab to highlight each item on a web page
   defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true # FDA required - Show the full URL in the address bar (note: this still hides the scheme)
-  defaults write com.apple.Safari HomePage -string "about:blank" # FDA required - Set Safari’s home page to `about:blank` for faster loading
-  defaults write com.apple.Safari AutoOpenSafeDownloads -bool false # FDA required - Prevent Safari from opening ‘safe’ files automatically after downloading
+  defaults write com.apple.Safari HomePage -string "about:blank" # FDA required - Set Safari's home page to `about:blank` for faster loading
+  defaults write com.apple.Safari AutoOpenSafeDownloads -bool false # FDA required - Prevent Safari from opening 'safe' files automatically after downloading
   defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2BackspaceKeyNavigationEnabled -bool true # FDA required - Allow hitting the Backspace key to go to the previous page in history
-  defaults write com.apple.Safari ShowSidebarInTopSites -bool false # FDA required - Hide Safari’s sidebar in Top Sites
-  defaults write com.apple.Safari DebugSnapshotsUpdatePolicy -int 2 # FDA required - Disable Safari’s thumbnail cache for History and Top Sites
-  defaults write com.apple.Safari IncludeInternalDebugMenu -bool true # FDA required - Enable Safari’s debug menu
-  defaults write com.apple.Safari FindOnPageMatchesWordStartsOnly -bool false # FDA required - Make Safari’s search banners default to Contains instead of Starts With
-  defaults write com.apple.Safari ProxiesInBookmarksBar "()" # FDA required - Remove useless icons from Safari’s bookmarks bar
+  defaults write com.apple.Safari ShowSidebarInTopSites -bool false # FDA required - Hide Safari's sidebar in Top Sites
+  defaults write com.apple.Safari DebugSnapshotsUpdatePolicy -int 2 # FDA required - Disable Safari's thumbnail cache for History and Top Sites
+  defaults write com.apple.Safari IncludeInternalDebugMenu -bool true # FDA required - Enable Safari's debug menu
+  defaults write com.apple.Safari FindOnPageMatchesWordStartsOnly -bool false # FDA required - Make Safari's search banners default to Contains instead of Starts With
+  defaults write com.apple.Safari ProxiesInBookmarksBar "()" # FDA required - Remove useless icons from Safari's bookmarks bar
   defaults write com.apple.Safari IncludeDevelopMenu -bool true  # FDA required - Enable the Develop menu and the Web Inspector in Safari
   defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true # FDA required
   defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled -bool true # FDA required
@@ -175,7 +178,7 @@ if [ "$OS_FAMILY" = "Darwin" ]; then
 
   #Photos.app
   # Note: Sandbox apps keep their prefs in their container ("~/Library/Containers/**AppID**/Data/Library/Preferences/**AppID**.plist")
-  # Non‑sandboxed apps keep their prefs in ~/Library/Preferences
+  # Non-sandboxed apps keep their prefs in ~/Library/Preferences
   defaults write "$HOME/Library/Containers/com.apple.Photos/Data/Library/Preferences/com.apple.Photos" NSUserKeyEquivalents -dict-add "Close Viewer" "@$\U0020" # Remap 'Close Viewer' to Cmd+Shift+Space
   defaults write "$HOME/Library/Containers/com.apple.Photos/Data/Library/Preferences/com.apple.Photos" NSUserKeyEquivalents -dict-add "Start Playback" "\U0020" # Remap 'Start Playback' to Spacebar
   defaults write "$HOME/Library/Containers/com.apple.Photos/Data/Library/Preferences/com.apple.Photos" NSUserKeyEquivalents -dict-add "Stop Playback" "\U0020" # Remap 'Stop Playback' to Spacebar
