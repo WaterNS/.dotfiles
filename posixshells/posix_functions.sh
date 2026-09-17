@@ -599,10 +599,10 @@ githubCloneByCurl() {
   # Identify which type of archive to fetch
   echo "Downloading and rehydrating repo $repo_url to $dest_folder ..."
   if [ -x "$(command -v tar)" ]; then
-    archive_url="${repo_url%/}/tarball/master"
+    archive_url="${repo_url%/}/tarball/HEAD"
     mkdir -p "$dest_folder" && curl -L -s "$archive_url" | tar xz --strip 1 -C "$dest_folder" && reHydrateRepo "$dest_folder" "$repo_remote" "$depth"
   elif [ -x "$(command -v unzip)" ]; then
-    archive_url="${repo_url%/}/zipball/master"
+    archive_url="${repo_url%/}/zipball/HEAD"
     mkdir -p "$dest_folder" && curl -L -s "$archive_url" | unzip -q -d "$dest_folder" - && reHydrateRepo "$dest_folder" "$repo_remote" "$depth"
   else
     echo " -- githubCloneByCurl: Couldn't find extract tool (tar/unzip)"
