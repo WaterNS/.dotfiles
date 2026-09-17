@@ -26,44 +26,119 @@ if [ -z "$jq_command" ]; then
   exit 1
 fi
 
-# Read and validate existing mappings before changing anything. OpenStep plists
-# can encode the HID numbers as strings, so normalize both fields numerically.
-plist=$(hidutil property --get "UserKeyMapping") || exit 1
-if [ "$plist" = "(null)" ]; then
-  current_json="[]"
-else
-  current_json=$(printf '%s\n' "$plist" | plutil -convert json -o - -) || exit 1
-fi
-current_json=$(printf '%s\n' "$current_json" | "$jq_command" -ce '
-  if type != "array" then error("UserKeyMapping must be an array")
-  else map(
-    .HIDKeyboardModifierMappingSrc |= tonumber |
-    .HIDKeyboardModifierMappingDst |= tonumber
-  ) end
-') || exit 1
+# Explicit matching returns a RegistryID/Key/Value table, including on macOS
+# versions where an unfiltered query used to return a single plist value.
+# Wrap each row's complete (possibly multiline) value in an OpenStep array.
+mapping_table_to_plist() {
+  awk '
+    BEGIN { print "(" }
+    /^[[:space:]]*$/ { next }
+    !header {
+      if ($0 !~ /^[[:space:]]*RegistryID[[:space:]]+Key[[:space:]]+Value[[:space:]]*$/) {
+        failed = 1; exit 1
+      }
+      header = 1; next
+    }
+    $1 ~ /^(0[xX])?[[:xdigit:]]+$/ && $2 == "UserKeyMapping" {
+      value = $0
+      sub(/^[[:space:]]*[^[:space:]]+[[:space:]]+UserKeyMapping[[:space:]]+/, "", value)
+      if (value ~ /^\(null\)[[:space:]]*$/) value = "()"
+      if (value !~ /^\(/) { failed = 1; exit 1 }
+      if (rows++) print ","
+      print value
+      next
+    }
+    {
+      if (!rows) { failed = 1; exit 1 }
+      print
+    }
+    END {
+      if (failed || !header) exit 1
+      print ")"
+    }
+  '
+}
 
-# A single mapping with the correct source AND destination needs no write.
-# shellcheck disable=SC2016 # $src/$dst are jq variables supplied by --argjson.
-if printf '%s\n' "$current_json" | "$jq_command" -e --argjson src "$src" --argjson dst "$dst" '
-  map(select(.HIDKeyboardModifierMappingSrc == $src)) |
-  length == 1 and .[0].HIDKeyboardModifierMappingDst == $dst
-' >/dev/null; then
-  exit 0
-fi
+remap_keyboard() (
+  matching=$1
+  table=$(hidutil property --matching "$matching" --get UserKeyMapping) || exit 1
+  # A keyboard may have been disconnected since the device list was read.
+  [ -n "$table" ] || exit 0
+  plist=$(printf '%s\n' "$table" | mapping_table_to_plist) || {
+    echo 'mac-KbDisableDndButton: unexpected hidutil property output.' >&2
+    exit 1
+  }
+  mappings=$(printf '%s\n' "$plist" | plutil -convert json -o - -) || exit 1
+  # OpenStep can encode HID numbers as strings; normalize both fields.
+  mappings=$(printf '%s\n' "$mappings" | "$jq_command" -ce '
+    map(if type != "array" then error("UserKeyMapping must be an array")
+      else map(
+        .HIDKeyboardModifierMappingSrc |= tonumber |
+        .HIDKeyboardModifierMappingDst |= tonumber
+      ) end)
+  ') || exit 1
 
-# Replace stale/duplicate mappings for this key while preserving other keys.
-# shellcheck disable=SC2016 # $src/$dst are jq variables supplied by --argjson.
-new_json=$(printf '%s\n' "$current_json" | "$jq_command" -c --argjson src "$src" --argjson dst "$dst" '
-  {UserKeyMapping: (map(select(.HIDKeyboardModifierMappingSrc != $src)) + [{
-    HIDKeyboardModifierMappingSrc: $src,
-    HIDKeyboardModifierMappingDst: $dst
-  }])}
-') || exit 1
-hidutil property --set "$new_json" >/dev/null || exit 1
-echo 'Remapped: Do-Not-Disturb (F6) button -> No Key/No Action'
+  # A single correct mapping on every matched service needs no write.
+  # shellcheck disable=SC2016 # $src/$dst are jq variables supplied by --argjson.
+  if printf '%s\n' "$mappings" | "$jq_command" -e --argjson src "$src" --argjson dst "$dst" '
+    all(.[]; map(select(.HIDKeyboardModifierMappingSrc == $src)) |
+      length == 1 and .[0].HIDKeyboardModifierMappingDst == $dst)
+  ' >/dev/null; then
+    exit 0
+  fi
+
+  # Some services share all matching fields. Only write to such a group when
+  # its other mappings agree, so a device-specific remap cannot be overwritten.
+  # shellcheck disable=SC2016 # $src/$dst are jq variables supplied by --argjson.
+  new_json=$(printf '%s\n' "$mappings" | "$jq_command" -ce --argjson src "$src" --argjson dst "$dst" '
+    map(map(select(.HIDKeyboardModifierMappingSrc != $src))) | unique |
+    if length != 1 then error("Matched keyboards have different mappings; refusing to overwrite them")
+    else {UserKeyMapping: (.[0] + [{
+      HIDKeyboardModifierMappingSrc: $src,
+      HIDKeyboardModifierMappingDst: $dst
+    }])} end
+  ') || exit 1
+  hidutil property --matching "$matching" --set "$new_json" >/dev/null || exit 1
+  echo 'Remapped: Do-Not-Disturb (F6) button -> No Key/No Action'
+)
+
+# Use the supported vendor/product/location fields to address keyboard services.
+# RegistryID is an output column, not a supported hidutil matching property.
+devices=$(hidutil list --matching keyboard) || exit 1
+keyboard_matches=$(printf '%s\n' "$devices" | awk '
+  /^Services:[[:space:]]*$/ { services = 1; next }
+  /^Devices:[[:space:]]*$/ { exit }
+  /^[[:space:]]*$/ { next }
+  services && $1 == "VendorID" { header = 1; next }
+  services && header {
+    for (i = 1; i <= 3; i++) {
+      if ($i !~ /^0[xX][[:xdigit:]]+$/) { failed = 1; exit 1 }
+    }
+    if ($4 != "1" || $5 != "6") { failed = 1; exit 1 }
+    matching = "{\"PrimaryUsagePage\":1,\"PrimaryUsage\":6"
+    # Missing properties are displayed as zero; do not require them to exist.
+    if ($1 !~ /^0[xX]0+$/) matching = matching ",\"VendorID\":" $1
+    if ($2 !~ /^0[xX]0+$/) matching = matching ",\"ProductID\":" $2
+    if ($3 !~ /^0[xX]0+$/) matching = matching ",\"LocationID\":" $3
+    matching = matching "}"
+    if (!seen[matching]++) print matching
+    next
+  }
+  { failed = 1; exit 1 }
+  END { if (failed || !services || !header) exit 1 }
+') || {
+  echo 'mac-KbDisableDndButton: unexpected hidutil device list.' >&2
+  exit 1
+}
+while IFS= read -r matching; do
+  [ -n "$matching" ] || continue
+  remap_keyboard "$matching" || exit 1
+done <<EOF
+$keyboard_matches
+EOF
 
 ## Check the mappings:
-#hidutil property --get "UserKeyMapping"
+#hidutil property --matching keyboard --get "UserKeyMapping"
 
 ## Clear the mappings:
-#hidutil property --set '{"UserKeyMapping":[]}'
+#hidutil property --matching keyboard --set '{"UserKeyMapping":[]}'
