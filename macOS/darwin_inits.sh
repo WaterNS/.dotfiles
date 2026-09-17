@@ -196,29 +196,56 @@ if [ "$OS_FAMILY" = "Darwin" ]; then
         || defaults write com.apple.universalaccess com.apple.custommenu.apps -array-add "com.microsoft.rdc.osx.beta" # Add app entry into System Settings › Keyboard › App Shortcuts
 
 
-  # mac-KbDisableDndButton - Add to login:
-  command cat <<EOF > "$HOME/Library/LaunchAgents/com.dotfiles.mac-KbDisableDndButton.plist"
+  # Keep the login agent current without rewriting/reloading it on every init.
+  (
+    agent_label=com.dotfiles.mac-KbDisableDndButton
+    agent_domain="gui/$(id -u)"
+    agent_path="$HOME/Library/LaunchAgents/$agent_label.plist"
+    agent_program="${HOMEREPO:-$HOME/.dotfiles}/bin/mac-KbDisableDndButton"
+    agent_program_xml=$(printf '%s' "$agent_program" | sed -e 's/&/\&amp;/g' -e 's/</\&lt;/g' -e 's/>/\&gt;/g')
+    agent_plist=$(command cat <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
   "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-  <key>Label</key><string>com.dotfiles.mac-KbDisableDndButton</string>
+  <key>Label</key><string>$agent_label</string>
   <key>Program</key>
-  <string>$HOME/.dotfiles/bin/mac-KbDisableDndButton</string>
-
-  <!-- Troubleshooting:
-  launchctl print gui/$(id -u)/com.dotfiles.mac-KbDisableDndButton
-  launchctl bootout "gui/$(id -u)" ~/Library/LaunchAgents/com.dotfiles.mac-KbDisableDndButton.plist
-  launchctl print gui/$(id -u)/com.dotfiles.mac-KbDisableDndButton
-  launchctl bootstrap "gui/$(id -u)" ~/Library/LaunchAgents/com.dotfiles.mac-KbDisableDndButton.plist
-  launchctl print gui/$(id -u)/com.dotfiles.mac-KbDisableDndButton -->
+  <string>$agent_program_xml</string>
 
   <key>RunAtLoad</key><true/>
 </dict>
 </plist>
 EOF
-  launchctl bootstrap "gui/$(id -u)" ~/Library/LaunchAgents/com.dotfiles.mac-KbDisableDndButton.plist
+    )
+
+    agent_loaded=false
+    if launchctl print "$agent_domain/$agent_label" >/dev/null 2>&1; then
+      agent_loaded=true
+    fi
+
+    if ! printf '%s\n' "$agent_plist" | cmp -s "$agent_path" -; then
+      mkdir -p "$HOME/Library/LaunchAgents" || exit 1
+      agent_temp=$(mktemp "$HOME/Library/LaunchAgents/.$agent_label.XXXXXX") || exit 1
+      trap 'rm -f "$agent_temp"' EXIT
+      printf '%s\n' "$agent_plist" > "$agent_temp" || exit 1
+      plutil -lint "$agent_temp" >/dev/null || exit 1
+      chmod 644 "$agent_temp" || exit 1
+      if [ "$agent_loaded" = true ]; then
+        launchctl bootout "$agent_domain/$agent_label" || exit 1
+        agent_loaded=false
+      fi
+      mv -f "$agent_temp" "$agent_path" || exit 1
+    fi
+
+    if [ "$agent_loaded" = false ]; then
+      launchctl bootstrap "$agent_domain" "$agent_path" || exit 1
+    else
+      # The mapping can be lost after disconnecting keyboards. This is a no-op
+      # when it is already correct, and also applies changes to the helper.
+      "$agent_program" || exit 1
+    fi
+  ) || return 1
 
   killall cfprefsd #flush the preferences daemon so the pane refreshes immediately
   echo "** Darwin Init Done ** Note that some of these changes require a logout/restart to take effect."

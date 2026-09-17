@@ -255,7 +255,7 @@ install_zsh_plugins
 
 # Init Darwin based systems
 if [ "$OS_PLATFORM" = "macos" ]; then
-  . "$HOMEREPO/macOS/darwin_inits.sh"
+  . "$HOMEREPO/macOS/darwin_inits.sh" || exit 1
 fi
 
 #Write last update file

@@ -1,50 +1,66 @@
-#!/usr/bin/env zsh
+#!/bin/sh
 # Disable the Mac keyboard Do-Not-Disturb keyboard button (half-moon icon on F6 key)
 
-# src ↔ dst you want to add
-src=0x10000009B   # the key you press
-srcBinary=4294967451
-dst=0x700000000   # where you want it to go
-dstBinary="30064771072"
+# Decimal values keep the payload valid JSON.
+src=4294967451   # 0x10000009B: Do-Not-Disturb button
+dst=30064771072  # 0x700000000: No Key
 
 #Key:
 # 0x70000003F = F6 Button
 # 0x10000009B = Do-Not-Disturb button
 # 0x700000000 = No Key
 
-# 1. Read the current list ---------------------------------------------------
-plist=$(hidutil property --get "UserKeyMapping")
-if [[ "$plist" == "(null)" ]]; then
+# jq is installed by init_posix; launchd does not inherit the shell's PATH.
+repo_dir=$(CDPATH='' cd -- "$(dirname -- "$0")/.." && pwd -P) || exit 1
+jq_command=$(command -v jq)
+if [ -z "$jq_command" ]; then
+  for candidate in "$repo_dir/opt/bin/jq" "$repo_dir/opt/homebrew/bin/jq" /opt/homebrew/bin/jq /usr/local/bin/jq; do
+    if [ -x "$candidate" ]; then
+      jq_command=$candidate
+      break
+    fi
+  done
+fi
+if [ -z "$jq_command" ]; then
+  echo 'mac-KbDisableDndButton: jq is unavailable; rerun init_posix.sh.' >&2
+  exit 1
+fi
+
+# Read and validate existing mappings before changing anything. OpenStep plists
+# can encode the HID numbers as strings, so normalize both fields numerically.
+plist=$(hidutil property --get "UserKeyMapping") || exit 1
+if [ "$plist" = "(null)" ]; then
   current_json="[]"
 else
-  current_json=$(echo "$plist" | plutil -convert json -o - - 2>/dev/null)
+  current_json=$(printf '%s\n' "$plist" | plutil -convert json -o - -) || exit 1
+fi
+current_json=$(printf '%s\n' "$current_json" | "$jq_command" -ce '
+  if type != "array" then error("UserKeyMapping must be an array")
+  else map(
+    .HIDKeyboardModifierMappingSrc |= tonumber |
+    .HIDKeyboardModifierMappingDst |= tonumber
+  ) end
+') || exit 1
+
+# A single mapping with the correct source AND destination needs no write.
+# shellcheck disable=SC2016 # $src/$dst are jq variables supplied by --argjson.
+if printf '%s\n' "$current_json" | "$jq_command" -e --argjson src "$src" --argjson dst "$dst" '
+  map(select(.HIDKeyboardModifierMappingSrc == $src)) |
+  length == 1 and .[0].HIDKeyboardModifierMappingDst == $dst
+' >/dev/null; then
+  exit 0
 fi
 
-# 2. Exit early if mapping already present -----------------------------------
-# Uses plain grep to look for "HIDKeyboardModifierMappingSrc":<hex>
-testString="\"HIDKeyboardModifierMappingSrc\":\"$srcBinary\""
-if echo "$current_json" | grep -q "$testString"; then
-  #echo "Mapping already present — nothing to do."
-else
-  # 3. Build a new array + push it back ----------------------------------------
-  # If current_json isn’t empty (i.e. not []), strip the surrounding [ ]
-  # and add a trailing comma so we can append our new object cleanly.
-  prefix=""
-  if [[ "$current_json" != "[]" ]]; then
-    prefix="${current_json:1:-1},"
-  fi
-
-  new_json=$(cat <<EOF
-  {"UserKeyMapping":[
-  ${prefix}{"HIDKeyboardModifierMappingSrc":$src,
-            "HIDKeyboardModifierMappingDst":$dst}
-  ]}
-EOF
-  )
-
-  echo "⚠️  Remapping: Do-Not-Disturb (F6) button -> No Key/No Action \n"
-  hidutil property --set "$new_json"
-fi
+# Replace stale/duplicate mappings for this key while preserving other keys.
+# shellcheck disable=SC2016 # $src/$dst are jq variables supplied by --argjson.
+new_json=$(printf '%s\n' "$current_json" | "$jq_command" -c --argjson src "$src" --argjson dst "$dst" '
+  {UserKeyMapping: (map(select(.HIDKeyboardModifierMappingSrc != $src)) + [{
+    HIDKeyboardModifierMappingSrc: $src,
+    HIDKeyboardModifierMappingDst: $dst
+  }])}
+') || exit 1
+hidutil property --set "$new_json" >/dev/null || exit 1
+echo 'Remapped: Do-Not-Disturb (F6) button -> No Key/No Action'
 
 ## Check the mappings:
 #hidutil property --get "UserKeyMapping"
