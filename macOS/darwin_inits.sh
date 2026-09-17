@@ -28,6 +28,7 @@ if [ "$OS_FAMILY" = "Darwin" ]; then
   defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
   defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
   defaults write NSGlobalDomain NSAutomaticTextCompletionEnabled -bool false
+  defaults write NSGlobalDomain NSAutomaticInlinePredictionEnabled -bool false # Disable inline predictive text
   # Disable press-and-hold for keys in favor of key repeat
   defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
   # Set a blazingly fast keyboard repeat rate
@@ -44,6 +45,8 @@ if [ "$OS_FAMILY" = "Darwin" ]; then
   defaults write com.apple.mail DisableInlineAttachmentViewing -bool true # FDA required - Disable inline attachments (just show the icons)
   defaults write com.apple.mail AddressesIncludeNameOnPasteboard -bool false # FDA required - Copy email addresses as `foo@example.com` instead of `Foo Bar <foo@example.com>` in Mail.app
   defaults write com.apple.mail SuppressAddressHistory -bool true # FDA required - Disable "Previous Recipients" 'feature'
+  # macOS 27: Disable "Summarize Message Previews" in Mail's shared preferences
+  defaults write "$HOME/Library/Group Containers/group.com.apple.mail/Library/Preferences/group.com.apple.mail" DisableAutomaticMessageSummarization -bool true
 
   # macOS: Disable Window Tints based on background
   defaults write -g AppleReduceDesktopTinting -bool yes
@@ -66,6 +69,20 @@ if [ "$OS_FAMILY" = "Darwin" ]; then
 
   # macOS 27: Disable Finder's "Suggest file names", including automatic TextEdit titles
   defaults write NSGlobalDomain NSSmartNamingDisabled -bool true
+
+  # Disable Spotlight indexing on all mounted volumes; skip sudo when already disabled.
+  (
+    spotlight_status=$(LC_ALL=C /usr/bin/mdutil -a -s) || exit 1
+    if printf '%s\n' "$spotlight_status" | grep -Eq '^[[:space:]]*Indexing enabled\.$'; then
+      sudo /usr/bin/mdutil -a -i off || exit 1
+      spotlight_status=$(LC_ALL=C /usr/bin/mdutil -a -s) || exit 1
+      if printf '%s\n' "$spotlight_status" | grep -Eq '^[[:space:]]*Indexing enabled\.$'; then
+        printf '%s\n' 'Unable to disable Spotlight indexing on all mounted volumes.' >&2
+        printf '%s\n' "$spotlight_status" >&2
+        exit 1
+      fi
+    fi
+  ) || return 1
 
   # Display ASCII control characters using caret notation in standard text views
   # Try e.g. `cd /tmp; unidecode "\x{0000}" > cc.txt; open -e cc.txt`
