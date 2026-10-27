@@ -45,6 +45,34 @@ a-Shell is the exception: writable user files live below Documents, so the repos
 
 Symlinks created for config files found in $HOME, pointing to ones in this repo.
 
+## Resumable file sharing with `simpleserver`
+
+Run `simpleserver` and open `http://<server-address>:8000/` on another device. PowerShell serves the current directory; POSIX shells serve `/tmp`; a-Shell serves `$HOME/tmp`. The helper uses Python 3's standard library and requires no additional packages.
+
+Each file has a **Resume options** link alongside the existing download and media controls. Open it to choose:
+
+- **Resumable HTTP URL:** a stable attachment URL for a download manager that retains partial files and supports HTTP byte ranges. Copy this URL into the client. It has no temporary browser download session to expire, and remains usable after a server restart while the file and its address stay the same.
+- **`.torrent`:** a single-file torrent with piece hashes and a [BEP 19 HTTP web seed](https://www.bittorrent.org/beps/bep_0019.html). A compatible torrent client downloads the same file from this server, checks each piece, and can retain completed pieces across interruptions. No separate torrent daemon or tracker is needed.
+- **Magnet:** a magnet link with the torrent metadata URL (`xs`) and HTTP web seed (`ws`). Clients differ in support for fetching metadata this way. If the magnet stays at “retrieving metadata,” download and open the `.torrent` instead.
+
+For a command-line download, use the resumable HTTP URL and repeat the same command after an interruption:
+
+```sh
+curl -fL -C - -o "video.mp4" "http://192.168.1.10:8000/video.mp4?download=1"
+```
+
+Keep the local partial file and serve the same unchanged source file when resuming. HTTP resume requires the client to preserve and verify its partial download; the torrent option also verifies content against piece hashes. The first torrent request reads and hashes the source file, which can take time for large files; subsequent requests reuse a bounded in-memory cache. Restarting the server clears that cache.
+
+The wrappers forward a custom port and additional options such as `--directory`, `--bind`, and `--public-url`:
+
+```sh
+simpleserver --directory "/path/to/share" --public-url "http://192.168.1.10:8000"
+```
+
+Normally links use the address through which the client opened the server. Set `--public-url` to the address clients can reach when advertising a different host or a reverse proxy prefix, for example `https://files.example.com/share`. Keep the server reachable at that host, port, and prefix until the transfer finishes. To select another port, run `simpleserver 9000`; otherwise the default is 8000.
+
+On iOS, screen-off and background behavior depends on the client app. These options let a capable client resume after it is suspended; they do not make Safari or another app continue running in the background. Use a client that saves its partial download or torrent progress, then resume when it becomes active again.
+
 
 # POSIX OS bootstrap
 

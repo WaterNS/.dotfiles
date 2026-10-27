@@ -1139,6 +1139,6 @@ function simpleserver {
     return
   }
 
-  & $simpleServerPython (Join-Path $HOMEREPO 'bin\simple_http_server.py') 8000
+  & $simpleServerPython (Join-Path $HOMEREPO 'bin\simple_http_server.py') @args
 }
 Set-Alias serverHttp simpleserver

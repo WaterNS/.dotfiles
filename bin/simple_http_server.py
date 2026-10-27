@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Small HTTP server with byte ranges and media-aware directory listings."""
+"""Small HTTP server with byte ranges, media listings, and web-seeded torrents."""
 
 import argparse
 import collections
@@ -20,6 +20,10 @@ import threading
 import time
 import urllib.parse
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+
+# Embedded Windows Python can omit the script directory from its search path.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from simple_http_torrents import TorrentCache, metadata, validate_public_url
 
 
 _BYTE_RANGE = re.compile(
@@ -242,6 +246,25 @@ video {
   width: 5.25rem;
   text-align: center !important;
 }
+.resume-column { width: 8.5rem; }
+.resume-link { display: inline-block; padding-block: .6rem; }
+.mobile-resume { display: none; }
+.transfer-panel { max-width: 64rem; margin-top: 1.5rem; }
+.transfer-panel h2 { margin-bottom: .75rem; }
+.transfer-panel p { line-height: 1.55; }
+.transfer-panel textarea {
+  display: block;
+  width: 100%;
+  margin: .5rem 0 1rem;
+  padding: .75rem;
+  border: 1px solid var(--border-strong);
+  border-radius: .5rem;
+  background: var(--surface-soft);
+  color: var(--ink);
+  font: .85rem/1.5 ui-monospace, SFMono-Regular, Consolas, monospace;
+  overflow-wrap: anywhere;
+}
+.transfer-panel code { overflow-wrap: anywhere; }
 .file-link {
   display: inline-block;
   max-width: 100%;
@@ -340,6 +363,8 @@ button:focus-visible {
   .type-column { display: none; }
   .size-column { width: 6.25rem; font-size: .85rem; }
   .play-column { width: 4.25rem; }
+  .resume-column { display: none; }
+  .mobile-resume { display: block; font-size: .85rem; }
   .file-table th, .file-table td { padding: .45rem .6rem; }
   .file-table-wrap, .media-panel { border-radius: .8rem; }
 }
@@ -1603,11 +1628,16 @@ class GuardedThreadingHTTPServer(ThreadingHTTPServer):
         request_handler_class,
         bind_and_activate=True,
         download_sessions=None,
+        public_url=None,
     ):
         self.download_sessions = (
             download_sessions
             if download_sessions is not None
             else _DownloadSessionRegistry()
+        )
+        self.torrents = TorrentCache()
+        self.public_url = (
+            validate_public_url(public_url) if public_url is not None else None
         )
         super().__init__(
             server_address,
@@ -1904,6 +1934,10 @@ class RangeRequestHandler(SimpleHTTPRequestHandler):
         }
         self._transfer_state = None
 
+        transfer = self._transfer_request()
+        if transfer is not None:
+            return self._serve_transfer_options(transfer)
+
         path = self.translate_path(self.path)
         if os.path.isdir(path) or not os.path.isfile(path):
             return super().send_head()
@@ -1927,6 +1961,14 @@ class RangeRequestHandler(SimpleHTTPRequestHandler):
             last_modified_timestamp = min(file_status.st_mtime, time.time())
             last_modified = self.date_time_string(last_modified_timestamp)
             etag = self._make_etag(file_status)
+            seed_versions = urllib.parse.parse_qs(
+                urllib.parse.urlsplit(self.path).query,
+                keep_blank_values=True,
+            ).get("seed", [])
+            if seed_versions and seed_versions != [etag]:
+                source.close()
+                self.send_error(412, "Web seed changed; create a new torrent")
+                return None
             download_details = self._download_request_details()
             download_requested = (
                 download_details["download_requested"]
@@ -2130,6 +2172,192 @@ class RangeRequestHandler(SimpleHTTPRequestHandler):
             self._release_resume_guard_lease()
             source.close()
             raise
+
+    def _transfer_request(self):
+        query = urllib.parse.parse_qs(
+            urllib.parse.urlsplit(self.path).query,
+            keep_blank_values=True,
+        )
+        if "transfer" not in query:
+            return None
+        modes = query.get("transfer", [])
+        versions = query.get("etag", [])
+        valid = (
+            set(query) <= {"transfer", "etag"}
+            and len(modes) == 1
+            and modes[0] in ("resume", "torrent", "magnet")
+            and len(versions) <= 1
+        )
+        return {
+            "mode": modes[0] if valid else None,
+            "etag": versions[0] if versions else None,
+        }
+
+    def _transfer_base_url(self):
+        configured = getattr(self.server, "public_url", None)
+        if configured:
+            return configured
+        host = self.headers.get("Host")
+        if not host:
+            address, port = self.connection.getsockname()[:2]
+            host = "[{}]:{}".format(address, port) if ":" in address else (
+                "{}:{}".format(address, port)
+            )
+        base = validate_public_url("http://" + host)
+        if urllib.parse.urlsplit(base).path:
+            raise ValueError("Invalid Host header")
+        return base
+
+    def _serve_transfer_options(self, transfer):
+        if transfer["mode"] is None:
+            self.send_error(400, "Invalid transfer options")
+            return None
+        path = self.translate_path(self.path)
+        if not os.path.isfile(path):
+            self.send_error(404, "File not found")
+            return None
+        try:
+            base_url = self._transfer_base_url()
+        except ValueError:
+            self.send_error(400, "Invalid server URL")
+            return None
+        try:
+            with open(path, "rb") as source:
+                file_status = os.fstat(source.fileno())
+            if not stat.S_ISREG(file_status.st_mode):
+                self.send_error(404, "Not a regular file")
+                return None
+            etag = self._make_etag(file_status)
+            if transfer["etag"] is not None and transfer["etag"] != etag:
+                self.send_error(412, "File changed; reopen Resume options")
+                return None
+            torrent = None
+            if transfer["mode"] in ("torrent", "magnet"):
+                torrent = self.server.torrents.get(path)
+                if torrent["etag"] != etag:
+                    raise ValueError("File changed while preparing torrent")
+        except OSError:
+            self.send_error(404, "File unavailable")
+            return None
+        except (ValueError, UnicodeError):
+            self.send_error(409, "File changed or cannot be used in a torrent; retry")
+            return None
+
+        # Re-encode the path so spaces, Unicode, and URL metacharacters survive
+        # embedding in another URL (including a magnet's xs and ws parameters).
+        request_path = urllib.parse.quote(
+            urllib.parse.unquote(urllib.parse.urlsplit(self.path).path),
+            safe="/",
+        )
+        file_url = base_url + "/" + request_path.lstrip("/")
+        direct_url = file_url + "?download=1"
+        seed_url = file_url + "?" + urllib.parse.urlencode({"seed": etag})
+        torrent_url = file_url + "?" + urllib.parse.urlencode(
+            {"transfer": "torrent", "etag": etag}
+        )
+        magnet_page_url = file_url + "?" + urllib.parse.urlencode(
+            {"transfer": "magnet", "etag": etag}
+        )
+        name = os.path.basename(path)
+        if transfer["mode"] == "torrent":
+            return self._send_transfer_payload(
+                metadata(torrent, seed_url),
+                "application/x-bittorrent",
+                filename=name + ".torrent",
+            )
+
+        escape = functools.partial(html.escape, quote=True)
+        title = "Resume options for " + name
+        page = [
+            '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">',
+            '<meta name="viewport" content="width=device-width, initial-scale=1">',
+            "<title>{}</title><style>{}</style></head><body><main>".format(
+                escape(title), _DIRECTORY_STYLE
+            ),
+            "<header><h1>{}</h1>".format(escape(title)),
+            '<p class="hint">Use a download manager that keeps partial downloads. '
+            "If iOS pauses it when the screen locks, reopen the app and resume "
+            "the same download. Background behavior depends on the app.</p></header>",
+            '<section class="media-panel transfer-panel"><h2>Resumable HTTP</h2>',
+            '<p>This stable URL supports repeated byte-range requests and has '
+            "no download session expiry. Copy it into your download manager.</p>",
+            '<label for="resume-url">Download URL</label>',
+            '<textarea id="resume-url" readonly rows="3">{}</textarea>'.format(
+                escape(direct_url)
+            ),
+            '<p><a href="{}" download>Download directly</a></p>'.format(
+                escape(direct_url)
+            ),
+            "<p>On a computer, rerun this command to resume a partial file:</p>",
+            "<p><code>{}</code></p></section>".format(
+                escape("curl -f -C - -O '" + direct_url + "'")
+            ),
+            '<section class="media-panel transfer-panel"><h2>Torrent and magnet</h2>',
+            "<p>A client with HTTP web-seed support downloads this same file in "
+            "verified pieces and can resume missing pieces later. Keep the "
+            "source file unchanged and this server reachable at the same address.</p>",
+            '<p><a href="{}" download="{}">Download .torrent</a>'.format(
+                escape(torrent_url), escape(name + ".torrent")
+            ),
+        ]
+        if torrent is None:
+            page.extend([
+                ' &middot; <a href="{}">Prepare magnet link</a></p>'.format(
+                    escape(magnet_page_url)
+                ),
+                "<p>The first torrent or magnet request reads the whole file "
+                "to calculate piece hashes. Large files can take a while; "
+                "subsequent requests use cached hashes.</p>",
+            ])
+        else:
+            magnet = "magnet:?" + urllib.parse.urlencode([
+                ("xt", "urn:btih:" + torrent["info_hash"]),
+                ("dn", name),
+                ("xl", str(torrent["size"])),
+                ("xs", torrent_url),
+                ("ws", seed_url),
+            ])
+            page.extend([
+                ' &middot; <a href="{}">Open magnet link</a></p>'.format(
+                    escape(magnet)
+                ),
+                '<label for="magnet-url">Magnet link</label>',
+                '<textarea id="magnet-url" readonly rows="5">{}</textarea>'.format(
+                    escape(magnet)
+                ),
+            ])
+        page.extend([
+            "<p>If a magnet stalls at fetching metadata, open the .torrent "
+            "instead. Magnets require a client that supports the embedded "
+            "HTTP metadata source (xs). This server supplies an HTTP web seed; "
+            "it does not run a BitTorrent peer or public tracker.</p></section>",
+            '<p><a href="./">Back to directory</a></p>',
+            "</main></body></html>",
+        ])
+        return self._send_transfer_payload(
+            "\n".join(page).encode("utf-8"), "text/html; charset=utf-8"
+        )
+
+    def _send_transfer_payload(self, payload, content_type, filename=None):
+        self.send_response(200)
+        self.send_header("Content-Type", content_type)
+        self.send_header("Content-Length", str(len(payload)))
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("Referrer-Policy", "no-referrer")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header(
+            "Content-Security-Policy",
+            "default-src 'none'; style-src 'unsafe-inline'; "
+            "frame-ancestors 'none'; base-uri 'none'",
+        )
+        if filename is not None:
+            self.send_header(
+                "Content-Disposition",
+                "attachment; filename=\"download.torrent\"; filename*=UTF-8''" +
+                urllib.parse.quote(filename, safe=""),
+            )
+        self.end_headers()
+        return io.BytesIO(payload)
 
     def _reject_resume_request(self, source, etag, last_modified):
         source.close()
@@ -3095,8 +3323,8 @@ class RangeRequestHandler(SimpleHTTPRequestHandler):
             "<h1>{}</h1>".format(escaped_title),
             (
                 '<p class="hint">Select a filename to download it, or use Play '
-                "for recognized audio and video files. If a browser cannot "
-                "resume safely, this page offers a clean restart.</p>"
+                "for recognized audio and video files. Use Resume options "
+                "for a stable download-manager URL, torrent, or magnet link.</p>"
             ),
             "</header>",
             (
@@ -3154,6 +3382,7 @@ class RangeRequestHandler(SimpleHTTPRequestHandler):
             '<th class="size-column" scope="col">Size</th>',
             '<th class="type-column" scope="col">Type</th>',
             '<th class="play-column" scope="col">Play</th>',
+            '<th class="resume-column" scope="col">Resume</th>',
             "</tr>",
             "</thead>",
             "<tbody>",
@@ -3162,7 +3391,7 @@ class RangeRequestHandler(SimpleHTTPRequestHandler):
         if request_path.rstrip("/"):
             page.append(
                 (
-                    '<tr><td colspan="4"><a class="file-link" href="../">'
+                    '<tr><td colspan="5"><a class="file-link" href="../">'
                     "../ Parent directory</a></td></tr>"
                 )
             )
@@ -3354,6 +3583,17 @@ class RangeRequestHandler(SimpleHTTPRequestHandler):
                     'aria-hidden="true">&mdash;</span>'
                 )
 
+            if is_regular_file and listed_status is not None:
+                resume_cell = (
+                    '<a class="resume-link" href="{}?transfer=resume" '
+                    'aria-label="Resume options for {}">Resume options</a>'
+                ).format(escaped_url, escaped_name_attribute)
+                name_cell += '<div class="mobile-resume">{}</div>'.format(
+                    resume_cell
+                )
+            else:
+                resume_cell = '<span aria-hidden="true">&mdash;</span>'
+
             page.append(
                 (
                     "<tr>"
@@ -3362,19 +3602,21 @@ class RangeRequestHandler(SimpleHTTPRequestHandler):
                     '<td class="type-column">'
                     '<span class="file-kind">{type}</span></td>'
                     '<td class="play-column">{play_cell}</td>'
+                    '<td class="resume-column">{resume_cell}</td>'
                     "</tr>"
                 ).format(
                     name_cell=name_cell,
                     size_cell=size_cell,
                     type=escaped_type_text,
                     play_cell=play_cell,
+                    resume_cell=resume_cell,
                 )
             )
 
         if not names:
             page.append(
                 (
-                    '<tr><td class="empty" colspan="4">'
+                    '<tr><td class="empty" colspan="5">'
                     "This directory is empty.</td></tr>"
                 )
             )
@@ -3446,8 +3688,8 @@ class RangeRequestHandler(SimpleHTTPRequestHandler):
 def main():
     parser = argparse.ArgumentParser(
         description=(
-            "Serve files with single byte-range support and media-aware "
-            "directory listings."
+            "Serve files with byte-range resume, media-aware listings, "
+            "and HTTP web-seeded torrents/magnets."
         ),
     )
     parser.add_argument(
@@ -3455,6 +3697,15 @@ def main():
         "--bind",
         metavar="ADDRESS",
         help="bind to this address (default: all interfaces)",
+    )
+    parser.add_argument(
+        "--public-url",
+        type=validate_public_url,
+        metavar="URL",
+        help=(
+            "advertise this HTTP(S) base URL in resume/torrent/magnet links "
+            "(default: the browser's server address); may include a proxy prefix"
+        ),
     )
     parser.add_argument(
         "-d",
@@ -3471,10 +3722,12 @@ def main():
     )
     address = args.bind or ""
 
-    with GuardedThreadingHTTPServer((address, args.port), handler) as server:
+    with GuardedThreadingHTTPServer(
+        (address, args.port), handler, public_url=args.public_url
+    ) as server:
         display_address = args.bind or "0.0.0.0"
         print(
-            "Serving media-aware HTTP with byte-range support on {} port {} "
+            "Serving HTTP with byte-range resume and torrent/magnet options on {} port {} "
             "(http://{}:{}/) ...".format(
                 display_address,
                 args.port,

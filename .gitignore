@@ -9,3 +9,6 @@ Desktop.ini
 
 # Installed packages folder
 opt/
+
+# Python helper bytecode
+__pycache__/

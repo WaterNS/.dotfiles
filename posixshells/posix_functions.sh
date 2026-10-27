@@ -344,7 +344,7 @@ simpleserver() (
   "$__simpleServerPython" \
     "${HOMEREPO:-"$HOME/.dotfiles"}/bin/simple_http_server.py" \
     --directory /tmp \
-    8000
+    "$@"
 )
 
 getFileExt() {
