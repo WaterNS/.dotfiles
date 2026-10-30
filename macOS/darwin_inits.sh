@@ -29,6 +29,8 @@ if [ "$OS_FAMILY" = "Darwin" ]; then
   defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
   defaults write NSGlobalDomain NSAutomaticTextCompletionEnabled -bool false
   defaults write NSGlobalDomain NSAutomaticInlinePredictionEnabled -bool false # Disable inline predictive text
+  defaults write NSGlobalDomain NSSmartReplyEnabled -bool false   # macOS 27: Disable "Show suggested replies" (Smart Reply in Messages/Mail).
+
   # Disable press-and-hold for keys in favor of key repeat
   defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
   # Set a blazingly fast keyboard repeat rate
